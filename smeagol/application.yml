@@ -4,5 +4,5 @@ server:
 scm:
   url: http://localhost:8080/scm
 cas:
-  url: http://localhost:8080/cas
-  serviceUrl: http://localhost:8080/smeagol
+  url: https://localhost:8443/cas
+  serviceUrl: https://localhost:8443/smeagol

@@ -2,8 +2,9 @@
 
 FROM tomcat:9.0.8-jre8-alpine
 
-COPY target/cas.war /usr/local/tomcat/webapps/cas.war
+COPY tomcat/conf/server.xml /usr/local/tomcat/conf/server.xml
 
+COPY target/cas.war /usr/local/tomcat/webapps/cas.war
 COPY smeagol/application.yml /usr/local/tomcat/application.yml
 
 RUN \

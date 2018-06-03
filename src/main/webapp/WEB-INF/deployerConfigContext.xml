@@ -104,7 +104,7 @@
     <util:list id="registeredServicesList">
         <bean class="org.jasig.cas.services.RegexRegisteredService"
               p:id="0" p:name="HTTP and IMAP" p:description="Allows HTTP(S) and IMAP(S) protocols"
-              p:serviceId="^(http?|https?|imaps?)://localhost:8080/.*" p:evaluationOrder="10000001" /> 
+              p:serviceId="^(http?|https?|imaps?)://localhost.*" p:evaluationOrder="10000001" /> 
 
 </util:list>
             

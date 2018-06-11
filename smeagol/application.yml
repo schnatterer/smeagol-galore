@@ -2,7 +2,7 @@ stage: production
 server:
   contextPath: /smeagol
 scm:
-  url: http://localhost:8080/scm
+  url: https://localhost:8443/scm
 cas:
   url: https://localhost:8443/cas
   serviceUrl: https://localhost:8443/smeagol

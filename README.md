@@ -7,7 +7,10 @@ A lightweight version of cloudogu's git-based wiki system. Runs outside a cloudo
 mvn -f cas clean package
 docker build -t smeagol-galore . 
 
-docker run -it --rm -p 8080:8080 -p 8443:8443 -v $(PWD)/cas/etc/cas.properties:/etc/cas/cas.properties -v $(PWD)/dev/cacerts:/usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts -v $(PWD)/dev/cacerts:/etc/ssl/certs/java/cacerts -v $(PWD)/dev/keystore.jks:/usr/local/tomcat/conf/keystore.jks  smeagol-galore
+docker run -it --rm -p 8080:8080 -p 8443:8443 -v $(PWD)/cas/etc/cas.properties:/etc/cas/cas.properties \
+    -v $(PWD)/dev/cacerts:/usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts  -v $(PWD)/dev/keystore.jks:/usr/local/tomcat/conf/keystore.jks  \
+    -v $(PWD)/dev/scm:/root/.scm \
+    smeagol-galore
 ```
 
 # Credentials

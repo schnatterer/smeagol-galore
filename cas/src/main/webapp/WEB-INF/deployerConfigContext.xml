@@ -61,15 +61,15 @@
             </map>
         </constructor-arg>
 
-        <!-- Uncomment the metadata populator to allow clearpass to capture and cache the password
-             This switch effectively will turn on clearpass.
+        <!-- Allow clearpass to capture and cache the password
+             This switch effectively will turn on clearpass. -->
+
         <property name="authenticationMetaDataPopulators">
            <util:list>
               <bean class="org.jasig.cas.extension.clearpass.CacheCredentialsMetaDataPopulator"
                     c:credentialCache-ref="encryptedMap" />
            </util:list>
         </property>
-        -->
 
         <!--
            | Defines the security policy around authentication. Some alternative policies that ship with CAS:
@@ -104,7 +104,7 @@
           class="org.jasig.cas.authentication.AcceptUsersAuthenticationHandler">
         <property name="users">
             <map>
-                <entry key="casuser" value="Mellon"/>
+                <entry key="scmadmin" value="scmadmin"/>
             </map>
         </property>
     </bean>

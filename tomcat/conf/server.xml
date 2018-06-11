@@ -68,7 +68,7 @@
                connectionTimeout="20000"
                redirectPort="8443" />
 
-               <Connector port="8443"
+   <!-- <Connector port="8443"
        maxThreads="150"
        enableLookups="false"
        disableUploadTimeout="true"
@@ -77,7 +77,20 @@
        secure="true"
        SSLEnabled="true"
        SSLCertificateFile="${catalina.base}/conf/ssl.crt"
-       SSLCertificateKeyFile="${catalina.base}/conf/ssl.key" />
+       SSLCertificateKeyFile="${catalina.base}/conf/ssl.key" >
+       <SSLHostConfig>
+            <Certificate certificateKeystoreFile="${catalina.base}/conf/localhost-rsa.jks"
+                         type="RSA" />
+        </SSLHostConfig>
+            </Connector>
+-->
+
+<Connector
+           protocol="org.apache.coyote.http11.Http11NioProtocol"
+           port="8443" maxThreads="200"
+           scheme="https" secure="true" SSLEnabled="true"
+           keystoreFile="${catalina.base}/conf/keystore.jks" keystorePass="changeit"
+           clientAuth="false" sslProtocol="TLS"/>
     <!-- A "Connector" using the shared thread pool-->
     <!--
     <Connector server="Apache" secure="true" executor="tomcatThreadPool"

@@ -23,7 +23,10 @@ https://burcakulug.wordpress.com/2017/09/09/how-to-make-java-and-tomcat-docker-c
 ```bash
 docker run -it -v $(PWD)/dev:/cacerts-test openjdk:8u102-jre
 cd /cacerts-test; cp /etc/ssl/certs/java/cacerts .
-keytool -genkey -alias localhost -keyalg RSA -keypass changeit -storepass changeit -keystore keystore.jks
+# In order to authenticate via scm-cas-plugin, we need to provide a subjectAltName otherwise we'll encounter 
+# ClientTransportException: HTTP transport error: javax.net.ssl.SSLHandshakeException: java.security.cert.CertificateException: No subject alternative names present
+# See https://stackoverflow.com/a/84441845976863/
+keytool -genkey -alias localhost -keyalg RSA -keypass changeit -storepass changeit -keystore keystore.jks -ext san=ip:127.0.0.1 -ext san=dns:localhost
 keytool -export -alias localhost -storepass changeit -file server.cer -keystore keystore.jks
 
 keytool -import -v -trustcacerts -alias localhost -file server.cer -keystore cacerts -keypass changeit -storepass changeit

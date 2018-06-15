@@ -14,6 +14,7 @@ FROM tomcat:9.0.8-jre8-alpine
 COPY cas/target/cas.war /usr/local/tomcat/webapps/cas.war
 COPY --from=downloader /webapps/ /usr/local/tomcat/webapps/
 
-# Config
-COPY tomcat/conf/server.xml /usr/local/tomcat/conf/server.xml
+# Tomcat Config (TLS & root URL redirect)
+COPY tomcat /usr/local/tomcat
+# Smeagol config
 COPY smeagol/application.yml /usr/local/tomcat/application.yml

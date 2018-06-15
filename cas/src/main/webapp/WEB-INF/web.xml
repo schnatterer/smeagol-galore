@@ -227,6 +227,12 @@
         <url-pattern>/clearPass</url-pattern>
     </servlet-mapping>
 
+    <!-- saml support -->
+
+    <servlet-mapping>
+        <servlet-name>cas</servlet-name>
+        <url-pattern>/samlValidate</url-pattern>
+    </servlet-mapping>
 
     <session-config>
         <!-- Default to 5 minute session timeouts -->

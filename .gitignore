@@ -13,3 +13,5 @@ bin/
 *.iml
 *.log
 dev
+# vscode local history
+.history

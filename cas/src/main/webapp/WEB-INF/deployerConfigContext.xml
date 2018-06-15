@@ -132,7 +132,7 @@
     +-->
     <bean id="attributeRepository" class="org.jasig.services.persondir.support.StubPersonAttributeDao"
             p:backingMap-ref="attrRepoBackingMap" />
-    
+
     <util:map id="attrRepoBackingMap">
         <entry key="username" value="scmadmin" />
         <entry key="mail" value="scm@adm.in" />
@@ -169,7 +169,7 @@
             <property name="ignoreAttributes" value="true" />
 
             <!-- <property name="proxyPolicy">
-              <bean class="org.jasig.cas.services.RegexMatchingRegisteredServiceProxyPolicy" c:pattern="^https?://.*" /> 
+              <bean class="org.jasig.cas.services.RegexMatchingRegisteredServiceProxyPolicy" c:pattern="^https?://.*" />
             </property>
             -->
         </bean>

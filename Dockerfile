@@ -8,7 +8,8 @@ RUN set -x && \
   apk add --no-cache --update zip unzip && \
   mkdir /webapps && \
   wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/schnatterer/smeagol/33e358d427/smeagol-33e358d427.war && \
-  wget -O /webapps/scm.war https://maven.scm-manager.org/nexus/content/repositories/releases/sonia/scm//scm-webapp/${SCM_VERSION}/scm-webapp-${SCM_VERSION}.war
+  wget -O /tmp/scm.war https://maven.scm-manager.org/nexus/content/repositories/releases/sonia/scm//scm-webapp/${SCM_VERSION}/scm-webapp-${SCM_VERSION}.war && \
+  unzip /tmp/scm.war -d /webapps/scm 
 
 # Set plantuml.com as plantuml renderer. Alternative would be to deploy plantuml
 # "Fix" executable war (which seems to confuse jar & zip utilities)
@@ -25,6 +26,7 @@ RUN \
   apk add --no-cache --update su-exec && \
   mkdir /home/tomcat
   # TODO add umask 007 or 077?
+  #umask "077"
 
 COPY --from=downloader /webapps/ /usr/local/tomcat/webapps/
 
@@ -38,5 +40,3 @@ COPY smeagol/application.yml /usr/local/tomcat/application.yml
 COPY entrypoint.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
-# TODO use "startup.sh -security"?
-CMD ["catalina.sh", "run"]

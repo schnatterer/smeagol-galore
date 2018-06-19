@@ -6,7 +6,7 @@ set -o errexit -o nounset -o pipefail
 USER_ID=${USERID:-1000}
 GROUP_ID=${GROUP_ID:-1000}
 
-# Tomcat user
+echo "Creating tomcat user with UID:GID=${USER_ID}:${GROUP_ID}"
 # -S              Create a system group/user
 addgroup -g ${GROUP_ID} -S tomcat && \
 # -D              Do not assign a password
@@ -20,4 +20,11 @@ chown -R tomcat:tomcat /home/tomcat && \
 chmod 400 ${CATALINA_HOME}/conf/*
 
 sync
-exec su-exec tomcat "$@"
+
+exec su-exec tomcat catalina.sh run
+
+# TODO use "startup.sh -security"?
+#exec su-exec tomcat  "startup.sh -security"
+
+# never exit
+#while true; do sleep 10000; done

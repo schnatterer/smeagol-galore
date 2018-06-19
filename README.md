@@ -48,15 +48,45 @@ keytool -list -alias localhost -keystore cacerts -storepass changeit
    - Cas logs:  `<saml1p:StatusCode Value="saml1p:Success"/>`
    - but scm: logs `[https-openssl-nio-8443-exec-9] ERROR de.triology.scm.plugins.cas.CasAuthenticationFilter - authentication failed`  
      No Stacktrace :-/: https://bitbucket.org/triologygmbh/scm-cas-plugin/src/a75de4c30890739d7d28668fdb64f5cf44e64499/src/main/java/de/triology/scm/plugins/cas/CasAuthenticationFilter.java?at=master&fileviewer=file-view-default#CasAuthenticationFilter.java-216
-- Users:
- - change scm default PW on first start. EntryPoint.sh? And print to log?
- - How to authorize user created in CAS? Create Group? 
+- make cas authenticate against scmm user base? Even when scmm itself uses cas, the rest api uses the local user base!
+- create volume for .scm folder or whole user folder?
+- scm plugin installs fail
 - Which config files are required to be mounted on docker run? 
   deployerConfigContext.xml?
-- ...
 - Cleanup cas template (jetty, etc.), update deps & maven?
 - Smeagol PR for executable war
 - Create helm chart
+
+ - change scm default PW on first start. EntryPoint.sh? And print to log?
+
+# Troubleshooting
+
+## Extend Log output
+
+### SCM-Manager
+
+* Copy `logback.xml` for [SCM-Manager](https://github.com/sdorra/scm-manager/blob/one.dot.x/scm-webapp/src/main/resources/logback.default.xml)
+* Increase logging for SCM-Manager and/or plugins. E.g. for SCM-Manager
+  ```xml
+    <logger name="sonia.scm" level="TRACE" />
+  ```
+* Run Container with `-v $(PWD)/dev/scm/logback.xml:/usr/local/tomcat/webapps/scm/WEB-INF/classes/logback.xml`
+
+## Debugging
+
+* At the very end of `entrypoint.sh`: 
+  ```bash
+  export JPDA_OPTS="-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
+  catalina.sh jpda start
+  ```
+* Rebuild docker container.
+* Start container with `-p8000:8000`
+* Load sources for [SCM-Manager](https://github.com/sdorra/scm-manager) and related plugins, CAS from this repo and/or [smeagol](https://github.com/cloudogu/smeagol) into your IDE.
+* Start debugger, e.g. in [IntelliJ](https://stackoverflow.com/a/6734028/1845976)
+
+# never exit
+while true; do sleep 10000; done
+
 
 # Links
 

@@ -108,7 +108,7 @@
           class="org.jasig.cas.authentication.AcceptUsersAuthenticationHandler">
         <property name="users">
             <map>
-                <entry key="scmadmin" value="scmadmin"/>
+                <entry key="admin" value="admin"/>
             </map>
         </property>
     </bean>
@@ -134,7 +134,7 @@
             p:backingMap-ref="attrRepoBackingMap" />
 
     <util:map id="attrRepoBackingMap">
-        <entry key="username" value="scmadmin" />
+        <entry key="username" value="admin" />
         <entry key="mail" value="scm@adm.in" />
         <entry key="displayName" value="Scm Admin" />
         <entry key="groups" value="admin" />

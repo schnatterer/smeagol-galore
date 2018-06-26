@@ -16,7 +16,7 @@ docker run -it --rm -p 8080:8080 -p 8443:8443 -v $(PWD)/cas/etc/cas.properties:/
 You can overwrite the user and group ID that that starts the server process by passing `-e USER_ID 1042 -e GROUP_ID 1042`. Be default UID and GID `1000` are used.
 
 # Credentials
-scmadmin:scmadmin
+admin:admin
 
 # Create self signed TLS certs and add to truststore / cacerts for local development
 
@@ -37,27 +37,23 @@ keytool -list -alias localhost -keystore cacerts -storepass changeit
 ```
 
 # TODOs
-
-- scmmmanger: Install and configure cas plugin and ?scm-webhook-plugin?
-  https://github.com/cloudogu/scm/blob/master/Dockerfile
-  - Set attributes same as in smeagol https://github.com/cloudogu/smeagol/blob/develop/src/main/java/com/cloudogu/smeagol/AccountService.java#L67
-    set url to `/cas`?
-  - Challenge: We don't have a hook that is called when scm is up. So can't use scm-script-plugin as in cloudogu/scm.
-    We could try to install the cas plugin from docker file (similar to scm-script-plugin) and set defaults
-- scmmanager with cas plugin: Login fails.
-   - Cas logs:  `<saml1p:StatusCode Value="saml1p:Success"/>`
-   - but scm: logs `[https-openssl-nio-8443-exec-9] ERROR de.triology.scm.plugins.cas.CasAuthenticationFilter - authentication failed`  
-     No Stacktrace :-/: https://bitbucket.org/triologygmbh/scm-cas-plugin/src/a75de4c30890739d7d28668fdb64f5cf44e64499/src/main/java/de/triology/scm/plugins/cas/CasAuthenticationFilter.java?at=master&fileviewer=file-view-default#CasAuthenticationFilter.java-216
 - make cas authenticate against scmm user base? Even when scmm itself uses cas, the rest api uses the local user base!
-- create volume for .scm folder or whole user folder?
-- scm plugin installs fail
-- Which config files are required to be mounted on docker run? 
-  deployerConfigContext.xml?
-- Cleanup cas template (jetty, etc.), update deps & maven?
-- Smeagol PR for executable war
-- Create helm chart
 
- - change scm default PW on first start. EntryPoint.sh? And print to log?
+- Make hostname configurable (overwrite in entrypoint in cas, smeagol.yml, scm cas plugin, etc.?)
+- Which config files are required to be mounted on docker run? 
+  - deployerConfigContext.xml? (use xml for attributes?) / cas.properties
+  - or can we include them in image and adapt e.g. hostname and pw change url in
+   entrypoint?
+- Cleanup cas template (jetty, etc.), update deps & maven?
+- Readme: Getting started: 
+  - Needs internet access for installing cas plugin on first start
+  - How to create first wiki
+- Create helm chart (use draft?)
+- ...
+ 
+ - set favicon
+ - Install scm-webhook-plugin and configure for smeagol? Still needed for smeagol 0.5.0?
+- TODOs in dockerfile?
 
 # Troubleshooting
 
@@ -74,19 +70,9 @@ keytool -list -alias localhost -keystore cacerts -storepass changeit
 
 ## Debugging
 
-* At the very end of `entrypoint.sh`: 
-  ```bash
-  export JPDA_OPTS="-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
-  catalina.sh jpda start
-  ```
-* Rebuild docker container.
-* Start container with `-p8000:8000`
+* Start container with `-p8000:8000 -e DEBUG=true`
 * Load sources for [SCM-Manager](https://github.com/sdorra/scm-manager) and related plugins, CAS from this repo and/or [smeagol](https://github.com/cloudogu/smeagol) into your IDE.
-* Start debugger, e.g. in [IntelliJ](https://stackoverflow.com/a/6734028/1845976)
-
-# never exit
-while true; do sleep 10000; done
-
+* Start debugger, e.g. in [IntelliJ](https://stackoverflow.com/a/6734028/1845976) on port 8000
 
 # Links
 
@@ -103,7 +89,8 @@ while true; do sleep 10000; done
 
 ## CAS
 
-* https://github.com/UniconLabs/simple-cas4-overlay-template/blob/master/pom.xml
-* https://apereo.github.io/cas/4.0.x/index.html
+* [Cas 4 Overlay example](https://github.com/UniconLabs/simple-cas4-overlay-template/blob/master/pom.xml)
+* [CAS 4 code](https://github.com/apereo/cas/tree/v4.0.7)
+* [CAS 4 docs](https://apereo.github.io/cas/4.0.x/index.html)
 
 

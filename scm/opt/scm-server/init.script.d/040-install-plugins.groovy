@@ -8,7 +8,9 @@ def logger = LoggerFactory.getLogger("sonia.scm.install-plugins.groovy")
 def env = System.getenv()
 
 def plugins = [
-   "de.triology.scm.plugins:scm-cas-plugin"
+   "de.triology.scm.plugins:scm-cas-plugin",
+   "sonia.scm.plugins:scm-gravatar-plugin",
+   "sonia.scm.plugins:scm-statistic-plugin"
 ]    
 
 def pluginManager = injector.getInstance(PluginManager.class)    

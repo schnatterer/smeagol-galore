@@ -62,15 +62,15 @@ RUN \
   # Add umask -> New files are only accessible to user
   umask "077"
 
-# TODO consolidate/optimize COPY stages
-
+# TODO consolidate/optimize COPY stages in downloader to get less layers?
 COPY --from=downloader /webapps/ ${CATALINA_HOME}/webapps/
-
 COPY scm /
 # Tomcat Config (TLS & root URL redirect)
 COPY tomcat /usr/local/tomcat
 # Smeagol config
 COPY smeagol/application.yml /usr/local/tomcat/application.yml
 COPY entrypoint.sh /
+
+VOLUME /home/tomcat/.scm
 
 ENTRYPOINT ["/entrypoint.sh"]

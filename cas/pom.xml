@@ -60,6 +60,13 @@
             <version>${cas.version}</version>
         </dependency>
 
+        <!-- Support for password file -->
+        <dependency>
+            <groupId>org.jasig.cas</groupId>
+            <artifactId>cas-server-support-generic</artifactId>
+            <version>${cas.version}</version>
+        </dependency>
+
         <!-- saml support for scmmanager -->
 
         <dependency>

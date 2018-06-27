@@ -13,6 +13,8 @@ docker run -it --rm -p 8080:8080 -p 8443:8443 -v $(PWD)/cas/etc/cas.properties:/
     smeagol-galore
 ```
 
+Note that SCM-Manager installs plugins via the internet.
+
 # Create self signed TLS certs and add to truststore / cacerts for local development
 
 https://burcakulug.wordpress.com/2017/09/09/how-to-make-java-and-tomcat-docker-containers-to-trust-self-signed-certificates/
@@ -32,7 +34,13 @@ keytool -list -alias localhost -keystore cacerts -storepass changeit
 ```
 
 # Credentials
-admin:admin
+
+Are defined in `/etc/cas/users.txt` and `/etc/cas/attributes.xml`. Custom ones can be mounted into the container like so for example: `-v $(PWD)/dev/users.txt:/etc/cas/users.txt`.
+
+Default: `admin:admin`
+
+See [users.txt](cas/etc/cas/users.txt) and [attributes.xml](cas/etc/cas/attributes.xml).
+
 
 # Environment Variables
 
@@ -46,28 +54,22 @@ admin:admin
 * Go to https://localhost:8443/scm 
 * Log in as administrator
 * Create a git wiki
-* Clone into git wiki
+* Clone into git wiki, e.g. for localhost: `git -c http.sslVerify=false clone https://admin@localhost:8443/scm/git/test`
 * Add empty `.smeagol.yml` file
+* Push, e.g. for localhost: `git -c http.sslVerify=false push`
+* Go to https://localhost:8443/smeagol
 
 # TODOs
-- make cas authenticate against scmm user base? Even when scmm itself uses cas, the rest api uses the local user base!
 
 - Make hostname configurable (overwrite in entrypoint in cas, smeagol.yml, scm cas plugin, etc.?)
-- Which config files are required to be mounted on docker run? 
-  - deployerConfigContext.xml? (use xml for attributes?) / cas.properties
-  - or can we include them in image and adapt e.g. hostname and pw change url in
-   entrypoint?
-- Cleanup cas template (jetty, etc.), update deps & maven?
-- Readme: Getting started: 
-  - Needs internet access for installing cas plugin on first start
-  - How to create first wiki
-  - TODOs in dockerfile?
+- Move deployerConfigContext.xml out of war? --> Can be mounted externally like cas.properties if needed
+- Cleanup cas template (jetty, etc.), update deps & maven
+- TODOs in dockerfile
 
 - Create helm chart (use draft?)
 - ...
  
  - set favicon
- - Install scm-webhook-plugin and configure for smeagol? Still needed for smeagol 0.5.0?
 
 # Troubleshooting
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<person-data>
+    <person name="admin">
+        <attribute key="username"><value>admin</value></attribute>
+        <attribute key="mail"><value>scm@adm.in</value></attribute>
+        <attribute key="displayName"><value>Scm Admin</value></attribute>
+        <attribute key="groups"><value>admin</value></attribute>
+    </person>
+</person-data>

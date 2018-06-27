@@ -105,13 +105,8 @@
        | * org.jasig.cas.support.spnego.authentication.handler.support.JCIFSSpnegoAuthenticationHandler
        -->
     <bean id="primaryAuthenticationHandler"
-          class="org.jasig.cas.authentication.AcceptUsersAuthenticationHandler">
-        <property name="users">
-            <map>
-                <entry key="admin" value="admin"/>
-            </map>
-        </property>
-    </bean>
+          class="org.jasig.cas.adaptors.generic.FileAuthenticationHandler"
+          p:fileName="file:/etc/cas/users.txt" />
 
     <!-- Required for proxy ticket mechanism -->
     <bean id="proxyPrincipalResolver"
@@ -130,16 +125,9 @@
     Bean that defines the attributes that a service may return.  This example uses the Stub/Mock version.  A real implementation
     may go against a database or LDAP server.  The id should remain "attributeRepository" though.
     +-->
-    <bean id="attributeRepository" class="org.jasig.services.persondir.support.StubPersonAttributeDao"
-            p:backingMap-ref="attrRepoBackingMap" />
-
-    <util:map id="attrRepoBackingMap">
-        <entry key="username" value="admin" />
-        <entry key="mail" value="scm@adm.in" />
-        <entry key="displayName" value="Scm Admin" />
-        <entry key="groups" value="admin" />
-    </util:map>
-
+    <bean id="attributeRepository" class="org.jasig.services.persondir.support.xml.XmlPersonAttributeDao"
+          p:mappedXmlResource="file:/etc/cas/attributes.xml" />
+          
     <!-- 
     Sample, in-memory data store for the ServiceRegistry. A real implementation
     would probably want to replace this with the JPA-backed ServiceRegistry DAO

@@ -63,6 +63,7 @@ RUN \
   umask "077"
 
 # TODO consolidate/optimize COPY stages in downloader to get less layers?
+COPY cas/etc/ /etc/
 COPY --from=downloader /webapps/ ${CATALINA_HOME}/webapps/
 COPY scm /
 # Tomcat Config (TLS & root URL redirect)

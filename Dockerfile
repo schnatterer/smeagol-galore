@@ -27,13 +27,13 @@ COPY cas/target/cas.war /cas/target/cas.war
 FROM alpine:3.7 as downloader
 ENV SCM_VERSION=1.54 \
     SCM_SCRIPT_PLUGIN_VERSION=1.6 \
-    GROOVY_VERSION=2.4.12
+    GROOVY_VERSION=2.4.12 \
+    SMEAGOL_VERSION=v0.5.2
 
-# TODO Use official war (versiom > 0.5.1) here!
 RUN set -x && \
   apk add --no-cache --update zip unzip curl && \
   mkdir /webapps && \
-  wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/schnatterer/smeagol/33e358d427/smeagol-33e358d427.war && \
+  wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/cloudogu/smeagol/${SMEAGOL_VERSION}/smeagol-${SMEAGOL_VERSION}.war && \
   wget -O /tmp/scm.war https://maven.scm-manager.org/nexus/content/repositories/releases/sonia/scm//scm-webapp/${SCM_VERSION}/scm-webapp-${SCM_VERSION}.war && \
   unzip /tmp/scm.war -d /webapps/scm
 

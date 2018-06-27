@@ -13,11 +13,6 @@ docker run -it --rm -p 8080:8080 -p 8443:8443 -v $(PWD)/cas/etc/cas.properties:/
     smeagol-galore
 ```
 
-You can overwrite the user and group ID that that starts the server process by passing `-e USER_ID 1042 -e GROUP_ID 1042`. Be default UID and GID `1000` are used.
-
-# Credentials
-admin:admin
-
 # Create self signed TLS certs and add to truststore / cacerts for local development
 
 https://burcakulug.wordpress.com/2017/09/09/how-to-make-java-and-tomcat-docker-containers-to-trust-self-signed-certificates/
@@ -36,6 +31,24 @@ keytool -import -v -trustcacerts -alias localhost -file server.cer -keystore cac
 keytool -list -alias localhost -keystore cacerts -storepass changeit
 ```
 
+# Credentials
+admin:admin
+
+# Environment Variables
+
+* You can overwrite the user and group ID that that starts the server process by passing `-e USER_ID 1042 -e GROUP_ID 1042`. Be default UID and GID `1000` are used.
+* Set the name of SCM-Manager's `ADMIN_GROUP`
+* Set your Fully Qualified Domain name (including Port) - `FQDN`
+* `-e DEBUG=true` exposes port 8000 as Tomcat debug port
+
+# Create wiki
+
+* Go to https://localhost:8443/scm 
+* Log in as administrator
+* Create a git wiki
+* Clone into git wiki
+* Add empty `.smeagol.yml` file
+
 # TODOs
 - make cas authenticate against scmm user base? Even when scmm itself uses cas, the rest api uses the local user base!
 
@@ -48,12 +61,13 @@ keytool -list -alias localhost -keystore cacerts -storepass changeit
 - Readme: Getting started: 
   - Needs internet access for installing cas plugin on first start
   - How to create first wiki
+  - TODOs in dockerfile?
+
 - Create helm chart (use draft?)
 - ...
  
  - set favicon
  - Install scm-webhook-plugin and configure for smeagol? Still needed for smeagol 0.5.0?
-- TODOs in dockerfile?
 
 # Troubleshooting
 

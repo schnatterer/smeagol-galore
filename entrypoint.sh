@@ -12,8 +12,6 @@ EXTRA_JVM_ARGUMENTS=-Dsonia.scm.init.script.d=/opt/scm-server/init.script.d
 
 main() {
 
-     #setupScmManagerConfig
-
     createUserAndGroup
 
     setTomcatFoldersOwnership
@@ -21,30 +19,6 @@ main() {
     startTomcat
 
 }
-
-#setupScmManagerConfig() {
-
-    #if [ ! -f ${USER_HOME}/.scm/plugins ] 
-    #then
-    #    echo "Installing scm-plugins"
-    #    #mkdir -p ${USER_HOME}/.scm/plugins/de/triology/scm/plugins/scm-cas-plugin/${SCM_CAS_PLUGIN}
-    #    mkdir -p ${USER_HOME}/.scm/plugins
-    #    cp -rf /scm-runtime-plugins/* ${USER_HOME}/.scm/plugins
-    #fi
-
-    #if [ ! -f ${USER_HOME}/.scm ]
-    #then 
-    #    mkdir -p ${USER_HOME}/.scm/config
-    #fi
-
-    #if [ ! -f ${USER_HOME}/.scm/config/config.xml ] 
-    #then
-    #    mkdir -p ${USER_HOME}/.scm/config
-    #    cat /scm/config.xml > ${USER_HOME}/.scm/config/config.xml
-    #fi
-
-    #cp -f /cas_plugin.xml > ${USER_HOME}/.scm/config/cas_plugin.xml
-#}
 
 createUserAndGroup() {
 

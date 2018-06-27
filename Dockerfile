@@ -58,11 +58,10 @@ RUN \
   apk add --no-cache --update su-exec && \
   # Delete tomcat default apps
   rm -rf ${CATALINA_HOME}/webapps/* && \
-  mkdir /home/tomcat 
-  # TODO add umask 007 or 077?
-  #umask "077"
+  mkdir /home/tomcat  && \
+  # Add umask -> New files are only accessible to user
+  umask "077"
 
-# TODO delete tomcat default webapps
 # TODO consolidate/optimize COPY stages
 
 COPY --from=downloader /webapps/ ${CATALINA_HOME}/webapps/

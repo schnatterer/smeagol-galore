@@ -56,6 +56,8 @@ FROM tomcat:9.0.8-jre8-alpine
 
 RUN \
   apk add --no-cache --update su-exec && \
+  # Delete tomcat default apps
+  rm -rf ${CATALINA_HOME}/webapps/* && \
   mkdir /home/tomcat 
   # TODO add umask 007 or 077?
   #umask "077"

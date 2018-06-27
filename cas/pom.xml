@@ -68,6 +68,14 @@
             <version>${cas.version}</version>
         </dependency>
 
+        <!-- REST support for scmmanager API calls -->
+        <dependency>
+            <groupId>org.jasig.cas</groupId>
+            <artifactId>cas-server-integration-restlet</artifactId>
+            <version>${cas.version}</version>
+        </dependency>
+
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.mockito</groupId>

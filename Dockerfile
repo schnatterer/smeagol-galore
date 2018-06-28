@@ -71,6 +71,8 @@ RUN \
 
 COPY --from=downloader /dist /
 
+EXPOSE 8443
+
 VOLUME /home/tomcat/.scm
 
 ENTRYPOINT ["/entrypoint.sh"]

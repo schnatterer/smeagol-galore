@@ -19,9 +19,9 @@ Runs without a full cloudogu ecosystem, but still features
 ```bash
 docker build -t smeagol-galore . 
 
-docker run -it --rm -p 8080:8080 -p 8443:8443 \
-    -v $(PWD)/dev/cacerts:/usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts  -v $(PWD)/dev/keystore.jks:/usr/local/tomcat/conf/keystore.jks  \
-    -v $(PWD)/dev/scm:/user/tomcat/.scm \
+docker run -it --name smeagol --rm -p 8080:8080 -p 8443:8443 \
+    -v $(pwd)/dev/cacerts:/usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts  -v $(pwd)/dev/keystore.jks:/usr/local/tomcat/conf/keystore.jks  \
+    -v $(pwd)/dev/scm:/user/tomcat/.scm \
     smeagol-galore
 ```
 
@@ -32,7 +32,7 @@ Note that SCM-Manager installs plugins via the internet on first startup.
 https://burcakulug.wordpress.com/2017/09/09/how-to-make-java-and-tomcat-docker-containers-to-trust-self-signed-certificates/
 
 ```bash
-docker run -it -v $(PWD)/dev:/cacerts-test openjdk:8u102-jre
+docker run -it -v $(pwd)/dev:/cacerts-test openjdk:8u102-jre
 cd /cacerts-test; cp /etc/ssl/certs/java/cacerts .
 # In order to authenticate via scm-cas-plugin, we need to provide a subjectAltName otherwise we'll encounter 
 # ClientTransportException: HTTP transport error: javax.net.ssl.SSLHandshakeException: java.security.cert.CertificateException: No subject alternative names present
@@ -47,7 +47,7 @@ keytool -list -alias localhost -keystore cacerts -storepass changeit
 
 ## Credentials
 
-Are defined in `/etc/cas/users.txt` and `/etc/cas/attributes.xml`. Custom ones can be mounted into the container like so for example: `-v $(PWD)/dev/users.txt:/etc/cas/users.txt`.
+Are defined in `/etc/cas/users.txt` and `/etc/cas/attributes.xml`. Custom ones can be mounted into the container like so for example: `-v $(pwd)/dev/users.txt:/etc/cas/users.txt`.
 
 Default: `admin:admin`
 
@@ -63,6 +63,7 @@ Get started at [deployerConfigContext.xml](cas/src/main/webapp/WEB-INF/deployerC
 * Set the name of SCM-Manager's `ADMIN_GROUP`
 * Set your Fully Qualified Domain name (including Port) - `FQDN`
 * `-e DEBUG=true` exposes port 8000 as Tomcat debug port
+* `EXTRA_JVM_ARGUMENTS`, set e.g. `-XmX` for tomcat process
 
 ## Create wiki
 
@@ -85,7 +86,7 @@ Get started at [deployerConfigContext.xml](cas/src/main/webapp/WEB-INF/deployerC
   ```xml
     <logger name="sonia.scm" level="TRACE" />
   ```
-* Run Container with `-v $(PWD)/dev/scm/logback.xml:/usr/local/tomcat/webapps/scm/WEB-INF/classes/logback.xml`
+* Run Container with `-v $(pwd)/dev/scm/logback.xml:/usr/local/tomcat/webapps/scm/WEB-INF/classes/logback.xml`
 
 ## Debugging
 

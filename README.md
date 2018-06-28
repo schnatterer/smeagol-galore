@@ -96,6 +96,8 @@ Get started at [deployerConfigContext.xml](cas/src/main/webapp/WEB-INF/deployerC
 
 # Links
 
+[Unidata/tomcat-docker: Security-hardened Tomcat container](https://github.com/Unidata/tomcat-docker)
+
 ## SCM
 
 * [scm-cas-plugin](https://bitbucket.org/triologygmbh/scm-cas-plugin/src)
@@ -109,7 +111,12 @@ Get started at [deployerConfigContext.xml](cas/src/main/webapp/WEB-INF/deployerC
 
 # TODOs
 
+- Solve access denied for tomcat on /usr/local/tomcat/...
+
 - Write FQDN Env Var to cas config files, smeagol.yml, scm cas plugin, etc.?
+- Create and trust self signed certs (if not present) on startup in order to provide more convenient getting started?
+
+- Startup test using travis?
 
 - Create helm chart (use draft?)
  

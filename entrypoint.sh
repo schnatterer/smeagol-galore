@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Based on https://github.com/Unidata/tomcat-docker/blob/dee2d221b046b05689a4180a6a80e321549abf0a/entrypoint.sh
 
-export USER_ID=${USERID:-1000}
+export USER_ID=${USER_ID:-1000}
 export GROUP_ID=${GROUP_ID:-1000}
 export ADMIN_GROUP=${ADMIN_GROUP:-admin}
 export FQDN=${FQDN:-localhost:8443}

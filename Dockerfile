@@ -60,19 +60,33 @@ COPY entrypoint.sh /dist
 
 # Build final image
 FROM tomcat:9.0.8-jre8-alpine
-
-RUN \
-  apk add --no-cache --update su-exec && \
-  # Delete tomcat default apps
-  rm -rf ${CATALINA_HOME}/webapps/* && \
-  mkdir /home/tomcat  && \
-  # Add umask -> New files are only accessible to user
-  umask "077"
+ARG USER_ID="1000"
+ARG GROUP_ID="1000"
 
 COPY --from=downloader /dist /
 
-EXPOSE 8443
+RUN \
+  # Delete tomcat default apps
+  cd ${CATALINA_HOME}/webapps/ && rm -rf docs examples manager host-manager && \
+  # Delete all of ROOT app except index
+  find ${CATALINA_HOME}/webapps/ROOT/* ! -path . ! -name index.* -delete && \
+  mkdir -p /home/tomcat/.scm  && \
+  # Add umask -> New files are only accessible to user and group
+  umask "007" && \
+  # Create tomcat user & group
+  addgroup -g ${GROUP_ID} -S tomcat && \
+  adduser -u ${USER_ID} -S tomcat -G tomcat && \
+  chown -R tomcat:tomcat ${CATALINA_HOME} && \
+  chown -R tomcat:tomcat /home/tomcat && \
+  chmod -R 770 /home/tomcat && \
+  chmod 400 ${CATALINA_HOME}/conf/*
 
 VOLUME /home/tomcat/.scm
+
+WORKDIR ${CATALINA_HOME}
+
+EXPOSE 8443
+
+USER tomcat
 
 ENTRYPOINT ["/entrypoint.sh"]

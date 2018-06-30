@@ -57,13 +57,21 @@ CAS has "pluggable authentication support (LDAP, database, X.509, 2-factor)" see
 Get started at [deployerConfigContext.xml](cas/src/main/webapp/WEB-INF/deployerConfigContext.xml)
 
 
-## Environment Variables
+## Configuration
 
-* You can overwrite the user and group ID that that starts the server process by passing `-e USER_ID 1042 -e GROUP_ID 1042`. Be default UID and GID `1000` are used.
+Via Environment Variables:
+
 * Set the name of SCM-Manager's `ADMIN_GROUP`
 * Set your Fully Qualified Domain name (including Port) - `FQDN`
 * `-e DEBUG=true` exposes port 8000 as Tomcat debug port
 * `EXTRA_JVM_ARGUMENTS`, set e.g. `-XmX` for tomcat process
+
+The container is run as with UID and GID = 1000.
+If you want to run it as a different user you pass `-u` param when running the container.
+However, you should make sure that that the user exists (e.g. mount `/etc/passwd`).
+In order to get permissions on `/usr/local/tomcat` your user should be member of group 1000.
+
+Another option is to build your own image and set `--build-arg USER_ID` and `GROUP_ID` to your liking.
 
 ## Create wiki
 
@@ -115,6 +123,8 @@ Get started at [deployerConfigContext.xml](cas/src/main/webapp/WEB-INF/deployerC
 
 - Write FQDN Env Var to cas config files, smeagol.yml, scm cas plugin, etc.?
 - Create and trust self signed certs (if not present) on startup in order to provide more convenient getting started?
+
+- Disable tomcat error pages in server.xml (again)
 
 - Startup test using travis?
 

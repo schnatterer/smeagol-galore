@@ -177,7 +177,7 @@
         -->
 
         <!-- Disable too much output on 404, 500, etc. -->
-       <!-- <Valve className="org.apache.catalina.valves.ErrorReportValve" showReport="false" showServerInfo="false" /> -->
+       <Valve className="org.apache.catalina.valves.ErrorReportValve" showReport="false" showServerInfo="false" />
 
         <!-- Access log processes all example.
              Documentation at: /docs/config/valve.html

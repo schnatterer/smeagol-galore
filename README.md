@@ -122,8 +122,6 @@ Another option is to build your own image and set `--build-arg USER_ID` and `GRO
 - Write FQDN Env Var to cas config files, smeagol.yml, scm cas plugin, etc.?
 - Create and trust self signed certs (if not present) on startup in order to provide more convenient getting started?
 
-- Disable tomcat error pages in server.xml (again)
-
 - Startup test using travis?
 
 - Create helm chart (use draft?)

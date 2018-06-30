@@ -21,7 +21,7 @@ docker build -t smeagol-galore .
 
 docker run -it --name smeagol --rm -p 8080:8080 -p 8443:8443 \
     -v $(pwd)/dev/cacerts:/usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts  -v $(pwd)/dev/keystore.jks:/usr/local/tomcat/conf/keystore.jks  \
-    -v $(pwd)/dev/scm:/user/tomcat/.scm \
+    -v $(pwd)/dev/scm:/home/tomcat/.scm \
     smeagol-galore
 ```
 
@@ -118,8 +118,6 @@ Another option is to build your own image and set `--build-arg USER_ID` and `GRO
 * [CAS 4 docs](https://apereo.github.io/cas/4.0.x/index.html)
 
 # TODOs
-
-- Solve access denied for tomcat on /usr/local/tomcat/...
 
 - Write FQDN Env Var to cas config files, smeagol.yml, scm cas plugin, etc.?
 - Create and trust self signed certs (if not present) on startup in order to provide more convenient getting started?

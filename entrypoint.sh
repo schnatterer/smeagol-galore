@@ -14,9 +14,41 @@ set -o errexit -o nounset -o pipefail
 
 main() {
 
+    createSelfSignedCert
+
     writeFQDN
 
     startTomcat
+}
+
+createSelfSignedCert() {
+
+    keystore=/usr/local/tomcat/conf/keystore.jks
+    trustStore=/etc/ssl/certs/java/cacerts
+    cert=/tmp/server.cer
+    host=$(echo "${FQDN}" | sed -e 's/:/\n/g' | head -1)
+
+    if [ ! -f ${keystore} ]; then
+
+        echo "No Keystore mounted, creating and trusting self-signed certificate"
+
+
+        # In order to authenticate via scm-cas-plugin, we need to provide a subjectAltName otherwise we'll encounter
+        # ClientTransportException: HTTP transport error: javax.net.ssl.SSLHandshakeException: java.security.cert.CertificateException: No subject alternative names present
+        # See https://stackoverflow.com/a/84441845976863/
+
+        keytool -genkey -noprompt \
+         -ext san=ip:127.0.0.1 -ext san=dns:${host} \
+         -alias ${host} \
+         -keyalg RSA -keypass changeit -storepass changeit -keystore ${keystore} \
+         -dname "CN=${host}, OU=Unknown, O=Unknown, L=Unknown, S=Unknown, C=Unknown"
+
+        keytool -export -alias ${host} -storepass changeit -file ${cert}  -keystore ${keystore}
+
+        keytool -import -noprompt -v -trustcacerts -alias ${host} -file ${cert} -keystore ${trustStore} -keypass changeit -storepass changeit
+    fi
+
+    chmod 444 ${trustStore}
 }
 
 writeFQDN() {

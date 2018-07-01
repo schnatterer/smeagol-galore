@@ -1,60 +1,86 @@
 Smeagol galore
 ============================
+[![](https://images.microbadger.com/badges/image/schnatterer/smeagol-galore.svg)](https://hub.docker.com/r/schnatterer/smeagol-galore)
 
 A lightweight version of [cloudogu's](https://cloudogu.com) git-based wiki system [smeagol](https://github.com/cloudogu/smeagol) the lighning-fast alternative to [gollum](https://github.com/gollum/gollum).
 
-Runs without a full cloudogu ecosystem, but still features
+Runs without a full Cloudogu ecosystem, but still features
 * Markdown,
 * WYSIWYG Editors,
-* PlantUML,
-* SCM-Manager,
-* Single Sign On using CAS,
-* everything deployed on a tomcat and 
+* [PlantUML](http://plantuml.com/),
+* [SCM-Manager](https://www.scm-manager.org/) as Git backend,
+* Single Sign On using [CAS](https://github.com/apereo/cas),
+* everything deployed on an [apache tomcat](https://github.com/apache/tomcat) and 
 * neatly packed into a docker image.
 
-# Get started 
+# Usage 
 
-## Run the container 
+## Getting started 
 
 ```bash
-docker build -t smeagol-galore . 
-
-docker run -it --name smeagol --rm -p 8080:8080 -p 8443:8443 \
-    -v $(pwd)/dev/cacerts:/usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts  -v $(pwd)/dev/keystore.jks:/usr/local/tomcat/conf/keystore.jks  \
-    -v $(pwd)/dev/scm:/home/tomcat/.scm \
-    smeagol-galore
+docker run -p 8443:8443 schnatterer/smeagol-galore
 ```
 
-Note that SCM-Manager installs plugins via the internet on first startup.
+Note that
+ 
+* SCM-Manager installs plugins via the internet on first startup, so it might take a while.
+* A self-signed certificate will be created on startup.
+  These will result in warnings in your browser.  
+  See bellow for custom certificates.
+* Smeagol galore will be available on https://localhost:8443
+* Default user/pw: `admin/admin` (see bellow for custom credentials)
 
-## Create self signed TLS certs and add to truststore / cacerts for local development
+## Persist state 
 
-https://burcakulug.wordpress.com/2017/09/09/how-to-make-java-and-tomcat-docker-containers-to-trust-self-signed-certificates/
+Mount SCMM Volume to persist your repos/wikis: `-v $(pwd)/dev/scm:/home/tomcat/.scm `.
+This will also persist SCMM plugins, so the second start will be much faster. 
 
 ```bash
-docker run -it -v $(pwd)/dev:/cacerts-test openjdk:8u102-jre
-cd /cacerts-test; cp /etc/ssl/certs/java/cacerts .
-# In order to authenticate via scm-cas-plugin, we need to provide a subjectAltName otherwise we'll encounter 
-# ClientTransportException: HTTP transport error: javax.net.ssl.SSLHandshakeException: java.security.cert.CertificateException: No subject alternative names present
-# See https://stackoverflow.com/a/84441845976863/
-keytool -genkey -noprompt \
- -ext san=ip:127.0.0.1 -ext san=dns:localhost \
- -alias localhost \
- -keyalg RSA -keypass changeit -storepass changeit -keystore keystore.jks \
- -dname "CN=localhost, OU=Unknown, O=Unknown, L=Unknown, S=Unknown, C=Unknown" 
- 
-keytool -export -alias localhost -storepass changeit -file server.cer -keystore keystore.jks
+docker run --rm  --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomcat/.scm schnatterer/smeagol-galore
+``` 
 
-keytool -import -v -trustcacerts -alias localhost -file server.cer -keystore cacerts -keypass changeit -storepass changeit
-# Check successful
-keytool -list -alias localhost -keystore cacerts -storepass changeit
+## Custom Certificate
+
+The self-signed certificate is only a valid option for trying out and development.
+In production you should provide a proper certificate, which can be done by mounting a java keystore like so: 
+`-v $(pwd)/dev/keystore.jks:/usr/local/tomcat/conf/keystore.jks`.
+
+Note that smeagol, cas and SCMM communicate with each other via HTTPS.
+If you're certificate is not trusted by the JVM you should add it to the trust store and then mount it like so: 
+`-v $(pwd)/dev/cacerts:/usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts`.
+
+See [entrypoint.sh](entrypoint.sh) for an example.
+
+
+## Create your first wiki
+
+Note that the git arg `-c http.sslVerify=false ` is only necessary for testing with a self-signed cert .
+If you use an official TLS cert this won't be necessary. 
+
+* Go to https://localhost:8443/scm 
+* Log in as administrator
+* Create a git repo
+* Clone into git wiki, e.g. for localhost: `git -c http.sslVerify=false clone https://admin@localhost:8443/scm/git/test`
+* Add empty `.smeagol.yml` file
+* Push, e.g. for localhost: `git -c http.sslVerify=false push`
+* Go to https://localhost:8443/smeagol
+
+All in one:
+
+```bash
+git -c http.sslVerify=false clone https://admin@localhost:8443/scm/git/test
+cd test
+touch .smeagol.yml
+git add .smeagol.yml
+git commit -m 'Creates smeagol wiki'
+git -c http.sslVerify=false push
 ```
 
 ## Credentials
 
-Are defined in `/etc/cas/users.txt` and `/etc/cas/attributes.xml`. Custom ones can be mounted into the container like so for example: `-v $(pwd)/dev/users.txt:/etc/cas/users.txt`.
+Default user/pw: `admin/admin`
 
-Default: `admin:admin`
+Credentials defined in `/etc/cas/users.txt` and `/etc/cas/attributes.xml`. Custom ones can be mounted into the container like so for example: `-v $(pwd)/dev/users.txt:/etc/cas/users.txt`.
 
 See [users.txt](cas/etc/cas/users.txt) and [attributes.xml](cas/etc/cas/attributes.xml).
 
@@ -79,30 +105,6 @@ However, you should make sure that that the user exists (e.g. mount `/etc/passwd
 In order to get permissions on `/usr/local/tomcat` your user should be member of group 1000.
 
 Another option is to build your own image and set `--build-arg USER_ID` and `GROUP_ID` to your liking.
-
-## Create wiki
-
-Note that the git arg `-c http.sslVerify=false ` is only necessary for testing with a self-signed cert .
-If you use an official TLS cert this won't be necessary. 
-
-* Go to https://localhost:8443/scm 
-* Log in as administrator
-* Create a git repo
-* Clone into git wiki, e.g. for localhost: `git -c http.sslVerify=false clone https://admin@localhost:8443/scm/git/test`
-* Add empty `.smeagol.yml` file
-* Push, e.g. for localhost: `git -c http.sslVerify=false push`
-* Go to https://localhost:8443/smeagol
-
-All in one:
-
-```bash
-git -c http.sslVerify=false clone https://admin@localhost:8443/scm/git/test
-cd test
-touch .smeagol.yml
-git add .smeagol.yml
-git commit -m 'Creates smeagol wiki'
-git -c http.sslVerify=false push
-```
 
 # Troubleshooting
 
@@ -140,10 +142,13 @@ git -c http.sslVerify=false push
 
 # TODOs
 
-- Create and trust self signed certs (if not present) on startup in order to provide more convenient getting started?
+- Startup test using travis? See [here, for example](https://github.com/Unidata/tomcat-docker/blob/master/.travis.yml)
+
+- Provide an overview diagram
 
 - Create helm chart (use draft?)
- 
-- Startup test using travis?
+
+- How to run behind proxy (HTTP/S, certs, Proxy config, etc.)?
 
 - Convert to a more 12-factor-like app using multiple containers and docker-compose
+- Use PKCMS12 instead of java keystore in tomcat and for self signed

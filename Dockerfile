@@ -81,6 +81,8 @@ RUN \
   chown -R tomcat:tomcat ${CATALINA_HOME} && \
   chown -R tomcat:tomcat /home/tomcat && \
   chown -R tomcat:tomcat /etc/cas && \
+  chown -R tomcat:tomcat /etc/ssl/certs/java/cacerts && \
+  chmod 774 /etc/ssl/certs/java/cacerts && \
   chmod -R 770 /home/tomcat && \
   chmod 400 ${CATALINA_HOME}/conf/*
 

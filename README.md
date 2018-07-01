@@ -37,7 +37,12 @@ cd /cacerts-test; cp /etc/ssl/certs/java/cacerts .
 # In order to authenticate via scm-cas-plugin, we need to provide a subjectAltName otherwise we'll encounter 
 # ClientTransportException: HTTP transport error: javax.net.ssl.SSLHandshakeException: java.security.cert.CertificateException: No subject alternative names present
 # See https://stackoverflow.com/a/84441845976863/
-keytool -genkey -alias localhost -keyalg RSA -keypass changeit -storepass changeit -keystore keystore.jks -ext san=ip:127.0.0.1 -ext san=dns:localhost
+keytool -genkey -noprompt \
+ -ext san=ip:127.0.0.1 -ext san=dns:localhost \
+ -alias localhost \
+ -keyalg RSA -keypass changeit -storepass changeit -keystore keystore.jks \
+ -dname "CN=localhost, OU=Unknown, O=Unknown, L=Unknown, S=Unknown, C=Unknown" 
+ 
 keytool -export -alias localhost -storepass changeit -file server.cer -keystore keystore.jks
 
 keytool -import -v -trustcacerts -alias localhost -file server.cer -keystore cacerts -keypass changeit -storepass changeit
@@ -62,7 +67,9 @@ Get started at [deployerConfigContext.xml](cas/src/main/webapp/WEB-INF/deployerC
 Via Environment Variables:
 
 * Set the name of SCM-Manager's `ADMIN_GROUP`
-* Set your Fully Qualified Domain name (including Port) - `FQDN`
+* Set your Fully Qualified Domain name (including Port) - `FQDN`  
+  Note that the smeagol galore container must be able to resolve this address as well, 
+  because the webb apps communicate with each other (smeagol -> cas, smeagol -> scm, scm -> cas)
 * `-e DEBUG=true` exposes port 8000 as Tomcat debug port
 * `EXTRA_JVM_ARGUMENTS`, set e.g. `-XmX` for tomcat process
 
@@ -75,6 +82,9 @@ Another option is to build your own image and set `--build-arg USER_ID` and `GRO
 
 ## Create wiki
 
+Note that the git arg `-c http.sslVerify=false ` is only necessary for testing with a self-signed cert .
+If you use an official TLS cert this won't be necessary. 
+
 * Go to https://localhost:8443/scm 
 * Log in as administrator
 * Create a git repo
@@ -82,6 +92,17 @@ Another option is to build your own image and set `--build-arg USER_ID` and `GRO
 * Add empty `.smeagol.yml` file
 * Push, e.g. for localhost: `git -c http.sslVerify=false push`
 * Go to https://localhost:8443/smeagol
+
+All in one:
+
+```bash
+git -c http.sslVerify=false clone https://admin@localhost:8443/scm/git/test
+cd test
+touch .smeagol.yml
+git add .smeagol.yml
+git commit -m 'Creates smeagol wiki'
+git -c http.sslVerify=false push
+```
 
 # Troubleshooting
 
@@ -119,11 +140,10 @@ Another option is to build your own image and set `--build-arg USER_ID` and `GRO
 
 # TODOs
 
-- Write FQDN Env Var to cas config files, smeagol.yml, scm cas plugin, etc.?
 - Create and trust self signed certs (if not present) on startup in order to provide more convenient getting started?
-
-- Startup test using travis?
 
 - Create helm chart (use draft?)
  
+- Startup test using travis?
+
 - Convert to a more 12-factor-like app using multiple containers and docker-compose

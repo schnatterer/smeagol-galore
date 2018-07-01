@@ -80,6 +80,7 @@ RUN \
   adduser -u ${USER_ID} -S tomcat -G tomcat && \
   chown -R tomcat:tomcat ${CATALINA_HOME} && \
   chown -R tomcat:tomcat /home/tomcat && \
+  chown -R tomcat:tomcat /etc/cas && \
   chmod -R 770 /home/tomcat && \
   chmod 400 ${CATALINA_HOME}/conf/*
 

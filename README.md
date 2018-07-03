@@ -2,7 +2,7 @@ Smeagol galore
 ============================
 [![](https://images.microbadger.com/badges/image/schnatterer/smeagol-galore.svg)](https://hub.docker.com/r/schnatterer/smeagol-galore)
 
-A lightweight version of [cloudogu's](https://cloudogu.com) git-based wiki system [smeagol](https://github.com/cloudogu/smeagol) the lighning-fast alternative to [gollum](https://github.com/gollum/gollum).
+A lightweight version of [cloudogu's](https://cloudogu.com) git-based wiki system [smeagol](https://github.com/cloudogu/smeagol), the lightning-fast alternative to [gollum](https://github.com/gollum/gollum).
 
 Runs without a full Cloudogu ecosystem, but still features
 * Markdown,
@@ -10,8 +10,10 @@ Runs without a full Cloudogu ecosystem, but still features
 * [PlantUML](http://plantuml.com/),
 * [SCM-Manager](https://www.scm-manager.org/) as Git backend,
 * Single Sign On using [CAS](https://github.com/apereo/cas),
-* everything deployed on an [apache tomcat](https://github.com/apache/tomcat) and 
+* everything deployed on an [Apache Tomcat](https://github.com/apache/tomcat) and 
 * neatly packed into a docker image.
+
+[![Diagram showing components and their relationships](http://www.plantuml.com/plantuml/svg/dP9FR-8m4CNl-HHkkmTMQc9QfAggAbGsK8G4omgAzeYczW0HiHtv3nnM_UxhE86IhbgXdTFWz-FDyyHFneAsJkJH1STL9f6au-cYFnqk5hCnsLXRc0TADUoJTMOtxjKPr4n9Yz8cJ0dASkMuMZjQv21Bd_Xm4fj2PnOD5M0iwYYwo2JB7KUdyzCXj8GDDKmaHSZnDIOGrYglq6FcKJhzULvUwmhWklCUD_DglFB4CU_kDcadxKQEsfzw1w5a8sT3vxWh_OmFoxQeFmV3GDYZKGAfZxWx6yxuae7c7nOm_pKRlGpcv-r0molcA3bG5cv_tCLn0pT9czO_6edUnr2h10DRnV1bjfaiG8CWeBNQapyH8QdAbIPNxL3Hsoaa5SV0_02sNMlb9A_fsmvqE2yLfJdg-lJcxkx-tfysNO1PfV_7XZmhQV-9LzajJFbOGy3BVlYCbuGyFdxZeUzsoTKgL9XROIzX5nLcGz_4GfNlU3bF9ot3n3NnJJm12MlKtmze0vmCUiFfk5M_T_-7gla8F_UMe_uoxStwBGRccgIz-IdoLjwhl169uowfpSW36V3Caj_PDZiHcV3242sPOQ5CT82_ahpcftgjv-m6fSqOM8my_fdqX98xaVy50)](http://www.plantuml.com/plantuml/uml/dP9FR-8m4CNl-HHkkmTMQc9QfAggAbGsK8G4omgAzeYczW0HiHtv3nnM_UxhE86IhbgXdTFWz-FDyyHFneAsJkJH1STL9f6au-cYFnqk5hCnsLXRc0TADUoJTMOtxjKPr4n9Yz8cJ0dASkMuMZjQv21Bd_Xm4fj2PnOD5M0iwYYwo2JB7KUdyzCXj8GDDKmaHSZnDIOGrYglq6FcKJhzULvUwmhWklCUD_DglFB4CU_kDcadxKQEsfzw1w5a8sT3vxWh_OmFoxQeFmV3GDYZKGAfZxWx6yxuae7c7nOm_pKRlGpcv-r0molcA3bG5cv_tCLn0pT9czO_6edUnr2h10DRnV1bjfaiG8CWeBNQapyH8QdAbIPNxL3Hsoaa5SV0_02sNMlb9A_fsmvqE2yLfJdg-lJcxkx-tfysNO1PfV_7XZmhQV-9LzajJFbOGy3BVlYCbuGyFdxZeUzsoTKgL9XROIzX5nLcGz_4GfNlU3bF9ot3n3NnJJm12MlKtmze0vmCUiFfk5M_T_-7gla8F_UMe_uoxStwBGRccgIz-IdoLjwhl169uowfpSW36V3Caj_PDZiHcV3242sPOQ5CT82_ahpcftgjv-m6fSqOM8my_fdqX98xaVy5)
 
 # Usage 
 
@@ -144,7 +146,7 @@ Another option is to build your own image and set `--build-arg USER_ID` and `GRO
 
 - Startup test using travis? See [here, for example](https://github.com/Unidata/tomcat-docker/blob/master/.travis.yml)
 
-- Provide an overview diagram
+- Create a first version
 
 - Create helm chart (use draft?)
 

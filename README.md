@@ -38,7 +38,7 @@ Mount SCMM Volume to persist your repos/wikis: `-v $(pwd)/dev/scm:/home/tomcat/.
 This will also persist SCMM plugins, so the second start will be much faster. 
 
 ```bash
-docker run --rm  --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomcat/.scm schnatterer/smeagol-galore
+docker run --rm --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomcat/.scm schnatterer/smeagol-galore
 ``` 
 
 ## Custom Certificate

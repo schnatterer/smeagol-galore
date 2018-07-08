@@ -1,0 +1,16 @@
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker build --no-cache -t smeagol-galore .
+    # Don't deamonize, because we want to see the logs
+  - docker run --rm --name smeagol-galore -p 8443:8443 smeagol-galore&
+   # Wait for smeagol-galore to startup
+  - sleep 90
+  - echo "Finish sleeping"
+
+# Do some basic sanity checks with the container
+script:
+- ./test.sh

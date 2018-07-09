@@ -14,17 +14,17 @@ main() {
 waitForScm() {
 
     # This takes 200s and more because of the installed plugins on first start
-    for i in {1..30} # Don't wait forever
+    echo "$(date +"%Y-%m-%d %H:%M:%S") Waiting for SCMM to become available"
+    TIMEOUT=300 
+    for i in {1..${TIMEOUT}} 
     do
-        ret=$(curl -sS --insecure --connect-timeout 1 https://localhost:8443/scm 2>&1 || true)
-        echo "Waiting for SCMM returned: ${ret}"
-        if [ -z "${ret}" ]; then
-            echo "SCMM became ready"
+        if docker logs smeagol-galore 2>&1 | grep 'Reloading Context with name \[/scm\] is completed'; then
             break
         fi
-        sleep 10
 
-        if [ "$i" = "30" ]; then 
+        sleep 1
+
+        if [ "$i" = "${TIMEOUT}" ]; then 
             echo "Cancel waiting for SCMM"
             return 1
          fi

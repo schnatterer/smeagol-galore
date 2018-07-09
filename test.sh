@@ -4,45 +4,39 @@ set -o errexit -o nounset -o pipefail
 
 main() {
 
-    waitForScm
-
     validateScmRestApiUsesCas
 
     validateSmeagolUsesCas
 }
 
-waitForScm() {
+validateScmRestApiUsesCas() {
 
-    # This takes 200s and more because of the installed plugins on first start
-    echo "$(date +"%Y-%m-%d %H:%M:%S") Waiting for SCMM to become available"
-    TIMEOUT=300 
-    for i in {1..${TIMEOUT}} 
+    echo "$(date +"%Y-%m-%d %H:%M:%S") Trying to validate SCMM REST API uses CAS"
+    
+    # Startup might take 200s and more because of the installed plugins, SCMM restart and CAS service reload on first start
+    TIMEOUT=500 
+    for i in $(seq 1 ${TIMEOUT}) 
     do
-        if docker logs smeagol-galore 2>&1 | grep 'Reloading Context with name \[/scm\] is completed'; then
+        result=$(curl -su admin:admin --insecure https://localhost:8443/scm/api/rest/users.json 2>&1)
+
+        # Validate our admin user is returned
+        if echo ${result} | grep scm@adm.in; then
+            echo "$(date +"%Y-%m-%d %H:%M:%S") validateScmRestApiUsesCas successful"
             break
         fi
 
-        sleep 1
-
         if [ "$i" = "${TIMEOUT}" ]; then 
-            echo "Cancel waiting for SCMM"
+            echo "$(date +"%Y-%m-%d %H:%M:%S") validateScmRestApiUsesCas fail after ${TIMEOUT} tries: ${result}"
             return 1
          fi
+
+         sleep 1
     done
-}
-
-validateScmRestApiUsesCas() {
-
-    result=$(curl -su admin:admin --retry 3 --retry-delay 0 --insecure https://localhost:8443/scm/api/rest/users.json 2>&1)
-    echo "Query Users = ${result}"
-    # Validate our admin user is returned
-    echo ${result} | grep scm@adm.in
-    echo "validateScmRestApiUsesCas successful"
 }
 
 validateSmeagolUsesCas() {
     # TODO can we do a smeagol login on CLI?
-    echo "validateSmeagolUsesCas not implemented, yet"
+    echo "$(date +"%Y-%m-%d %H:%M:%S") validateSmeagolUsesCas not implemented, yet"
 }
 
 main "$@"

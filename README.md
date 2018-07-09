@@ -1,6 +1,7 @@
 Smeagol galore
 ============================
-[![](https://images.microbadger.com/badges/image/schnatterer/smeagol-galore.svg)](https://hub.docker.com/r/schnatterer/smeagol-galore)
+[![Build Status](https://travis-ci.org/schnatterer/smeagol-galore.svg?branch=master)](https://travis-ci.org/schnatterer/smeagol-galore)
+[![Docker Hub](https://images.microbadger.com/badges/image/schnatterer/smeagol-galore.svg)](https://hub.docker.com/r/schnatterer/smeagol-galore)
 
 A lightweight version of [cloudogu's](https://cloudogu.com) git-based wiki system [smeagol](https://github.com/cloudogu/smeagol), the lightning-fast alternative to [gollum](https://github.com/gollum/gollum).
 
@@ -25,7 +26,7 @@ docker run -p 8443:8443 schnatterer/smeagol-galore
 
 Note that
  
-* SCM-Manager installs plugins via the internet on first startup, so it might take a while.
+* SCM-Manager installs plugins via the internet on first startup, so it might take more than a minute.
 * A self-signed certificate will be created on startup.
   These will result in warnings in your browser.  
   See bellow for custom certificates.
@@ -143,10 +144,6 @@ Another option is to build your own image and set `--build-arg USER_ID` and `GRO
 * [CAS 4 docs](https://apereo.github.io/cas/4.0.x/index.html)
 
 # TODOs
-
-- Startup test using travis? See [here, for example](https://github.com/Unidata/tomcat-docker/blob/master/.travis.yml)
-
-- Create a first version
 
 - Create helm chart (use draft?)
 

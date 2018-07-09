@@ -44,7 +44,7 @@ RUN set -x && \
 RUN set -x && \
   zip -F /tmp/smeagol-exec.war --out /tmp/smeagol.war && \
   unzip /tmp/smeagol.war -d ${CATALINA_HOME}/smeagol && \
-  sed -i "s/rendererURL\:\"\/plantuml\/png\//rendererURL\:\"http:\/\/www.plantuml.com\/plantuml\/png\//" "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)"
+  sed -i "s/rendererURL\:\"\/plantuml\/png\//rendererURL\:\"http:\/\/www.plantuml.com\/plantuml\/png\//g" "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)"
 
 # Aggregate /dist to copied into one layer of the final image
 # CAS config

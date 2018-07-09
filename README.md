@@ -21,7 +21,7 @@ Runs without a full Cloudogu ecosystem, but still features
 ## Getting started 
 
 ```bash
-docker run -p 8443:8443 schnatterer/smeagol-galore
+docker run -p 8443:8443 schnatterer/smeagol-galore:0.1.0
 ```
 
 Note that
@@ -30,7 +30,7 @@ Note that
 * A self-signed certificate will be created on startup.
   These will result in warnings in your browser.  
   See bellow for custom certificates.
-* Smeagol galore will be available on https://localhost:8443
+* Smeagol galore will be available on [https://localhost:8443](https://localhost:8443)
 * Default user/pw: `admin/admin` (see bellow for custom credentials)
 
 ## Persist state 
@@ -39,7 +39,7 @@ Mount SCMM Volume to persist your repos/wikis: `-v $(pwd)/dev/scm:/home/tomcat/.
 This will also persist SCMM plugins, so the second start will be much faster. 
 
 ```bash
-docker run --rm --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomcat/.scm schnatterer/smeagol-galore
+docker run --rm --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomcat/.scm schnatterer/smeagol-galore:0.1.0
 ``` 
 
 ## Custom Certificate
@@ -55,7 +55,7 @@ If you're certificate is not trusted by the JVM you should add it to the trust s
 See [entrypoint.sh](entrypoint.sh) for an example.
 
 
-## Create your first wiki
+## Create more wikis
 
 Note that the git arg `-c http.sslVerify=false ` is only necessary for testing with a self-signed cert .
 If you use an official TLS cert this won't be necessary. 
@@ -76,7 +76,7 @@ cd test
 touch .smeagol.yml
 git add .smeagol.yml
 git commit -m 'Creates smeagol wiki'
-git -c http.sslVerify=false push
+git -c http.sslVerify=false push --set-upstream origin master
 ```
 
 ## Credentials

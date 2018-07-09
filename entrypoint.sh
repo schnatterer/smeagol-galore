@@ -18,6 +18,8 @@ main() {
 
     writeFQDN
 
+    initWiki
+
     startTomcat
 }
 
@@ -66,6 +68,14 @@ writeFQDN() {
         echo "Updating FQDN in ${i} (FQDN=${FQDN})"
         sed -i "s/${DEFAULT_FQDN}/${FQDN}/" ${i}
     done
+}
+
+initWiki() {
+
+    if [ -z "$(ls -A ${USER_HOME}/.scm)" ]; then
+        echo "Creating default wiki"
+        cp -r /opt/scm-server/defaults/* ${USER_HOME}/.scm
+    fi
 }
 
 startTomcat() {

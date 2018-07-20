@@ -143,6 +143,13 @@ Another option is to build your own image and set `--build-arg USER_ID` and `GRO
 * [CAS 4 code](https://github.com/apereo/cas/tree/v4.0.7)
 * [CAS 4 docs](https://apereo.github.io/cas/4.0.x/index.html)
 
+# Building
+
+`docker build -t smeagol-galore .`
+
+* Optionally, you can choose your own PlantUML server like so: `--build-arg PLANTUMLSERVER="https://[...]/png/"`
+
+
 # TODOs
 
 - Create helm chart (use draft?)

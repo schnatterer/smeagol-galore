@@ -62,7 +62,7 @@ COPY entrypoint.sh /dist
 # Build final image
 # Before switching to tomcat 9 make sure there is a solution for the permission proble with aufs:
 # https://github.com/docker-library/tomcat/issues/35
-FROM tomcat:8.0.52-jre8-alpine
+FROM tomcat:8.0.53-jre8-alpine
 ARG USER_ID="1000"
 ARG GROUP_ID="1000"
 

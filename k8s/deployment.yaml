@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: smeagol-galore
+  labels:
+    run: smeagol-galore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: smeagol-galore
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        run: smeagol-galore
+    spec:
+      containers:
+      - image: schnatterer/smeagol-galore:0.1.1
+        imagePullPolicy: IfNotPresent
+        name: smeagol-galore
+      securityContext: {}
+
+# TODO PW & attribs secret
+# TODO PVC
+# TODO cert
+# TODO user, non root, service account

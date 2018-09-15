@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: smeagol-galore
@@ -20,9 +20,41 @@ spec:
       - image: schnatterer/smeagol-galore:0.1.1
         imagePullPolicy: IfNotPresent
         name: smeagol-galore
-      securityContext: {}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          runAsUser: 1000
+          runAsGroup: 1000
+          #readOnlyRootFilesystem: true
+          #privileged: true
+          #runAsUser: 0
+          #runAsGroup: 0
+        volumeMounts:
+        - name: users
+          mountPath: "/etc/cas/users.txt"
+          subPath: "users.txt"
+          readOnly: true
+        - name: attribs
+          mountPath: "/etc/cas/attributes.xml"
+          subPath: "attributes.xml"
+          readOnly: true
+        - name: scm
+          mountPath: /home/tomcat/.scm
+      volumes:
+      - name: users
+        secret:
+          secretName: smeagol-galore
+      - name: attribs
+        configMap:
+          name: smeagol-galore
+      - name: scm
+        persistentVolumeClaim:
+          claimName: smeagol-galore
+      #- name: scm
+      #  hostPath:
+      #   path: /tmp/data
 
-# TODO PW & attribs secret
-# TODO PVC
+# TODO Probes: https, /cas/login
+# TODO readOnlyRootFilesystem, service account, network policy?
 # TODO cert
-# TODO user, non root, service account

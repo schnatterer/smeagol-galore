@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smeagol-galore
+data:
+  attributes.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <person-data>
+        <person name="admin">
+            <attribute key="username"><value>scmadmin</value></attribute>
+            <attribute key="mail"><value>a@b.cd</value></attribute>
+            <attribute key="displayName"><value>Scm Admin</value></attribute>
+            <attribute key="groups"><value>admin</value></attribute>
+        </person>
+    </person-data>

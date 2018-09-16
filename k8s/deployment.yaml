@@ -31,6 +31,7 @@ spec:
           #runAsUser: 0
           #runAsGroup: 0
         volumeMounts:
+        # Config
         - name: users
           mountPath: "/etc/cas/users.txt"
           subPath: "users.txt"
@@ -39,22 +40,30 @@ spec:
           mountPath: "/etc/cas/attributes.xml"
           subPath: "attributes.xml"
           readOnly: true
+        # Persistent data
         - name: scm
           mountPath: /home/tomcat/.scm
       volumes:
+      # Config
       - name: users
         secret:
           secretName: smeagol-galore
       - name: attribs
         configMap:
           name: smeagol-galore
+      # Persistent data
       - name: scm
         persistentVolumeClaim:
           claimName: smeagol-galore
       #- name: scm
       #  hostPath:
-      #   path: /tmp/data
+      #    path: /tmp/data
+      serviceAccountName: smeagol-galore
 
-# TODO Probes: https, /cas/login
-# TODO readOnlyRootFilesystem, service account, network policy?
+# TODO network policy:
+  # https://github.com/ahmetb/kubernetes-network-policy-recipes/blob/master/03-deny-all-non-whitelisted-traffic-in-the-namespace.md
+  # https://github.com/ahmetb/kubernetes-network-policy-recipes/blob/master/08-allow-external-traffic.md
+# TODO Probes: https, /cas/login. Readiness probe might take > 1 minute (plugin installation)
 # TODO cert
+# TODO readOnlyRootFilesystem - difficult with auto generated cert  (needs write access to
+#    /usr/local/tomcat/conf/keystore.jks and  /etc/ssl/certs/java/cacerts)

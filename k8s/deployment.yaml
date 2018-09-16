@@ -60,9 +60,7 @@ spec:
       #    path: /tmp/data
       serviceAccountName: smeagol-galore
 
-# TODO network policy:
-  # https://github.com/ahmetb/kubernetes-network-policy-recipes/blob/master/03-deny-all-non-whitelisted-traffic-in-the-namespace.md
-  # https://github.com/ahmetb/kubernetes-network-policy-recipes/blob/master/08-allow-external-traffic.md
+# User: Login SCMM fails!
 # TODO Probes: https, /cas/login. Readiness probe might take > 1 minute (plugin installation)
 # TODO cert
 # TODO readOnlyRootFilesystem - difficult with auto generated cert  (needs write access to

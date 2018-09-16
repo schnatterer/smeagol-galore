@@ -60,7 +60,6 @@ spec:
       #    path: /tmp/data
       serviceAccountName: smeagol-galore
 
-# User: Login SCMM fails!
 # TODO Probes: https, /cas/login. Readiness probe might take > 1 minute (plugin installation)
 # TODO cert
 # TODO readOnlyRootFilesystem - difficult with auto generated cert  (needs write access to

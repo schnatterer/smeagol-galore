@@ -31,6 +31,25 @@ spec:
           # In addition, if no certificate is mounted a new one is generated.
           # All of this is not possible with a read-only filesystem.
           readOnlyRootFilesystem: false
+        readinessProbe:
+          httpGet:
+            path: /cas/login
+            port: 8443
+            scheme: HTTPS
+          # "Normal" server startup might take: about 30 Seconds
+          initialDelaySeconds: 10
+          periodSeconds: 1
+          # First plugin installation might take a couple of minutes. Should be less than 5, though!
+          failureThreshold: 300
+        livenessProbe:
+          httpGet:
+            path: /cas/login
+            port: 8443
+            scheme: HTTPS
+          # Make sure not to restart during first plugin install
+          initialDelaySeconds: 300
+          periodSeconds: 5
+          failureThreshold: 5
         env:
           - name: FQDN
             value: localhost:8443
@@ -78,4 +97,3 @@ spec:
       #    path: /tmp/data
       serviceAccountName: smeagol-galore
 
-# TODO Probes: https, /cas/login. Readiness probe might take > 1 minute (plugin installation)

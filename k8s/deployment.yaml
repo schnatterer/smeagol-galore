@@ -26,10 +26,11 @@ spec:
           privileged: false
           runAsUser: 1000
           runAsGroup: 1000
-          #readOnlyRootFilesystem: true
-          #privileged: true
-          #runAsUser: 0
-          #runAsGroup: 0
+          # Really difficult with this image: The FQDN needs to be adapted in multiple config files on startup, see
+          # entrypoint.sh.
+          # In addition, if no certificate is mounted a new one is generated.
+          # All of this is not possible with a read-only filesystem.
+          readOnlyRootFilesystem: false
         env:
           - name: FQDN
             value: localhost:8443
@@ -78,5 +79,3 @@ spec:
       serviceAccountName: smeagol-galore
 
 # TODO Probes: https, /cas/login. Readiness probe might take > 1 minute (plugin installation)
-# TODO readOnlyRootFilesystem - difficult with auto generated cert  (needs write access to
-#    /usr/local/tomcat/conf/keystore.jks and  /etc/ssl/certs/java/cacerts)

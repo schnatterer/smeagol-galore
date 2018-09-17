@@ -44,13 +44,12 @@ createSelfSignedCert() {
          -alias ${host} \
          -keyalg RSA -keypass changeit -storepass changeit -keystore ${keystore} \
          -dname "CN=${host}, OU=Unknown, O=Unknown, L=Unknown, S=Unknown, C=Unknown"
+         #-validity 3650
 
         keytool -export -alias ${host} -storepass changeit -file ${cert}  -keystore ${keystore}
 
         keytool -import -noprompt -v -trustcacerts -alias ${host} -file ${cert} -keystore ${trustStore} -keypass changeit -storepass changeit
     fi
-
-    chmod 444 ${trustStore}
 }
 
 writeFQDN() {

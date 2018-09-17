@@ -96,4 +96,6 @@ spec:
       #  hostPath:
       #    path: /tmp/data
       serviceAccountName: smeagol-galore
+      # For now, the pod does not query the k8s API
+      automountServiceAccountToken: false
 

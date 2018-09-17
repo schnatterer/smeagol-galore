@@ -30,6 +30,9 @@ spec:
           #privileged: true
           #runAsUser: 0
           #runAsGroup: 0
+        env:
+          - name: FQDN
+            value: localhost:8443
         volumeMounts:
         # Config
         - name: users
@@ -74,7 +77,6 @@ spec:
       #    path: /tmp/data
       serviceAccountName: smeagol-galore
 
-# TODO Env Var FQDN
 # TODO Probes: https, /cas/login. Readiness probe might take > 1 minute (plugin installation)
 # TODO readOnlyRootFilesystem - difficult with auto generated cert  (needs write access to
 #    /usr/local/tomcat/conf/keystore.jks and  /etc/ssl/certs/java/cacerts)

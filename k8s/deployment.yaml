@@ -17,7 +17,7 @@ spec:
         run: smeagol-galore
     spec:
       containers:
-      - image: schnatterer/smeagol-galore:0.1.1
+      - image: schnatterer/smeagol-galore:0.1.2
         imagePullPolicy: IfNotPresent
         name: smeagol-galore
         securityContext:
@@ -40,6 +40,14 @@ spec:
           mountPath: "/etc/cas/attributes.xml"
           subPath: "attributes.xml"
           readOnly: true
+        - name: cacerts
+          mountPath: "/usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts"
+          subPath: "cacerts"
+          readOnly: true
+        - name: keystore
+          mountPath: "/usr/local/tomcat/conf/keystore.jks"
+          subPath: "keystore.jks"
+          readOnly: true
         # Persistent data
         - name: scm
           mountPath: /home/tomcat/.scm
@@ -51,6 +59,12 @@ spec:
       - name: attribs
         configMap:
           name: smeagol-galore
+      - name: cacerts
+        secret:
+          secretName: smeagol-galore
+      - name: keystore
+        secret:
+          secretName: smeagol-galore
       # Persistent data
       - name: scm
         persistentVolumeClaim:
@@ -60,7 +74,7 @@ spec:
       #    path: /tmp/data
       serviceAccountName: smeagol-galore
 
+# TODO Env Var FQDN
 # TODO Probes: https, /cas/login. Readiness probe might take > 1 minute (plugin installation)
-# TODO cert
 # TODO readOnlyRootFilesystem - difficult with auto generated cert  (needs write access to
 #    /usr/local/tomcat/conf/keystore.jks and  /etc/ssl/certs/java/cacerts)

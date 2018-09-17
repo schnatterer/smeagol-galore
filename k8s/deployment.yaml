@@ -31,6 +31,14 @@ spec:
           # In addition, if no certificate is mounted a new one is generated.
           # All of this is not possible with a read-only filesystem.
           readOnlyRootFilesystem: false
+        resources:
+        # Pretty much rolled the dice on those ones. Better monitor and adapt!
+          requests:
+            cpu: "500m"
+            memory: "1024Mi"
+          limits:
+            cpu: "2000m"
+            memory: "2048Mi"
         readinessProbe:
           httpGet:
             path: /cas/login

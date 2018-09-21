@@ -30,6 +30,7 @@ Runs without a full Cloudogu ecosystem, but still features
   - [Create more wikis](#create-more-wikis)
   - [Credentials](#credentials)
   - [Configuration](#configuration)
+  - [Kubernetes](#kubernetes)
 - [Troubleshooting](#troubleshooting)
   - [Extend Log output](#extend-log-output)
     - [SCM-Manager](#scm-manager)
@@ -124,7 +125,10 @@ Via Environment Variables:
 * Set the name of SCM-Manager's `ADMIN_GROUP`
 * Set your Fully Qualified Domain name (including Port) - `FQDN`  
   Note that the smeagol galore container must be able to resolve this address as well, 
-  because the webb apps communicate with each other (smeagol -> cas, smeagol -> scm, scm -> cas)
+  because the webb apps communicate with each other (smeagol -> cas, smeagol -> scm, scm -> cas).
+  You can try this out locally, by adding the following entry to your `/etc/hosts`: `127.0.0.1 smeagol` and then passing 
+  the following parameters to the container: `-v /etc/hosts:/etc/hosts -e FQDN=smeagol:8443`. You can then reach smeagol
+  at `https://smeagol:8443`.
 * `-e DEBUG=true` exposes port 8000 as Tomcat debug port
 * `EXTRA_JVM_ARGUMENTS`, set e.g. `-XmX` for tomcat process
 
@@ -134,6 +138,28 @@ However, you should make sure that that the user exists (e.g. mount `/etc/passwd
 In order to get permissions on `/usr/local/tomcat` your user should be member of group 1000.
 
 Another option is to build your own image and set `--build-arg USER_ID` and `GROUP_ID` to your liking.
+
+
+## Kubernetes
+
+For an examples on how to deploy to kubernetes see folder `k8s`.
+
+It does not set a specific namespace, so set a namespace of your choice in you kubeconfig and deploy  with
+`kubectl apply -f k8s`.
+Note that this contains a whitelisting network policy for incoming traffic into the namespace allowing only inbound 
+traffic to smeagol-galore ([networkPolicy.yaml](k8s/networkPolicy.yaml)).
+
+The example [deployment.yaml](k8s/deployment.yaml) contains 
+* Setting resource requests & limits
+* Defining readiness and liveness probes
+* Security: Run as non-privileged user, don't mount service account token, use custom service account 
+  ([serviceAccount.yaml](k8s/serviceAccount.yaml)).
+* Setting custom FQDN
+* Use persistent storage ([pvc.yaml](k8s/pvc.yaml))
+* Defining custom user and attributes ([configmap.yaml](k8s/configmap.yaml) and [secret.yaml](k8s/secret.yaml) - in
+  this example we set up a user `arthur` with his password `towel`).
+* Defining custom self signed cert ([secret.yaml](k8s/secret.yaml)).
+
 
 # Troubleshooting
 
@@ -178,9 +204,15 @@ Another option is to build your own image and set `--build-arg USER_ID` and `GRO
 
 # TODOs
 
-- Create helm chart (use draft?)
-
+- Convert to a more 12-factor-like app using multiple containers and docker-compose
+- Use PKCMS12 instead of java keystore in tomcat and for self signed.
+  An idea, using openssl (which is not present in container, yet):
+  ```bash
+    # We could change a pks12 keystore like so, for example
+    openssl req -newkey rsa:2048 -x509 -keyout cakey.pem -out cacert.pem \
+       -subj '/CN=localhost/OU=Unknown/O=Unknown/L=Unknown/S=Unknown/C=Unknown' -days 3650
+    openssl pkcs12 -export -in cacert.pem -inkey cakey.pem -out keystore.jks -name "localhost"
+    ```
+- Create helm chart
 - How to run behind proxy (HTTP/S, certs, Proxy config, etc.)?
 
-- Convert to a more 12-factor-like app using multiple containers and docker-compose
-- Use PKCMS12 instead of java keystore in tomcat and for self signed

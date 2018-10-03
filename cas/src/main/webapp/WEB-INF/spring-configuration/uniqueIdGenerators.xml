@@ -47,7 +47,7 @@
     <!-- saml support -->
     
     <bean id="samlServiceTicketUniqueIdGenerator" class="org.jasig.cas.support.saml.util.SamlCompliantUniqueTicketIdGenerator">
-      <constructor-arg index="0" value="https://localhost:8443" />
+      <constructor-arg index="0" value="https://${fqdn}" />
     </bean>
 	 
 	<util:map id="uniqueIdGeneratorsMap">

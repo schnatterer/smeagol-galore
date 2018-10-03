@@ -16,8 +16,6 @@ main() {
 
     createSelfSignedCert
 
-    writeFQDN
-
     initWiki
 
     startTomcat
@@ -32,7 +30,7 @@ createSelfSignedCert() {
 
     if [ ! -f ${keystore} ]; then
 
-        echo "No Keystore mounted, creating and trusting self-signed certificate"
+        echo "No Keystore mounted, creating and trusting self-signed certificate for host ${host}"
 
 
         # In order to authenticate via scm-cas-plugin, we need to provide a subjectAltName otherwise we'll encounter
@@ -52,23 +50,6 @@ createSelfSignedCert() {
     fi
 }
 
-writeFQDN() {
-
-    files=( \
-        # Note that in SCMM the FQDN is set up using the groovy scripts
-        "/usr/local/tomcat/application.yml" \
-        "/etc/cas/cas.properties" \
-        "/usr/local/tomcat/webapps/cas/WEB-INF/deployerConfigContext.xml" \
-        "/usr/local/tomcat/webapps/cas/WEB-INF/spring-configuration/uniqueIdGenerators.xml" )
-
-
-    for i in "${files[@]}"
-    do
-        echo "Updating FQDN in ${i} (FQDN=${FQDN})"
-        sed -i "s/${DEFAULT_FQDN}/${FQDN}/" ${i}
-    done
-}
-
 initWiki() {
 
     if [ -z "$(ls -A ${USER_HOME}/.scm)" ]; then
@@ -86,7 +67,8 @@ startTomcat() {
         DEBUG_PARAM=jpda
     fi
 
-    export CATALINA_OPTS="${EXTRA_JVM_ARGUMENTS} -Dsonia.scm.init.script.d=/opt/scm-server/init.script.d"
+    # Don't set "-Dserver.name=${FQDN}", or clear pass will no longer work
+    export CATALINA_OPTS="${EXTRA_JVM_ARGUMENTS} -Dsonia.scm.init.script.d=/opt/scm-server/init.script.d -Dfqdn=${FQDN}"
     catalina.sh ${DEBUG_PARAM} run
 
     # TODO use "startup.sh -security"?

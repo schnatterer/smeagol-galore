@@ -148,7 +148,7 @@
             <property name="id" value="1" />
             <property name="name" value="HTTP and IMAP on example.com" />
             <property name="description" value="Allows HTTP(S) on localhost" />
-            <property name="serviceId" value="^(https)://localhost:8443/.*" />
+            <property name="serviceId" value="^(https)://${fqdn}/.*" />
             <property name="evaluationOrder" value="0" />
 
             <!-- Needed for smeagol -->

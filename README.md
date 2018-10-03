@@ -90,7 +90,7 @@ If you use an official TLS cert this won't be necessary.
 * Log in as administrator
 * Create a git repo
 * Clone into git wiki, e.g. for localhost: `git -c http.sslVerify=false clone https://admin@localhost:8443/scm/git/test`
-* Add empty `.smeagol.yml` file
+* Add empty `.smeagol.yml` file: `touch .smeagol.yml && git add .smeagol.yml && git commit -m 'Create smeagol wiki'`
 * Push, e.g. for localhost: `git -c http.sslVerify=false push`
 * Go to https://localhost:8443/smeagol
 

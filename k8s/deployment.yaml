@@ -17,7 +17,7 @@ spec:
         run: smeagol-galore
     spec:
       containers:
-      - image: schnatterer/smeagol-galore:0.1.2
+      - image: schnatterer/smeagol-galore:0.1.3
         imagePullPolicy: IfNotPresent
         name: smeagol-galore
         securityContext:
@@ -26,11 +26,7 @@ spec:
           privileged: false
           runAsUser: 1000
           runAsGroup: 1000
-          # Really difficult with this image: The FQDN needs to be adapted in multiple config files on startup, see
-          # entrypoint.sh.
-          # In addition, if no certificate is mounted a new one is generated.
-          # All of this is not possible with a read-only filesystem.
-          readOnlyRootFilesystem: false
+          readOnlyRootFilesystem: true
         resources:
         # Pretty much rolled the dice on those ones. Better monitor and adapt!
           requests:
@@ -82,6 +78,15 @@ spec:
         # Persistent data
         - name: scm
           mountPath: /home/tomcat/.scm
+        # Needed when using a read-only file system
+        - name: tomcat-tmp
+          mountPath: /usr/local/tomcat/temp
+        - name: tomcat-logs
+          mountPath: /usr/local/tomcat/logs
+        - name: tomcat-work
+          mountPath: /usr/local/tomcat/work
+        - name: tmp
+          mountPath: /tmp
       volumes:
       # Config
       - name: users
@@ -103,6 +108,15 @@ spec:
       #- name: scm
       #  hostPath:
       #    path: /tmp/data
+      # Needed when using a read-only file system
+      - name: tomcat-tmp
+        emptyDir: {}
+      - name: tomcat-logs
+        emptyDir: {}
+      - name: tomcat-work
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
       serviceAccountName: smeagol-galore
       # For now, the pod does not query the k8s API
       automountServiceAccountToken: false

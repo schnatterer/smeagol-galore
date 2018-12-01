@@ -116,5 +116,18 @@
             <id>sonatype-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+            <!--
+            Necessary to resolve javax.xml:xmldsig:jar:1.0 (transitive dependency of org.jasig.cas:cas-server-support-saml)
+
+            https://search.maven.org/artifact/javax.xml/xmldsig/1.0/jar
+            -> points to downloadUrl http://java.sun.com/.. which now is a redirect to oracle.com
+
+            Jar available here:
+            https://maven.atlassian.com/maven-external/javax/xml/xmldsig/1.0/
+            -->
+            <id>maven-atlassian</id>
+            <url>https://maven.atlassian.com/maven-external/</url>
+        </repository>
     </repositories>
 </project>

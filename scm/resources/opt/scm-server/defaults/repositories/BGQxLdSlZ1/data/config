@@ -3,3 +3,5 @@
 	filemode = false
 	bare = true
 	logallrefupdates = false
+[scmm]
+	repositoryid = BGQxLdSlZ1

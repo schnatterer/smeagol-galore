@@ -54,12 +54,10 @@ createSelfSignedCert() {
 
 initWiki() {
 
-    echo 'TODO initWiki for scm v2'
-# TODO adapt to v2
-#    if [ -z "$(ls -A ${USER_HOME}/.scm)" ]; then
-#        echo "Creating default wiki"
-#        cp -r /opt/scm-server/defaults/* ${USER_HOME}/.scm
-#    fi
+    if [ -z "$(ls -A ${USER_HOME}/.scm)" ]; then
+        echo "Creating default wiki"
+        cp -r /opt/scm-server/defaults/* ${USER_HOME}/.scm
+    fi
 }
 
 installScmPlugins() {

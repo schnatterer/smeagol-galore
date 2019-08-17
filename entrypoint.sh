@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # Exported so they can be read from tomcat process
 export ADMIN_GROUP=${ADMIN_GROUP:-admin}
@@ -17,6 +17,8 @@ main() {
     createSelfSignedCert
 
     initWiki
+
+    installScmPlugins
 
     startTomcat
 }
@@ -52,10 +54,21 @@ createSelfSignedCert() {
 
 initWiki() {
 
-    if [ -z "$(ls -A ${USER_HOME}/.scm)" ]; then
-        echo "Creating default wiki"
-        cp -r /opt/scm-server/defaults/* ${USER_HOME}/.scm
+    echo 'TODO initWiki for scm v2'
+# TODO adapt to v2
+#    if [ -z "$(ls -A ${USER_HOME}/.scm)" ]; then
+#        echo "Creating default wiki"
+#        cp -r /opt/scm-server/defaults/* ${USER_HOME}/.scm
+#    fi
+}
+
+installScmPlugins() {
+    if ! [ -d "${USER_HOME}/.scm/plugins" ];  then
+        mkdir -p "${USER_HOME}/.scm/plugins"
+
+      /usr/local/bin/scm-plugin-snapshot -config /etc/scm/plugin-config.yml ${USER_HOME}/.scm/plugins
     fi
+    echo "Finished installing SCM plugins"
 }
 
 startTomcat() {
@@ -68,8 +81,9 @@ startTomcat() {
     fi
 
     # Don't set "-Dserver.name=${FQDN}", or clear pass will no longer work
-    export CATALINA_OPTS="${EXTRA_JVM_ARGUMENTS} -Dsonia.scm.init.script.d=/opt/scm-server/init.script.d -Dfqdn=${FQDN}"
-    catalina.sh ${DEBUG_PARAM} run
+    export CATALINA_OPTS="${EXTRA_JVM_ARGUMENTS} -Dsonia.scm.init.script.d=/opt/scm-server/init.script.d -Dsonia.scm.skipAdminCreation=true-Dfqdn=${FQDN}"
+    # Start in foreground to receives signals (exec)
+    exec catalina.sh ${DEBUG_PARAM} run
 
     # TODO use "startup.sh -security"?
     #exec su-exec tomcat  startup.sh -security

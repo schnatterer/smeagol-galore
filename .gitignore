@@ -9,7 +9,6 @@ target/
 overlays/
 .gradle/
 build/
-bin/
 *.iml
 *.log
 dev

@@ -1,5 +1,5 @@
 # Define maven version for all stages
-FROM maven:3.5.4-jdk-8-alpine as maven
+FROM maven:3.6.1-jdk-8-alpine as maven
 
 FROM maven as mavencache
 ENV MAVEN_OPTS=-Dmaven.repo.local=/mvn
@@ -12,32 +12,35 @@ ENV MAVEN_OPTS=-Dmaven.repo.local=/mvn
 COPY --from=mavencache /mvn/ /mvn/
 ADD cas/ /cas/
 WORKDIR /cas
-RUN set -x && \
-  mvn package
+RUN mvn package
 
-
-# Download and cache webapps
-FROM alpine:3.7 as downloader
-ENV SCM_VERSION=1.54 \
-    SCM_SCRIPT_PLUGIN_VERSION=1.6 \
-    GROOVY_VERSION=2.4.12 \
-    SMEAGOL_VERSION=v0.5.2 \
-    CATALINA_HOME=/dist/usr/local/tomcat/webapps
+# Download and cache webapps - we need java for scm, so just use another maven container here
+FROM maven as downloader
+ENV SMEAGOL_VERSION=v0.5.6
+ENV CATALINA_HOME=/dist/usr/local/tomcat/webapps
+# No stable versions available just yet
+#ENV SCM_SCRIPT_PLUGIN_VERSION=
+#ENV SCM_VERSION=
 
 COPY --from=mavenbuild /cas/target/cas.war /tmp/cas.war
 
-RUN set -x && \
-  apk add --no-cache --update zip unzip curl && \
-  mkdir -p ${CATALINA_HOME} && \
-  wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/cloudogu/smeagol/${SMEAGOL_VERSION}/smeagol-${SMEAGOL_VERSION}.war && \
-  wget -O /tmp/scm.war https://maven.scm-manager.org/nexus/content/repositories/releases/sonia/scm//scm-webapp/${SCM_VERSION}/scm-webapp-${SCM_VERSION}.war && \
-  unzip /tmp/scm.war -d ${CATALINA_HOME}/scm && \
-  unzip /tmp/cas.war -d ${CATALINA_HOME}/cas
+RUN set -x
+RUN apk add --no-cache --update zip unzip curl unzip
+RUN mkdir -p ${CATALINA_HOME}
+RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/cloudogu/smeagol/${SMEAGOL_VERSION}/smeagol-${SMEAGOL_VERSION}.war
+RUN unzip /tmp/cas.war -d ${CATALINA_HOME}/cas
 
-# "Install" scm script plugin
-RUN set -x && \
-  curl -Lks http://repo1.maven.org/maven2/org/codehaus/groovy/groovy-all/${GROOVY_VERSION}/groovy-all-${GROOVY_VERSION}.jar -o ${CATALINA_HOME}/scm/WEB-INF/lib/groovy-all-${GROOVY_VERSION}.jar && \
-  curl -Lks http://maven.scm-manager.org/nexus/content/repositories/releases/sonia/scm/plugins/scm-script-plugin/${SCM_SCRIPT_PLUGIN_VERSION}/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.jar -o ${CATALINA_HOME}/scm/WEB-INF/lib/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.jar
+# Install scm
+COPY /scm/utils /opt/utils
+RUN curl -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/scm-manager-2.x/job/2.0.0-m3/lastSuccessfulBuild/artifact/scm-server/target/scm-server-app.tar.gz -o /tmp/scm-server.tar.gz
+RUN gunzip /tmp/scm-server.tar.gz
+RUN tar -C /opt -xf /tmp/scm-server.tar
+RUN cd /tmp && unzip /opt/scm-server/var/webapp/scm-webapp.war WEB-INF/plugins/plugin-index.xml
+RUN curl -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/scm-manager-bitbucket/job/scm-script-plugin/job/2.0.0/lastSuccessfulBuild/artifact/target/scm-script-plugin-2.0.0-SNAPSHOT.smp -o /tmp/WEB-INF/plugins/scm-script-plugin-2.0.0-SNAPSHOT.smp
+RUN java -cp /opt/utils AddPluginToIndex /tmp/WEB-INF/plugins/plugin-index.xml /tmp/WEB-INF/plugins/scm-script-plugin-2.0.0-SNAPSHOT.smp
+RUN zip -u /opt/scm-server/var/webapp/scm-webapp.war /tmp/WEB-INF/plugins/*
+RUN unzip /opt/scm-server/var/webapp/scm-webapp.war -d ${CATALINA_HOME}/scm
+  # TODO this could be done with less zipping and unzipping
 
 # Set plantuml.com as plantuml renderer. Alternative would be to deploy plantuml
 # "Fix" executable war (which seems to confuse jar & zip utilities)
@@ -51,7 +54,7 @@ RUN set -x && \
 # CAS config
 COPY cas/etc/ /dist/etc/
 # SCM config
-COPY scm /dist
+COPY scm/resources /dist
 # Tomcat Config (TLS & root URL redirect)
 COPY tomcat /dist/usr/local/tomcat
 # Smeagol config
@@ -62,6 +65,7 @@ COPY entrypoint.sh /dist
 # Build final image
 # Before switching to tomcat 9 make sure there is a solution for the permission proble with aufs:
 # https://github.com/docker-library/tomcat/issues/35
+# Maybe update to "tomcat:8.5" first?
 FROM tomcat:8.0.53-jre8-alpine
 ARG USER_ID="1000"
 ARG GROUP_ID="1000"
@@ -89,6 +93,7 @@ RUN \
 
 VOLUME /home/tomcat/.scm
 
+# TODO SSH?
 EXPOSE 8443
 
 USER tomcat

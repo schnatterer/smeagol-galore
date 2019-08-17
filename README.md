@@ -5,6 +5,11 @@ Smeagol galore
 
 A lightweight version of [cloudogu's](https://cloudogu.com) git-based wiki system [smeagol](https://github.com/cloudogu/smeagol), the lightning-fast alternative to [gollum](https://github.com/gollum/gollum).
 
+#TODO SCMv2
+* See TODOs in code
+* Create an initial Repo with smeagol.yml
+* Update README (also refer to plugin-config.yml)
+
 Runs without a full Cloudogu ecosystem, but still features
 * Markdown,
 * WYSIWYG Editors,

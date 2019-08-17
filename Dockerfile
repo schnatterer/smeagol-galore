@@ -18,7 +18,7 @@ RUN set -x && \
 
 # Download and cache webapps
 FROM alpine:3.7 as downloader
-ENV SCM_VERSION=1.54 \
+ENV SCM_VERSION=1.60 \
     SCM_SCRIPT_PLUGIN_VERSION=1.6 \
     GROOVY_VERSION=2.4.12 \
     SMEAGOL_VERSION=v0.5.2 \

@@ -18,8 +18,8 @@ RUN mvn package
 FROM maven as downloader
 ENV SMEAGOL_VERSION=v0.5.6
 ENV CATALINA_HOME=/dist/usr/local/tomcat/webapps
-# No stable versions available just yet
-#ENV SCM_SCRIPT_PLUGIN_VERSION=
+ENV SCM_SCRIPT_PLUGIN_VERSION=2.0.0-SNAPSHOT
+# No stable version available just yet
 #ENV SCM_VERSION=
 
 COPY --from=mavenbuild /cas/target/cas.war /tmp/cas.war
@@ -35,12 +35,10 @@ COPY /scm/utils /opt/utils
 RUN curl -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/scm-manager-2.x/job/2.0.0-m3/lastSuccessfulBuild/artifact/scm-server/target/scm-server-app.tar.gz -o /tmp/scm-server.tar.gz
 RUN gunzip /tmp/scm-server.tar.gz
 RUN tar -C /opt -xf /tmp/scm-server.tar
-RUN cd /tmp && unzip /opt/scm-server/var/webapp/scm-webapp.war WEB-INF/plugins/plugin-index.xml
-RUN curl -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/scm-manager-bitbucket/job/scm-script-plugin/job/2.0.0/lastSuccessfulBuild/artifact/target/scm-script-plugin-2.0.0-SNAPSHOT.smp -o /tmp/WEB-INF/plugins/scm-script-plugin-2.0.0-SNAPSHOT.smp
-RUN java -cp /opt/utils AddPluginToIndex /tmp/WEB-INF/plugins/plugin-index.xml /tmp/WEB-INF/plugins/scm-script-plugin-2.0.0-SNAPSHOT.smp
-RUN zip -u /opt/scm-server/var/webapp/scm-webapp.war /tmp/WEB-INF/plugins/*
 RUN unzip /opt/scm-server/var/webapp/scm-webapp.war -d ${CATALINA_HOME}/scm
-  # TODO this could be done with less zipping and unzipping
+# install scm-script-plugin
+RUN curl -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/scm-manager-bitbucket/job/scm-script-plugin/job/2.0.0/lastSuccessfulBuild/artifact/target/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp
+RUN java -cp /opt/utils AddPluginToIndex ${CATALINA_HOME}/scm/WEB-INF/plugins/plugin-index.xml ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp
 
 # Set plantuml.com as plantuml renderer. Alternative would be to deploy plantuml
 # "Fix" executable war (which seems to confuse jar & zip utilities)
@@ -93,8 +91,7 @@ RUN \
 
 VOLUME /home/tomcat/.scm
 
-# TODO SSH?
-EXPOSE 8443
+EXPOSE 8080 2222
 
 USER tomcat
 

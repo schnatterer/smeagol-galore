@@ -5,12 +5,6 @@ Smeagol galore
 
 A lightweight version of [cloudogu's](https://cloudogu.com) git-based wiki system [smeagol](https://github.com/cloudogu/smeagol), the lightning-fast alternative to [gollum](https://github.com/gollum/gollum).
 
-#TODO SCMv2
-
-* Make initial repo be picked up by SCMv2
-* README: refer to plugin-config.yml
-* Dockerfile: simplify zipping and unzipping
-
 Runs without a full Cloudogu ecosystem, but still features
 * Markdown,
 * WYSIWYG Editors,
@@ -21,6 +15,12 @@ Runs without a full Cloudogu ecosystem, but still features
 * neatly packed into a docker image.
 
 [![Diagram showing components and their relationships](http://www.plantuml.com/plantuml/svg/Z9BVIYCn58VlvocEkXSkE9Fw1oaYijsfYj1kfRNiXKWv9d4QEac69ACBuhjl9ZETjagbkJhjxvkJBoVvPHqQLyeyscFyHIWEwM0qxOzkfzFn0ERE5VQ248DlIIRSl7mkBJTKAyULIwYMXEQwP3ehIP6Zglh4otzYMnZXk2KIhUCcYlQ4edd9U6dozKr81LjYgKoAuF4z9ZbcEg_Hrlak7VtPpTUL1J9pkj8LFerVFD7wlfuadQIpuT7q9xw3rEgBPvip_bhrirwMBhZP3eODyOrRBJdnYgyxmuBDA1hsQG2J-_7Tm_LajnaOVEOvLmm93QTlPz5Eu3ZfaER7Xj5g6-AqfEXg3R_iGgW23Kf0O_GRl4S0gSwrWODEMD77EgGquu7vhGtZfY6Fpy-xNRP98dNQr2ZIHMPqgLY3dvpYAMDRcW3SQEM-ADJjfhPwa45Yln-kQX_G0WibmENbZxgykeA3bx22GVt1GpXv-C25ikBhQfCFgtg-iqawFBHK7e4luY4gpBZvkKGtmE5rxtOqE6oUkV-WBZx3DxtPNN-MziRzGuhs2DBUP1tvg8vQszvNbpiT3eBlygOhusNjdTyhl9e9nF4LD7l31LmpuU2lM8Yra4eVt787Orve6otXxoAVUKcVzKetvye9Yev77jyQhPgsnfuPSyMy1XEO6PGsQhFuSIuOu-gfRXT5KVrueJqaF9vr_vrroV7vq_zcwo39SH26ml2LdgGdmBl19Bx_aKQ9WPwakojcD_yovIyInOOuBLPIO0rm5QH5a6mDMC4Iu1P6hmDMI5PS1beXTMMbZIYs0eg6MG5EvBe2a20xLm0KsPO0u5W4M0Ba4c1oKg-3dDrfPfV1LX9f2if5K4hEPagx3B9R8e45G24MWVv_m7u5SWNedj0pAdfRav-1RBVMTaKapaWG-H7bdm3RcGEaHMJW_NYsopkmUckzFPan3CbypD8ho6ssjvRjGOncwNxSkzZ_0MnlxMwFGjXspAfR1tlxLhPH31arGf-WRhNzCiHUXsJhe6pVHEK0h5-20-HStmQ0fs0YZju6J92yjDaj2pf8Bi1vZ1ln0kXZoAQ8B01TWFFwxXaOm4vWLcwFl_V-EvaCpqfSW-8B0Aa4e8dLLZ1oeiUnpGHWJW5Kn1696u1pCLT0vCae4qJk3p2-4fbZ5BriEi7vrGJIb-yJXdLv0H3Q2Juq0Q2w221ga4zrCCXdy7Wt_ucdLpoZ_W80)](http://www.plantuml.com/plantuml/uml/Z9BVIYCn58VlvocEkXSkE9Fw1oaYijsfYj1kfRNiXKWv9d4QEac69ACBuhjl9ZETjagbkJhjxvkJBoVvPHqQLyeyscFyHIWEwM0qxOzkfzFn0ERE5VQ248DlIIRSl7mkBJTKAyULIwYMXEQwP3ehIP6Zglh4otzYMnZXk2KIhUCcYlQ4edd9U6dozKr81LjYgKoAuF4z9ZbcEg_Hrlak7VtPpTUL1J9pkj8LFerVFD7wlfuadQIpuT7q9xw3rEgBPvip_bhrirwMBhZP3eODyOrRBJdnYgyxmuBDA1hsQG2J-_7Tm_LajnaOVEOvLmm93QTlPz5Eu3ZfaER7Xj5g6-AqfEXg3R_iGgW23Kf0O_GRl4S0gSwrWODEMD77EgGquu7vhGtZfY6Fpy-xNRP98dNQr2ZIHMPqgLY3dvpYAMDRcW3SQEM-ADJjfhPwa45Yln-kQX_G0WibmENbZxgykeA3bx22GVt1GpXv-C25ikBhQfCFgtg-iqawFBHK7e4luY4gpBZvkKGtmE5rxtOqE6oUkV-WBZx3DxtPNN-MziRzGuhs2DBUP1tvg8vQszvNbpiT3eBlygOhusNjdTyhl9e9nF4LD7l31LmpuU2lM8Yra4eVt787Orve6otXxoAVUKcVzKetvye9Yev77jyQhPgsnfuPSyMy1XEO6PGsQhFuSIuOu-gfRXT5KVrueJqaF9vr_vrroV7vq_zcwo39SH26ml2LdgGdmBl19Bx_aKQ9WPwakojcD_yovIyInOOuBLPIO0rm5QH5a6mDMC4Iu1P6hmDMI5PS1beXTMMbZIYs0eg6MG5EvBe2a20xLm0KsPO0u5W4M0Ba4c1oKg-3dDrfPfV1LX9f2if5K4hEPagx3B9R8e45G24MWVv_m7u5SWNedj0pAdfRav-1RBVMTaKapaWG-H7bdm3RcGEaHMJW_NYsopkmUckzFPan3CbypD8ho6ssjvRjGOncwNxSkzZ_0MnlxMwFGjXspAfR1tlxLhPH31arGf-WRhNzCiHUXsJhe6pVHEK0h5-20-HStmQ0fs0YZju6J92yjDaj2pf8Bi1vZ1ln0kXZoAQ8B01TWFFwxXaOm4vWLcwFl_V-EvaCpqfSW-8B0Aa4e8dLLZ1oeiUnpGHWJW5Kn1696u1pCLT0vCae4qJk3p2-4fbZ5BriEi7vrGJIb-yJXdLv0H3Q2Juq0Q2w221ga4zrCCXdy7Wt_ucdLpoZ_W80)
+
+**NOTE**: This version of smeagol-galore uses a SNAPSHOT version of SCM-Manager v2. Breaking changes might occurr!
+
+**TODO SCMv2**
+
+* Make initial repo be picked up by SCMv2
 
 # Table of contents
 
@@ -54,16 +54,19 @@ Runs without a full Cloudogu ecosystem, but still features
 ## Getting started 
 
 ```bash
-docker run -p 8443:8443 schnatterer/smeagol-galore:0.1.0
+docker run -p 8443:8443 schnatterer/smeagol-galore:0.2.0-SNAPSHOT
 ```
 
 Note that
  
-* SCM-Manager installs plugins via the internet on first startup, so it might take more than a minute.
+* SCM-Manager installs plugins via the internet on first startup, so it might take some time.
+  You can choose which plugins are installed by editing `plugin-config.yml`, e.g. by mounting your own version into the
+  container: `- v your-plugin-config.yml:/etc/scm/plugin-config.yml`
 * A self-signed certificate will be created on startup.
   These will result in warnings in your browser.  
   See bellow for custom certificates.
-* Smeagol galore will be available on [https://localhost:8443](https://localhost:8443)
+* Smeagol galore will be available on [https://localhost:8443](https://localhost:8443) (and via `/smeagol`).  
+  SCM-Manager will be available on [https://localhost:8443/scm](https://localhost:8443/scm).
 * Default user/pw: `admin/admin` (see bellow for custom credentials)
 
 ## Persist state 
@@ -72,7 +75,7 @@ Mount SCMM Volume to persist your repos/wikis: `-v $(pwd)/dev/scm:/home/tomcat/.
 This will also persist SCMM plugins, so the second start will be much faster. 
 
 ```bash
-docker run --rm --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomcat/.scm schnatterer/smeagol-galore:0.1.0
+docker run --rm --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomcat/.scm schnatterer/smeagol-galore:0.2.0-SNAPSHOT
 ``` 
 
 ## Custom Certificate
@@ -169,17 +172,6 @@ The example [deployment.yaml](k8s/deployment.yaml) contains
 
 # Troubleshooting
 
-## Extend Log output
-
-### SCM-Manager
-
-* Copy `logback.xml` for [SCM-Manager](https://github.com/sdorra/scm-manager/blob/one.dot.x/scm-webapp/src/main/resources/logback.default.xml)
-* Increase logging for SCM-Manager and/or plugins. E.g. for SCM-Manager
-  ```xml
-    <logger name="sonia.scm" level="TRACE" />
-  ```
-* Run Container with `-v $(pwd)/dev/scm/logback.xml:/usr/local/tomcat/webapps/scm/WEB-INF/classes/logback.xml`
-
 ## Debugging
 
 * Start container with `-p8000:8000 -e DEBUG=true`
@@ -192,7 +184,7 @@ The example [deployment.yaml](k8s/deployment.yaml) contains
 
 ## SCM
 
-* [scm-cas-plugin](https://bitbucket.org/triologygmbh/scm-cas-plugin/src)
+* [scm-cas-plugin](https://bitbucket.org/scm-manager/scm-cas-plugin/src/master/)
 * [cloudogu/scm docker image](https://github.com/cloudogu/scm/blob/master/Dockerfile)
 
 ## CAS

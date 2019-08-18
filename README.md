@@ -21,6 +21,7 @@ Runs without a full Cloudogu ecosystem, but still features
 **TODO SCMv2**
 
 * Make initial repo be picked up by SCMv2
+* Readme for example
 
 # Table of contents
 

@@ -1,0 +1,65 @@
+version: "3.7"
+services:
+  smeagol-galore:
+    image: schnatterer/smeagol-galore:0.2.0-SNAPSHOT
+    container_name: smeagol-galore
+    # TODO Challenges: Existing files changed on startup because of
+    #/usr/local/tomcat/conf/keystore.jks
+    #/etc/ssl/certs/java/cacerts
+    # Solution: Mount own /usr/local/tomcat/conf/keystore.jks
+    # In addition Folders are owned by root causing problems in SCMM for example.
+    # Possible solution: chown files in Dockerfile and declare them as volumes? Or maybe bind mounts to /tmp? Or chmod in Dockerfile?
+    #read_only: true
+    security_opt:
+      - no-new-privileges
+    # TODO Self signed cert for 172.1.2.2 does not work. Must be a domain
+    #networks:
+    #  smeagol_galore:
+    #    ipv4_address: 172.1.2.2
+    #environment:
+    #  - FQDN=172.1.2.2
+    ports:
+      - 8443:8443
+    restart: unless-stopped
+    volumes:
+      - smeagol-galore:/home/tomcat/.scm
+      - type: bind
+        source: ./config/users.txt
+        target: /etc/cas/users.txt
+        read_only: true
+      - type: bind
+        source: ./config/attributes.xml
+        target: /etc/cas/attributes.xml
+        read_only: true
+      - type: bind
+        source: ./config/plugin-config.yml
+        target: /etc/scm/plugin-config.yml
+        read_only: true
+      # Example for more verbose log output
+      - type: bind
+        source: ./config/logback-verbose.xml
+        target: /usr/local/tomcat/webapps/scm/WEB-INF/classes/logback.xml
+        read_only: true
+      # Make writable - needed when by tomcat when 'read_only: true'
+      #- type: tmpfs
+      #  target: /usr/local/tomcat/temp
+      #- type: tmpfs
+      #  target: /usr/local/tomcat/work
+      #- type: tmpfs
+      #  target: /usr/local/tomcat/logs
+      #- type: tmpfs
+      #  target: /tmp
+      #- type: tmpfs
+      #  target: /usr/local/tomcat/conf/Catalina
+
+networks:
+  smeagol_galore:
+    # Internal network is not allowed to access internet. Does not work if downloading plugins.
+    #external: false
+    #internal: true
+    ipam:
+      config:
+        - subnet: 172.1.2.0/24
+
+volumes:
+  smeagol-galore:

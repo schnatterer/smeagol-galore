@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<person-data>
+    <person name="admin">
+        <attribute key="username"><value>admin</value></attribute>
+        <attribute key="mail"><value>scm@adm.in</value></attribute>
+        <attribute key="displayName"><value>Scm Admin</value></attribute>
+        <attribute key="groups"><value>admin</value></attribute>
+    </person>
+    <person name="another">
+        <attribute key="username"><value>another</value></attribute>
+        <attribute key="mail"><value>an@th.er</value></attribute>
+        <attribute key="displayName"><value>Another user</value></attribute>
+        <attribute key="groups"><value></value></attribute>
+    </person>
+</person-data>

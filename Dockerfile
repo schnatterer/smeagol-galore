@@ -39,6 +39,8 @@ RUN unzip /opt/scm-server/var/webapp/scm-webapp.war -d ${CATALINA_HOME}/scm
 # install scm-script-plugin
 RUN curl -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/scm-manager-bitbucket/job/scm-script-plugin/job/2.0.0/lastSuccessfulBuild/artifact/target/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp
 RUN java -cp /opt/utils AddPluginToIndex ${CATALINA_HOME}/scm/WEB-INF/plugins/plugin-index.xml ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp
+# Make logging less verbose
+COPY /scm/logging.xml ${CATALINA_HOME}/scm/WEB-INF/classes/logback.xml
 
 # Set plantuml.com as plantuml renderer. Alternative would be to deploy plantuml
 # "Fix" executable war (which seems to confuse jar & zip utilities)

@@ -172,6 +172,14 @@ The example [deployment.yaml](k8s/deployment.yaml) contains
 
 # Troubleshooting
 
+## Extend Log output
+
+### SCM-Manager
+
+* Copy `logback.xml` for [SCM-Manager](https://bitbucket.org/sdorra/scm-manager/src/default/scm-webapp/src/main/resources/logback.default.xml)
+* Increase logging for SCM-Manager and/or plugins if necessary.
+* Run Container with `-v $(pwd)/dev/scm/logback.xml:/usr/local/tomcat/webapps/scm/WEB-INF/classes/logback.xml`
+
 ## Debugging
 
 * Start container with `-p8000:8000 -e DEBUG=true`

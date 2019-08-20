@@ -3,6 +3,16 @@ services:
   smeagol-galore:
     image: schnatterer/smeagol-galore:0.2.0-SNAPSHOT
     container_name: smeagol-galore
+    security_opt:
+      - no-new-privileges
+    networks:
+      smeagol_galore:
+        ipv4_address: 172.1.2.2
+    environment:
+      - FQDN=localhost:8443
+    ports:
+      - 8443:8443
+    restart: unless-stopped
     # TODO Challenges: Existing files changed on startup because of
     #/usr/local/tomcat/conf/keystore.jks
     #/etc/ssl/certs/java/cacerts
@@ -10,17 +20,6 @@ services:
     # In addition Folders are owned by root causing problems in SCMM for example.
     # Possible solution: chown files in Dockerfile and declare them as volumes? Or maybe bind mounts to /tmp? Or chmod in Dockerfile?
     #read_only: true
-    security_opt:
-      - no-new-privileges
-    # TODO Self signed cert for 172.1.2.2 does not work. Must be a domain
-    #networks:
-    #  smeagol_galore:
-    #    ipv4_address: 172.1.2.2
-    #environment:
-    #  - FQDN=172.1.2.2
-    ports:
-      - 8443:8443
-    restart: unless-stopped
     volumes:
       - smeagol-galore:/home/tomcat/.scm
       - type: bind

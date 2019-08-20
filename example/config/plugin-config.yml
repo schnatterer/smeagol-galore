@@ -1,12 +1,4 @@
 plugins:
-  - scm-gravatar-plugin
   - scm-cas-plugin
-  - scm-mail-plugin
+  - scm-webhook-plugin
   - scm-rest-legacy-plugin
-  - scm-activity-plugin
-  - scm-statistic-plugin
-  - scm-notify-plugin
-  - scm-script-plugin
-  - scm-support-plugin
-  - scm-readme-plugin
-  - scm-ssh-plugin

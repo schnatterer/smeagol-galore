@@ -93,7 +93,7 @@ RUN \
 
 VOLUME /home/tomcat/.scm
 
-EXPOSE 8080 2222
+EXPOSE 8443 2222
 
 USER tomcat
 

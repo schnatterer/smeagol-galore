@@ -16,12 +16,7 @@ Runs without a full Cloudogu ecosystem, but still features
 
 [![Diagram showing components and their relationships](http://www.plantuml.com/plantuml/svg/Z9BVIYCn58VlvocEkXSkE9Fw1oaYijsfYj1kfRNiXKWv9d4QEac69ACBuhjl9ZETjagbkJhjxvkJBoVvPHqQLyeyscFyHIWEwM0qxOzkfzFn0ERE5VQ248DlIIRSl7mkBJTKAyULIwYMXEQwP3ehIP6Zglh4otzYMnZXk2KIhUCcYlQ4edd9U6dozKr81LjYgKoAuF4z9ZbcEg_Hrlak7VtPpTUL1J9pkj8LFerVFD7wlfuadQIpuT7q9xw3rEgBPvip_bhrirwMBhZP3eODyOrRBJdnYgyxmuBDA1hsQG2J-_7Tm_LajnaOVEOvLmm93QTlPz5Eu3ZfaER7Xj5g6-AqfEXg3R_iGgW23Kf0O_GRl4S0gSwrWODEMD77EgGquu7vhGtZfY6Fpy-xNRP98dNQr2ZIHMPqgLY3dvpYAMDRcW3SQEM-ADJjfhPwa45Yln-kQX_G0WibmENbZxgykeA3bx22GVt1GpXv-C25ikBhQfCFgtg-iqawFBHK7e4luY4gpBZvkKGtmE5rxtOqE6oUkV-WBZx3DxtPNN-MziRzGuhs2DBUP1tvg8vQszvNbpiT3eBlygOhusNjdTyhl9e9nF4LD7l31LmpuU2lM8Yra4eVt787Orve6otXxoAVUKcVzKetvye9Yev77jyQhPgsnfuPSyMy1XEO6PGsQhFuSIuOu-gfRXT5KVrueJqaF9vr_vrroV7vq_zcwo39SH26ml2LdgGdmBl19Bx_aKQ9WPwakojcD_yovIyInOOuBLPIO0rm5QH5a6mDMC4Iu1P6hmDMI5PS1beXTMMbZIYs0eg6MG5EvBe2a20xLm0KsPO0u5W4M0Ba4c1oKg-3dDrfPfV1LX9f2if5K4hEPagx3B9R8e45G24MWVv_m7u5SWNedj0pAdfRav-1RBVMTaKapaWG-H7bdm3RcGEaHMJW_NYsopkmUckzFPan3CbypD8ho6ssjvRjGOncwNxSkzZ_0MnlxMwFGjXspAfR1tlxLhPH31arGf-WRhNzCiHUXsJhe6pVHEK0h5-20-HStmQ0fs0YZju6J92yjDaj2pf8Bi1vZ1ln0kXZoAQ8B01TWFFwxXaOm4vWLcwFl_V-EvaCpqfSW-8B0Aa4e8dLLZ1oeiUnpGHWJW5Kn1696u1pCLT0vCae4qJk3p2-4fbZ5BriEi7vrGJIb-yJXdLv0H3Q2Juq0Q2w221ga4zrCCXdy7Wt_ucdLpoZ_W80)](http://www.plantuml.com/plantuml/uml/Z9BVIYCn58VlvocEkXSkE9Fw1oaYijsfYj1kfRNiXKWv9d4QEac69ACBuhjl9ZETjagbkJhjxvkJBoVvPHqQLyeyscFyHIWEwM0qxOzkfzFn0ERE5VQ248DlIIRSl7mkBJTKAyULIwYMXEQwP3ehIP6Zglh4otzYMnZXk2KIhUCcYlQ4edd9U6dozKr81LjYgKoAuF4z9ZbcEg_Hrlak7VtPpTUL1J9pkj8LFerVFD7wlfuadQIpuT7q9xw3rEgBPvip_bhrirwMBhZP3eODyOrRBJdnYgyxmuBDA1hsQG2J-_7Tm_LajnaOVEOvLmm93QTlPz5Eu3ZfaER7Xj5g6-AqfEXg3R_iGgW23Kf0O_GRl4S0gSwrWODEMD77EgGquu7vhGtZfY6Fpy-xNRP98dNQr2ZIHMPqgLY3dvpYAMDRcW3SQEM-ADJjfhPwa45Yln-kQX_G0WibmENbZxgykeA3bx22GVt1GpXv-C25ikBhQfCFgtg-iqawFBHK7e4luY4gpBZvkKGtmE5rxtOqE6oUkV-WBZx3DxtPNN-MziRzGuhs2DBUP1tvg8vQszvNbpiT3eBlygOhusNjdTyhl9e9nF4LD7l31LmpuU2lM8Yra4eVt787Orve6otXxoAVUKcVzKetvye9Yev77jyQhPgsnfuPSyMy1XEO6PGsQhFuSIuOu-gfRXT5KVrueJqaF9vr_vrroV7vq_zcwo39SH26ml2LdgGdmBl19Bx_aKQ9WPwakojcD_yovIyInOOuBLPIO0rm5QH5a6mDMC4Iu1P6hmDMI5PS1beXTMMbZIYs0eg6MG5EvBe2a20xLm0KsPO0u5W4M0Ba4c1oKg-3dDrfPfV1LX9f2if5K4hEPagx3B9R8e45G24MWVv_m7u5SWNedj0pAdfRav-1RBVMTaKapaWG-H7bdm3RcGEaHMJW_NYsopkmUckzFPan3CbypD8ho6ssjvRjGOncwNxSkzZ_0MnlxMwFGjXspAfR1tlxLhPH31arGf-WRhNzCiHUXsJhe6pVHEK0h5-20-HStmQ0fs0YZju6J92yjDaj2pf8Bi1vZ1ln0kXZoAQ8B01TWFFwxXaOm4vWLcwFl_V-EvaCpqfSW-8B0Aa4e8dLLZ1oeiUnpGHWJW5Kn1696u1pCLT0vCae4qJk3p2-4fbZ5BriEi7vrGJIb-yJXdLv0H3Q2Juq0Q2w221ga4zrCCXdy7Wt_ucdLpoZ_W80)
 
-**NOTE**: This version of smeagol-galore uses a SNAPSHOT version of SCM-Manager v2. Breaking changes might occurr!
-
-**TODO SCMv2**
-
-* Make initial repo be picked up by SCMv2
-* Readme for example
+**NOTE**: This version of smeagol-galore uses a SNAPSHOT version of SCM-Manager v2. Breaking changes might occur!
 
 # Table of contents
 
@@ -37,7 +32,9 @@ Runs without a full Cloudogu ecosystem, but still features
   - [Create more wikis](#create-more-wikis)
   - [Credentials](#credentials)
   - [Configuration](#configuration)
+  - [More substantial example](#more-substantial-example)
   - [Kubernetes](#kubernetes)
+- [Import from Gollum](#import-from-gollum)
 - [Troubleshooting](#troubleshooting)
   - [Extend Log output](#extend-log-output)
     - [SCM-Manager](#scm-manager)
@@ -150,6 +147,9 @@ In order to get permissions on `/usr/local/tomcat` your user should be member of
 
 Another option is to build your own image and set `--build-arg USER_ID` and `GROUP_ID` to your liking.
 
+## More substantial example
+
+See [example](example/README.md) for a more substantial example using docker-compose.
 
 ## Kubernetes
 
@@ -172,6 +172,34 @@ The example [deployment.yaml](k8s/deployment.yaml) contains
 * Defining custom self signed cert ([secret.yaml](k8s/secret.yaml)).
 
 
+# Import from Gollum
+
+- Just create a new repo in SCM-Manager and push Gollum's wiki there. Then do the following, add and commit each step. Finally push.
+- `touch .smeagol.yml`
+- `mkdir docs`
+- Move all files to /docs
+    ```bash
+    mkdir docs
+    git mv -k * docs #-k ignores errors such as moving docs to docs
+    git mv -k .* docs #hidden files
+    ```
+- There are [a couple of limitations regarding file names](https://github.com/cloudogu/smeagol/blob/50330fa6ded55d8cf62ced9d9b45e5ca8bbbe7a4/src/main/java/com/cloudogu/smeagol/wiki/domain/Path.java#L74).    
+  Find an `rename` or `git mv` them.
+    - For example, find files that end with a blank before the file extension: `ll | grep ' \.md'.`
+    - Find files that do not match the [character whitelist of smeagol](https://github.com/cloudogu/smeagol/blob/50330fa6ded55d8cf62ced9d9b45e5ca8bbbe7a4/src/main/java/com/cloudogu/smeagol/wiki/domain/Path.java#L20): 
+      `find ./  -printf "%f\n" | grep -Pv '^[\w\.\-_/ ]+$'`.  
+      You could just replace them: `rename 's/[(),#+~&]/_/g' *` (add more characters to replace in the first part of the regex, if needed).      
+      But keep in mind that changing the name of a file might break links to those.
+    - If you used uploads in Gollum, you might have to change the links.  
+      If you used fully qualified (absolute) links (like `https://mygoll.um/uploads`) or relative links starting in `/` 
+      (like `/uploads`) you should change all to `uploads`.  
+      You can find them like so: ` grep -r https://mygoll.um/uploads/` and `grep -r /uploads/`.
+- For some reason the version overview in smeagol shows only changes occurred after moving the files.  
+  However, the history can still be found in git via scm-manager.
+- Note that it is also possible to run Gollum and Smeagol in parallel:  
+  - Just add a git origin to Gollum's Git repo pointing to the Git Repo in SCM-Manager.  
+  - You can then sync via push and pull in Gollum's git repo.
+  
 # Troubleshooting
 
 ## Extend Log output

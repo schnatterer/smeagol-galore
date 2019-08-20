@@ -60,9 +60,10 @@ docker run -p 8443:8443 schnatterer/smeagol-galore:0.2.0-SNAPSHOT
 
 Note that
  
-* SCM-Manager installs plugins via the internet on first startup, so it might take some time.
+* SCM-Manager installs plugins via the internet on first startup, so it might take some time.  
   You can choose which plugins are installed by editing `plugin-config.yml`, e.g. by mounting your own version into the
-  container: `- v your-plugin-config.yml:/etc/scm/plugin-config.yml`
+  container: `- v your-plugin-config.yml:/etc/scm/plugin-config.yml`.  
+  See [SCM-Jenkins](https://oss.cloudogu.com/jenkins/job/scm-manager/) for available plugins.
 * A self-signed certificate will be created on startup.
   These will result in warnings in your browser.  
   See bellow for custom certificates.
@@ -223,3 +224,4 @@ The example [deployment.yaml](k8s/deployment.yaml) contains
 - Create helm chart
 - How to run behind proxy (HTTP/S, certs, Proxy config, etc.)?
 
+ 

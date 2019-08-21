@@ -10,6 +10,14 @@ services:
         ipv4_address: 172.1.2.2
     environment:
       - FQDN=localhost:8443
+      # Session timeouts: 60 days in sec = 518400; 30 days = 259200;
+      # Maximum session timeout - TGT will expire in maxTimeToLiveInSeconds regardless of usage
+      - TGT_MAXTIMETOLIVEINSECONDS=5184000
+      # Will expire sooner than maxTimeToLiveInSeconds if no further requests
+      - TGT_TIMETOKILLINSECONDS=259200
+      # Timeout Smeagol
+      - SERVER_SESSION_TIMEOUT=2592000
+      # SCMMv2's access token expiration seems to be hard coded to 1h.
     ports:
       - 8443:8443
     restart: unless-stopped

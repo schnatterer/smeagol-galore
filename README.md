@@ -138,11 +138,19 @@ Via Environment Variables:
   the following parameters to the container: `-v /etc/hosts:/etc/hosts -e FQDN=smeagol:8443`. You can then reach smeagol
   at `https://smeagol:8443`.
 * `-e DEBUG=true` exposes port 8000 as Tomcat debug port
-* Additional Arguments passed to tomcat, set e.g. `-XmX` for tomcat process
+* Additional arguments can be passed to tomcat, or the webapps (CAS, smeagol, SCM-Manager)
   * As Docker `CMD`, e.g.  
   `docker run schnatterer/smeagol-galore:0.2.0-SNAPSHOT '-Xmx1g -Dabc=def'` 
   * Via env var `EXTRA_JVM_ARGUMENTS`, e.g.   
-  `docker run -e EXTRA_JVM_ARGUMENTS='-Xmx1g -Dabc=def' schnatterer/smeagol-galore:0.2.0-SNAPSHOT` 
+  `docker run -e EXTRA_JVM_ARGUMENTS='-Xmx1g -Dabc=def' schnatterer/smeagol-galore:0.2.0-SNAPSHOT`
+  * Examples: 
+    * `-XmX2g` to virtual machine / tomcat process 
+    * See CAS's [`cas.properties`](cas/etc/cas/cas.properties) and
+    * Smeagol's [application.yml](https://github.com/cloudogu/smeagol/blob/develop/src/main/resources/application.yml)
+    * for options. These can either be set 
+      * as System Property, e.g. `docker run -e EXTRA_JVM_ARGUMENTS='-Dproperty.name=value'...`) or
+      * Environment Variable, e.g. (`docker run -e -e PROPERTY_NAME=value ...`).
+    * This is used in the [example](example/docker-compose.yaml) to increase session timeout / token expiration.
 
 The container is run as with UID and GID = 1000.
 If you want to run it as a different user you pass `-u` param when running the container.

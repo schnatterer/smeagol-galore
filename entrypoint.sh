@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # Exported so they can be read from tomcat process
 export ADMIN_GROUP=${ADMIN_GROUP:-admin}
@@ -7,8 +7,7 @@ export USER_HOME=/home/tomcat
 
 DEBUG=${DEBUG:-false}
 EXTRA_JVM_ARGUMENTS=${EXTRA_JVM_ARGUMENTS:-}
-DEFAULT_FQDN="localhost\:8443"
-
+CERT_VALIDITY_DAYS=${CERT_VALIDITY_DAYS:-30}
 
 set -o errexit -o nounset -o pipefail
 
@@ -34,7 +33,6 @@ createSelfSignedCert() {
 
         echo "No Keystore mounted, creating and trusting self-signed certificate for host ${host}"
 
-
         # In order to authenticate via scm-cas-plugin, we need to provide a subjectAltName otherwise we'll encounter
         # ClientTransportException: HTTP transport error: javax.net.ssl.SSLHandshakeException: java.security.cert.CertificateException: No subject alternative names present
         # See https://stackoverflow.com/a/84441845976863/
@@ -43,8 +41,8 @@ createSelfSignedCert() {
          -ext san=ip:127.0.0.1 -ext san=dns:${host} \
          -alias ${host} \
          -keyalg RSA -keypass changeit -storepass changeit -keystore ${keystore} \
-         -dname "CN=${host}, OU=Unknown, O=Unknown, L=Unknown, S=Unknown, C=Unknown"
-         #-validity 3650
+         -dname "CN=${host}, OU=Unknown, O=Unknown, L=Unknown, S=Unknown, C=Unknown" \
+         -validity "${CERT_VALIDITY_DAYS}"
 
         keytool -export -alias ${host} -storepass changeit -file ${cert}  -keystore ${keystore}
 
@@ -79,8 +77,9 @@ startTomcat() {
     fi
 
     # Don't set "-Dserver.name=${FQDN}", or clear pass will no longer work
-    export CATALINA_OPTS="-Dsonia.scm.init.script.d=/opt/scm-server/init.script.d -Dsonia.scm.skipAdminCreation=true \
-                          -Dfqdn=${FQDN} ${EXTRA_JVM_ARGUMENTS} $@"
+    CATALINA_OPTS="-Dsonia.scm.init.script.d=/opt/scm-server/init.script.d -Dsonia.scm.skipAdminCreation=true "
+    export CATALINA_OPTS="${CATALINA_OPTS} -Dfqdn=${FQDN} ${EXTRA_JVM_ARGUMENTS} $*"
+
     echo "Set CATALINA_OPTS: ${CATALINA_OPTS}"
     # Start in foreground to receives signals (exec)
     exec catalina.sh ${DEBUG_PARAM} run

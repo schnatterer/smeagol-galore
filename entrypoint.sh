@@ -20,7 +20,7 @@ main() {
 
     installScmPlugins
 
-    startTomcat
+    startTomcat "$@"
 }
 
 createSelfSignedCert() {
@@ -79,7 +79,9 @@ startTomcat() {
     fi
 
     # Don't set "-Dserver.name=${FQDN}", or clear pass will no longer work
-    export CATALINA_OPTS="${EXTRA_JVM_ARGUMENTS} -Dsonia.scm.init.script.d=/opt/scm-server/init.script.d -Dsonia.scm.skipAdminCreation=true -Dfqdn=${FQDN}"
+    export CATALINA_OPTS="-Dsonia.scm.init.script.d=/opt/scm-server/init.script.d -Dsonia.scm.skipAdminCreation=true \
+                          -Dfqdn=${FQDN} ${EXTRA_JVM_ARGUMENTS} $@"
+    echo "Set CATALINA_OPTS: ${CATALINA_OPTS}"
     # Start in foreground to receives signals (exec)
     exec catalina.sh ${DEBUG_PARAM} run
 

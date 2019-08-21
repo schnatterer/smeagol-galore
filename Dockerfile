@@ -87,6 +87,8 @@ RUN \
   chown -R tomcat:tomcat /home/tomcat && \
   chown -R tomcat:tomcat /etc/cas && \
   chown -R tomcat:tomcat /etc/ssl/certs/java/cacerts && \
+  # Needed when running with read-only file system and mounting this folder as volume (which leads to being owend by 0:0)
+  chmod 777 /usr/local/tomcat/temp && \
   chmod 774 /etc/ssl/certs/java/cacerts && \
   chmod -R 770 /home/tomcat && \
   chmod 400 ${CATALINA_HOME}/conf/*

@@ -262,6 +262,3 @@ The example [deployment.yaml](k8s/deployment.yaml) contains
     openssl pkcs12 -export -in cacert.pem -inkey cakey.pem -out keystore.jks -name "localhost"
     ```
 - Create helm chart
-- How to run behind proxy (HTTP/S, certs, Proxy config, etc.)?
-
- 

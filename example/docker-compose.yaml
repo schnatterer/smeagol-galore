@@ -21,13 +21,7 @@ services:
     ports:
       - 8443:8443
     restart: unless-stopped
-    # TODO Challenges: Existing files changed on startup because of
-    #/usr/local/tomcat/conf/keystore.jks
-    #/etc/ssl/certs/java/cacerts
-    # Solution: Mount own /usr/local/tomcat/conf/keystore.jks
-    # In addition Folders are owned by root causing problems in SCMM for example.
-    # Possible solution: chown files in Dockerfile and declare them as volumes? Or maybe bind mounts to /tmp? Or chmod in Dockerfile?
-    #read_only: true
+    read_only: true
     volumes:
       - smeagol-galore:/home/tomcat/.scm
       - type: bind
@@ -42,22 +36,30 @@ services:
         source: ./config/plugin-config.yml
         target: /etc/scm/plugin-config.yml
         read_only: true
+      - type: bind
+        source: ./config/keystore.jks
+        target: /usr/local/tomcat/conf/keystore.jks
+        read_only: true
+      - type: bind
+        source: ./config/cacerts
+        target: /etc/ssl/certs/java/cacerts
+        read_only: true
       # Example for more verbose log output
       - type: bind
         source: ./config/logback-verbose.xml
         target: /usr/local/tomcat/webapps/scm/WEB-INF/classes/logback.xml
         read_only: true
       # Make writable - needed when by tomcat when 'read_only: true'
-      #- type: tmpfs
-      #  target: /usr/local/tomcat/temp
-      #- type: tmpfs
-      #  target: /usr/local/tomcat/work
-      #- type: tmpfs
-      #  target: /usr/local/tomcat/logs
-      #- type: tmpfs
-      #  target: /tmp
-      #- type: tmpfs
-      #  target: /usr/local/tomcat/conf/Catalina
+      - type: tmpfs
+        target: /usr/local/tomcat/temp
+      - type: tmpfs
+        target: /usr/local/tomcat/work
+      - type: tmpfs
+        target: /usr/local/tomcat/logs
+      - type: tmpfs
+        target: /tmp
+      - type: tmpfs
+        target: /usr/local/tomcat/conf/Catalina
 
 networks:
   smeagol_galore:

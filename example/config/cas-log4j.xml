@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
 <log4j:configuration debug="false" xmlns:log4j="http://jakarta.apache.org/log4j/">
@@ -28,12 +27,12 @@
     </logger>
 
     <logger name="org.jasig" additivity="true">
-        <level value="INFO" />
+        <level value="DEBUG" />
         <appender-ref ref="console" />
     </logger>
 
     <logger name="net.unicon.cas" additivity="true">
-        <level value="INFO" />
+        <level value="DEBUG" />
         <appender-ref ref="console" />
     </logger>
 
@@ -65,7 +64,7 @@
       logger to System.out.
     -->
     <root>
-        <level value="WARN" />
+        <level value="DEBUG" />
         <appender-ref ref="console" />
     </root>
 </log4j:configuration>

@@ -216,11 +216,31 @@ The example [deployment.yaml](k8s/deployment.yaml) contains
 
 ## Extend Log output
 
+Details for SCM-Manager, CAS, and Smeagol bellow. Process is the same for each component: 
+
+* Copy log files from source
+* Increase levels for appenders
+* Mount into container 
+
+See also [more substantial example ](example/README.md) using docker-compose. 
+
 ### SCM-Manager
 
-* Copy `logback.xml` for [SCM-Manager](https://bitbucket.org/sdorra/scm-manager/src/default/scm-webapp/src/main/resources/logback.default.xml)
-* Increase logging for SCM-Manager and/or plugins if necessary.
-* Run Container with `-v $(pwd)/dev/scm/logback.xml:/usr/local/tomcat/webapps/scm/WEB-INF/classes/logback.xml`
+* [`logback.xml`](scm/logback.xml)
+* Run Container with `-v $(pwd)scm-logback.xml:/usr/local/tomcat/webapps/scm/WEB-INF/classes/logback.xml`
+* [See also](https://bitbucket.org/sdorra/scm-manager/src/default/scm-webapp/src/main/resources/logback.default.xml)
+
+### Smeagol
+
+* [`logback.xml`](smeagol/logback.xml)
+* Run Container with `-v $(pwd)/smeagol-logback.xml:/usr/local/tomcat/webapps/smeagol/WEB-INF/classes/logback.xml`
+* [See also](https://github.com/cloudogu/smeagol/blob/develop/src/main/resources/logback.xml)
+
+### CAS
+
+* [`log4j.xml`](cas/src/main/resources/log4j.xml)
+* Run Container with `-v $(pwd)/cas-log4j.xml:/usr/local/tomcat/webapps/cas/WEB-INF/classes/log4j.xml`
+
 
 ## Debugging
 

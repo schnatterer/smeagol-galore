@@ -44,10 +44,18 @@ services:
         source: ./config/cacerts
         target: /etc/ssl/certs/java/cacerts
         read_only: true
-      # Example for more verbose log output
+      # Examples for more verbose log output
       - type: bind
-        source: ./config/logback-verbose.xml
+        source: ./config/scm-logback.xml
         target: /usr/local/tomcat/webapps/scm/WEB-INF/classes/logback.xml
+        read_only: true
+      - type: bind
+        source: ./config/smeagol-logback.xml
+        target: /usr/local/tomcat/webapps/smeagol/WEB-INF/classes/logback.xml
+        read_only: true
+      - type: bind
+        source: ./config/cas-log4j.xml
+        target: /usr/local/tomcat/webapps/cas/WEB-INF/classes/log4j.xml
         read_only: true
       # Make writable - needed when by tomcat when 'read_only: true'
       - type: tmpfs

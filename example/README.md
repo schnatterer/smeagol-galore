@@ -25,6 +25,7 @@ In addition, the example implements a number of good practices for docker contai
   data are mounted as `tempfs`, an in-memory FS cleaned automatically and high throughput.  
   Note that for now, `read-only` will only work when mounting your own keystore, because otherwise the app creates and 
   tries to write its own keystore, but is not allowed, because the folders, when mounted as volume, are owned by root.
+* Drops all capabilities. Smeagol-galore does not need any and it decreases the attack surface of the container.
 
 Some things could be further improved, though:
 

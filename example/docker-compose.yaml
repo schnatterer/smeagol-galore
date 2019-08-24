@@ -22,6 +22,8 @@ services:
       - 8443:8443
     restart: unless-stopped
     read_only: true
+    cap_drop:
+      - ALL
     volumes:
       - smeagol-galore:/home/tomcat/.scm
       - type: bind

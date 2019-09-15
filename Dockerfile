@@ -69,6 +69,8 @@ ARG GROUP_ID="1000"
 COPY --from=downloader /dist /
 
 RUN \
+  apk update && \
+  apk upgrade && \
   # Delete tomcat default apps
   cd ${CATALINA_HOME}/webapps/ && rm -rf docs examples manager host-manager && \
   # Delete all of ROOT app except index

@@ -59,7 +59,7 @@ Note that
  
 * SCM-Manager installs plugins via the internet on first startup, so it might take some time.  
   You can choose which plugins are installed by editing `plugin-config.yml`, e.g. by mounting your own version into the
-  container: `- v your-plugin-config.yml:/etc/scm/plugin-config.yml`.  
+  container: `-v your-plugin-config.yml:/etc/scm/plugin-config.yml`.  
   See [SCM-Jenkins](https://oss.cloudogu.com/jenkins/job/scm-manager/) for available plugins.
 * A self-signed certificate will be created on startup.
   These will result in warnings in your browser.  
@@ -282,3 +282,5 @@ See also [more substantial example ](example/README.md) using docker-compose.
     openssl pkcs12 -export -in cacert.pem -inkey cakey.pem -out keystore.jks -name "localhost"
     ```
 - Create helm chart
+- Maybe persist CAS Tickets, so we can stay logged in even in case of a restart? HSQL stored to file=
+  Docs seem a bit unconsistent for cas [4.0.x](https://apereo.github.io/cas/4.0.x/installation/JPA-Ticket-Registry.html), though. Better with 4.1.x.

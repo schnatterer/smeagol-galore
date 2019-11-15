@@ -14,6 +14,13 @@ ADD cas/ /cas/
 WORKDIR /cas
 RUN mvn package
 
+# We're basing on a dev version, so make it at least reproducible.
+# https://hub.docker.com/r/cloudogu/scm-manager/tags
+# versions 483-485 (and maybe later) result in error when accessing scm from smeagol:
+# sonia.scm.web.SchemeBasedWebTokenGenerator - could not create token from authentication header
+# 473-482 (maybe  before) result in sonia.scm.plugin.PluginException: could not find groupId in plugin descriptor
+FROM cloudogu/scm-manager:2.0.0-941a8fd-dev-19.23 as scm
+
 # Download and cache webapps - we need java for scm, so just use another maven container here
 FROM maven as downloader
 ENV SMEAGOL_VERSION=v0.5.6
@@ -32,12 +39,11 @@ RUN unzip /tmp/cas.war -d ${CATALINA_HOME}/cas
 
 # Install scm
 COPY /scm/utils /opt/utils
-RUN curl -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/scm-manager-2.x/job/2.0.0-m3/lastSuccessfulBuild/artifact/scm-server/target/scm-server-app.tar.gz -o /tmp/scm-server.tar.gz
-RUN gunzip /tmp/scm-server.tar.gz
-RUN tar -C /opt -xf /tmp/scm-server.tar
+COPY --from=scm /opt/scm-server/var/webapp/scm-webapp.war /opt/scm-server/var/webapp/
 RUN unzip /opt/scm-server/var/webapp/scm-webapp.war -d ${CATALINA_HOME}/scm
-# install scm-script-plugin
-RUN curl -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/scm-manager-bitbucket/job/scm-script-plugin/job/2.0.0/lastSuccessfulBuild/artifact/target/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp
+# install scm-script-plugin & scm-cas-plugin
+RUN curl --fail -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/plugins/job/scm-script-plugin/job/develop/lastSuccessfulBuild/artifact/target/scm-script-plugin-2.0.0-SNAPSHOT.smp -o ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp
+RUN curl --fail -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/plugins/job/scm-cas-plugin/job/develop/lastSuccessfulBuild/artifact/target/scm-cas-plugin-2.0.0-SNAPSHOT.smp -o ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-cas-plugin-2.0.0-SNAPSHOT.smp
 RUN java -cp /opt/utils AddPluginToIndex ${CATALINA_HOME}/scm/WEB-INF/plugins/plugin-index.xml ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp
 # Make logging less verbose
 COPY /scm/logback.xml ${CATALINA_HOME}/scm/WEB-INF/classes/logback.xml
@@ -67,6 +73,8 @@ COPY entrypoint.sh /dist
 # Before switching to tomcat 9 make sure there is a solution for the permission proble with aufs:
 # https://github.com/docker-library/tomcat/issues/35
 # Maybe update to "tomcat:8.5" first?
+# #https://github.com/Unidata/tomcat-docker/blob/master/Dockerfile
+# https://jaxenter.de/apache-tomcat-8-5-56699
 FROM tomcat:8.0.53-jre8-alpine
 ARG USER_ID="1000"
 ARG GROUP_ID="1000"

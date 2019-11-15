@@ -13,16 +13,16 @@ public class AddPluginToIndex {
 
     private static Document read(String path) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder(); 
+        DocumentBuilder db = dbf.newDocumentBuilder();
         return db.parse(new File(path));
     }
 
     private static void write(Document doc, String path) throws Exception {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		Transformer transformer = transformerFactory.newTransformer();
+        Transformer transformer = transformerFactory.newTransformer();
 
-		DOMSource source = new DOMSource(doc);
-		StreamResult result = new StreamResult(path);
+        DOMSource source = new DOMSource(doc);
+        StreamResult result = new StreamResult(path);
 
         transformer.transform(source, result);
     }
@@ -39,22 +39,25 @@ public class AddPluginToIndex {
 
     public static void main(String[] args) throws Exception {
         String pluginIndex = args[0];
-        String smp = args[1];
 
         Document doc = read(pluginIndex);
 
         Element root = doc.getDocumentElement();
 
-		Element plugins = doc.createElement("plugins");
-        root.appendChild(plugins);
+        for (int i = 1; i < args.length; ++i) {
+            Element plugins = doc.createElement("plugins");
+            root.appendChild(plugins);
 
-        Element checksum = doc.createElement("checksum");
-        checksum.appendChild(doc.createTextNode(checksum(smp)));
-        plugins.appendChild(checksum);
+            String smp = args[i];
 
-        Element name = doc.createElement("name");
-        name.appendChild(doc.createTextNode(name(smp)));
-        plugins.appendChild(name);
+            Element checksum = doc.createElement("checksum");
+            checksum.appendChild(doc.createTextNode(checksum(smp)));
+            plugins.appendChild(checksum);
+
+            Element name = doc.createElement("name");
+            name.appendChild(doc.createTextNode(name(smp)));
+            plugins.appendChild(name);
+        }
 
         write(doc, pluginIndex);
     }

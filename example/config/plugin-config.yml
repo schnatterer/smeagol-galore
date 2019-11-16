@@ -1,4 +1,3 @@
 plugins:
-  - scm-cas-plugin
   - scm-webhook-plugin
   - scm-rest-legacy-plugin

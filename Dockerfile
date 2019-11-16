@@ -26,6 +26,7 @@ FROM maven as downloader
 ENV SMEAGOL_VERSION=v0.5.6
 ENV CATALINA_HOME=/dist/usr/local/tomcat/webapps
 ENV SCM_SCRIPT_PLUGIN_VERSION=2.0.0-SNAPSHOT
+ENV SCM_CAS_PLUGIN_VERSION=2.0.0-SNAPSHOT
 # No stable version available just yet
 #ENV SCM_VERSION=
 
@@ -42,9 +43,9 @@ COPY /scm/utils /opt/utils
 COPY --from=scm /opt/scm-server/var/webapp/scm-webapp.war /opt/scm-server/var/webapp/
 RUN unzip /opt/scm-server/var/webapp/scm-webapp.war -d ${CATALINA_HOME}/scm
 # install scm-script-plugin & scm-cas-plugin
-RUN curl --fail -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/plugins/job/scm-script-plugin/job/develop/lastSuccessfulBuild/artifact/target/scm-script-plugin-2.0.0-SNAPSHOT.smp -o ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp
-RUN curl --fail -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/plugins/job/scm-cas-plugin/job/develop/lastSuccessfulBuild/artifact/target/scm-cas-plugin-2.0.0-SNAPSHOT.smp -o ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-cas-plugin-2.0.0-SNAPSHOT.smp
-RUN java -cp /opt/utils AddPluginToIndex ${CATALINA_HOME}/scm/WEB-INF/plugins/plugin-index.xml ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp
+RUN curl --fail -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/plugins/job/scm-script-plugin/job/develop/lastSuccessfulBuild/artifact/target/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp
+RUN curl --fail -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/plugins/job/scm-cas-plugin/job/develop/lastSuccessfulBuild/artifact/target/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp -o ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp
+RUN java -cp /opt/utils AddPluginToIndex ${CATALINA_HOME}/scm/WEB-INF/plugins/plugin-index.xml ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp
 # Make logging less verbose
 COPY /scm/logback.xml ${CATALINA_HOME}/scm/WEB-INF/classes/logback.xml
 

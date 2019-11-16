@@ -1,7 +1,8 @@
 version: "3.7"
 services:
   smeagol-galore:
-    image: schnatterer/smeagol-galore:0.2.0-SNAPSHOT
+    #image: quay.io/schnatterer/smeagol-galore:scm-v2
+    image: sg
     container_name: smeagol-galore
     security_opt:
       - no-new-privileges

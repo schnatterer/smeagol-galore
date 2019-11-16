@@ -9,3 +9,4 @@ plugins:
   - scm-support-plugin
   - scm-readme-plugin
   - scm-ssh-plugin
+  - scm-editor-plugin

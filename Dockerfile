@@ -73,10 +73,10 @@ COPY entrypoint.sh /dist
 # Build final image
 # Before switching to tomcat 9 make sure there is a solution for the permission proble with aufs:
 # https://github.com/docker-library/tomcat/issues/35
-# Maybe update to "tomcat:8.5" first?
+# 8.5.41 seems to be the last "alpine" variat of tomcat 8.5. As of 2019/11 there's 8.5.47
+# Switch to "slim"?
 # #https://github.com/Unidata/tomcat-docker/blob/master/Dockerfile
-# https://jaxenter.de/apache-tomcat-8-5-56699
-FROM tomcat:8.0.53-jre8-alpine
+FROM tomcat:8.5.41-jre8-alpine
 ARG USER_ID="1000"
 ARG GROUP_ID="1000"
 

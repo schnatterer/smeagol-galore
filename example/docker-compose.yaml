@@ -36,8 +36,8 @@ services:
         target: /etc/cas/attributes.xml
         read_only: true
       - type: bind
-        source: ./config/plugin-config.yml
-        target: /etc/scm/plugin-config.yml
+        source: ./config/plugin-config.json
+        target: /etc/scm/plugin-config.json
         read_only: true
       - type: bind
         source: ./config/keystore.jks

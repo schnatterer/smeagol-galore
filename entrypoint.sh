@@ -9,6 +9,9 @@ DEBUG=${DEBUG:-false}
 EXTRA_JVM_ARGUMENTS=${EXTRA_JVM_ARGUMENTS:-}
 CERT_VALIDITY_DAYS=${CERT_VALIDITY_DAYS:-30}
 
+SCM_DATA="${USER_HOME}/.scm/"
+SCM_REQUIRED_PLUGINS="/opt/scm-server/required-plugins"
+
 set -o errexit -o nounset -o pipefail
 
 main() {
@@ -59,11 +62,28 @@ initWiki() {
 }
 
 installScmPlugins() {
-    if ! [ -d "${USER_HOME}/.scm/plugins" ];  then
-        mkdir -p "${USER_HOME}/.scm/plugins"
-
-      /usr/local/bin/scm-plugin-snapshot -config /etc/scm/plugin-config.yml ${USER_HOME}/.scm/plugins
+    if ! [ -d "${SCM_DATA}/config" ];  then
+        mkdir -p "${SCM_DATA}/config"
     fi
+
+    # delete outdated plugins
+    if [ -a "${SCM_DATA}/plugins/delete_on_update" ];  then
+      rm -rf "${SCM_DATA}/plugins"
+    fi
+
+    # install required plugins
+    if ! [ -d "${SCM_DATA}/plugins" ];  then
+        mkdir "${SCM_DATA}/plugins"
+    fi
+    if { ! [ -d "${SCM_DATA}/plugins/scm-cas-plugin" ] || [ -a "${SCM_DATA}/plugins/scm-cas-plugin/uninstall" ] ; } && ! [ -a "${SCM_DATA}/plugins/scm-cas-plugin.smp" ] ;  then
+        echo "Reinstalling scm-cas-plugin from default plugin folder"
+        cp "${SCM_REQUIRED_PLUGINS}/scm-cas-plugin.smp" "${SCM_DATA}/plugins"
+    fi
+    if { ! [ -d "${SCM_DATA}/plugins/scm-script-plugin" ] || [ -a "${SCM_DATA}/plugins/scm-script-plugin/uninstall" ] ; } && ! [ -a "${SCM_DATA}/plugins/scm-script-plugin.smp" ] ;  then
+        echo "Reinstalling scm-script-plugin from default plugin folder"
+        cp "${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp" "${SCM_DATA}/plugins"
+    fi
+
     echo "Finished installing SCM plugins"
 }
 
@@ -81,8 +101,11 @@ startTomcat() {
     export CATALINA_OPTS="${CATALINA_OPTS} -Dfqdn=${FQDN} ${EXTRA_JVM_ARGUMENTS} $*"
 
     echo "Set CATALINA_OPTS: ${CATALINA_OPTS}"
-    # Start in foreground to receives signals (exec)
-    exec catalina.sh ${DEBUG_PARAM} run
+    while catalina.sh ${DEBUG_PARAM} run ; scm_exit_code=$? ; [[ ${scm_exit_code} -eq 42 ]] ; do
+      echo Got exit code ${scm_exit_code} -- restarting SCM-Manager
+    done
+    echo Got exit code ${scm_exit_code} -- exiting
+    exit ${scm_exit_code}
 
     # TODO use "startup.sh -security"?
     #exec su-exec tomcat  startup.sh -security

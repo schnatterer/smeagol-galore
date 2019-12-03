@@ -14,21 +14,15 @@ ADD cas/ /cas/
 WORKDIR /cas
 RUN mvn package
 
-# We're basing on a dev version, so make it at least reproducible.
-# https://hub.docker.com/r/cloudogu/scm-manager/tags
-# versions 483-485 (and maybe later) result in error when accessing scm from smeagol:
-# sonia.scm.web.SchemeBasedWebTokenGenerator - could not create token from authentication header
-# 473-482 (maybe  before) result in sonia.scm.plugin.PluginException: could not find groupId in plugin descriptor
-FROM cloudogu/scm-manager:2.0.0-941a8fd-dev-19.23 as scm
-
 # Download and cache webapps - we need java for scm, so just use another maven container here
 FROM maven as downloader
 ENV SMEAGOL_VERSION=v0.5.6
 ENV CATALINA_HOME=/dist/usr/local/tomcat/webapps
-ENV SCM_SCRIPT_PLUGIN_VERSION=2.0.0-SNAPSHOT
-ENV SCM_CAS_PLUGIN_VERSION=2.0.0-SNAPSHOT
-# No stable version available just yet
-#ENV SCM_VERSION=
+ENV SCM_SCRIPT_PLUGIN_VERSION=2.0.0-rc1
+ENV SCM_CAS_PLUGIN_VERSION=2.0.0-rc1
+ENV SCM_VERSION=2.0.0-rc1
+ENV SCM_PKG_URL=https://maven.scm-manager.org/nexus/content/repositories/releases/sonia/scm/scm-server/${SCM_VERSION}/scm-server-${SCM_VERSION}-app.tar.gz
+ENV SCM_REQUIRED_PLUGINS=/dist/opt/scm-server/required-plugins
 
 COPY --from=mavenbuild /cas/target/cas.war /tmp/cas.war
 
@@ -39,13 +33,14 @@ RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/cloudogu/smeagol
 RUN unzip /tmp/cas.war -d ${CATALINA_HOME}/cas
 
 # Install scm
-COPY /scm/utils /opt/utils
-COPY --from=scm /opt/scm-server/var/webapp/scm-webapp.war /opt/scm-server/var/webapp/
+RUN curl --fail -Lks ${SCM_PKG_URL} -o /tmp/scm-server.tar.gz
+RUN gunzip /tmp/scm-server.tar.gz
+RUN tar -C /opt -xf /tmp/scm-server.tar
 RUN unzip /opt/scm-server/var/webapp/scm-webapp.war -d ${CATALINA_HOME}/scm
-# install scm-script-plugin & scm-cas-plugin
-RUN curl --fail -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/plugins/job/scm-script-plugin/job/develop/lastSuccessfulBuild/artifact/target/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp
-RUN curl --fail -Lks https://oss.cloudogu.com/jenkins/job/scm-manager/job/plugins/job/scm-cas-plugin/job/develop/lastSuccessfulBuild/artifact/target/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp -o ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp
-RUN java -cp /opt/utils AddPluginToIndex ${CATALINA_HOME}/scm/WEB-INF/plugins/plugin-index.xml ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp ${CATALINA_HOME}/scm/WEB-INF/plugins/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp
+# download scm-script-plugin & scm-cas-plugin
+RUN mkdir -p ${SCM_REQUIRED_PLUGINS}
+RUN curl --fail -Lks https://maven.scm-manager.org/nexus/content/repositories/plugin-releases/sonia/scm/plugins/scm-script-plugin/${SCM_SCRIPT_PLUGIN_VERSION}/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp
+RUN curl --fail -Lks https://maven.scm-manager.org/nexus/content/repositories/plugin-releases/sonia/scm/plugins/scm-cas-plugin/${SCM_CAS_PLUGIN_VERSION}/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-cas-plugin.smp
 # Make logging less verbose
 COPY /scm/logback.xml ${CATALINA_HOME}/scm/WEB-INF/classes/logback.xml
 

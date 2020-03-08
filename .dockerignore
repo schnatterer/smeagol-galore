@@ -1,0 +1,8 @@
+# Ignore all
+*
+# Whitelist
+!cas
+!tomcat
+!scm
+!smeagol
+!entrypoint.sh

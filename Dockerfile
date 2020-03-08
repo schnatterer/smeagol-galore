@@ -1,5 +1,9 @@
-# Define maven version for all stages
+# Define image versions for all stages
 FROM maven:3.6.1-jdk-8-alpine as maven
+# Before switching to tomcat 9 make sure there is a solution for the permission proble with aufs:
+# https://github.com/docker-library/tomcat/issues/35
+#FROM bitnami/tomcat:9.0.31-debian-10-r25
+FROM bitnami/tomcat:8.5.51-debian-10-r23 as tomcat
 
 FROM maven as mavencache
 ENV MAVEN_OPTS=-Dmaven.repo.local=/mvn
@@ -61,39 +65,32 @@ COPY cas/etc/ /dist/etc/
 COPY scm/resources /dist
 # Tomcat Config (TLS & root URL redirect)
 COPY tomcat /dist/opt/bitnami/tomcat/
-# Smeagol config TODO overwrite the development one in war folder?
+# Smeagol config
 COPY smeagol/application.yml /dist/application.yml
 COPY smeagol/logback.xml ${CATALINA_HOME}/smeagol/WEB-INF/classes/logback.xml
 COPY entrypoint.sh /dist
-
-# Build final image
-# Before switching to tomcat 9 make sure there is a solution for the permission proble with aufs:
-# https://github.com/docker-library/tomcat/issues/35
-#FROM bitnami/tomcat:9.0.31-debian-10-r25
-FROM bitnami/tomcat:8.5.51-debian-10-r23
-
-# TODO why is user in root group?
-COPY --from=downloader --chown=tomcat:0  /dist /
-USER root
+# Allow for editing cacerts in entrypoint.sh
+# Note on chown 1001:0
+# Bitnami images are always run with root group         # See https://docs.openshift.com/container-platform/4.3/openshift_images/create-images.html#images-create-guide-openshift_create-images
+COPY --from=tomcat --chown=1001:0  /opt/bitnami/java/lib/security/cacerts /dist/opt/bitnami/java/lib/security/cacerts
 RUN \
-  # Delete tomcat default apps
-  rm -rf /opt/bitnami/tomcat/webapps_default && \
-  # TODO refactor this to earlier stage?
-  # Make volume writable
-  mkdir -p /home/tomcat/.scm  && \
-  chown -R tomcat /home/tomcat && \
-  chown -R tomcat /home/tomcat/.scm  && \
-  chown -R tomcat /etc/cas && \
-  chown -R tomcat /opt/bitnami/java/lib/security/cacerts && \
-  # Needed when running with read-only file system and mounting this folder as volume (which leads to being owend by 0:0)
-  chmod 777 /opt/bitnami/tomcat/temp && \
-  chmod 774 /opt/bitnami/java/lib/security/cacerts && \
-  chmod -R 770 /home/tomcat 
+      chown -R 1001:0 /dist/opt/bitnami/java/lib/security/cacerts && \
+      # Needed when running with read-only file  system and mounting this folder as volume (which leads to being owend by 0:0)
+      mkdir /dist/opt/bitnami/tomcat/temp && \
+      chmod 770 /dist/opt/bitnami/tomcat/temp && \
+      chmod 770 /dist/opt/bitnami/java/lib/security/cacerts
+# Make volume writable
+RUN  \
+  mkdir -p /dist/home/tomcat/.scm  && \
+  chown -R 1001:0 /dist/home/tomcat && \
+  chown -R 1001:0 /dist/home/tomcat/.scm  && \
+  chown -R 1001:0 /dist/etc/cas && \
+  chmod -R 770 /dist/home/tomcat
+  
 
+FROM tomcat
+COPY --from=downloader --chown=tomcat:0  /dist /
 VOLUME /home/tomcat/.scm
-
 EXPOSE 8443 2222
-USER tomcat
-
 # Remove base images CMD - here it is used to pass additional CATALINA_ARGS conveniently
 CMD []

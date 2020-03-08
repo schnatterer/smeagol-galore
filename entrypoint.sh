@@ -99,9 +99,10 @@ startTomcat() {
     # Don't set "-Dserver.name=${FQDN}", or clear pass will no longer work
     CATALINA_OPTS="-Dsonia.scm.init.script.d=/opt/scm-server/init.script.d -Dsonia.scm.skipAdminCreation=true "
     export CATALINA_OPTS="${CATALINA_OPTS} -Dfqdn=${FQDN} ${EXTRA_JVM_ARGUMENTS} $*"
-
     echo "Set CATALINA_OPTS: ${CATALINA_OPTS}"
-    while catalina.sh ${DEBUG_PARAM} run ; scm_exit_code=$? ; [[ ${scm_exit_code} -eq 42 ]] ; do
+
+    local SCM_RESTART_EVENT=42
+    while catalina.sh ${DEBUG_PARAM} run ; scm_exit_code=$? ; [[ ${scm_exit_code} -eq ${SCM_RESTART_EVENT} ]] ; do
       echo Got exit code ${scm_exit_code} -- restarting SCM-Manager
     done
     echo Got exit code ${scm_exit_code} -- exiting

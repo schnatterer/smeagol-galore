@@ -11,6 +11,7 @@ CERT_VALIDITY_DAYS=${CERT_VALIDITY_DAYS:-30}
 
 SCM_DATA="${USER_HOME}/.scm/"
 SCM_REQUIRED_PLUGINS="/opt/scm-server/required-plugins"
+TOMCAT_BIN_DIR=/opt/bitnami/tomcat/bin
 
 set -o errexit -o nounset -o pipefail
 
@@ -27,8 +28,8 @@ main() {
 
 createSelfSignedCert() {
 
-    keystore=/usr/local/tomcat/conf/keystore.jks
-    trustStore=/etc/ssl/certs/java/cacerts
+    keystore=/opt/bitnami/tomcat/conf/keystore.jks
+    trustStore=/opt/bitnami/java/lib/security/cacerts
     cert=/tmp/server.cer
     host=$(echo "${FQDN}" | sed -e 's/:/\n/g' | head -1)
 
@@ -100,18 +101,13 @@ startTomcat() {
     CATALINA_OPTS="-Dsonia.scm.init.script.d=/opt/scm-server/init.script.d -Dsonia.scm.skipAdminCreation=true "
     export CATALINA_OPTS="${CATALINA_OPTS} -Dfqdn=${FQDN} ${EXTRA_JVM_ARGUMENTS} $*"
     echo "Set CATALINA_OPTS: ${CATALINA_OPTS}"
-
+    
     local SCM_RESTART_EVENT=42
-    while catalina.sh ${DEBUG_PARAM} run ; scm_exit_code=$? ; [[ ${scm_exit_code} -eq ${SCM_RESTART_EVENT} ]] ; do
+    while ${TOMCAT_BIN_DIR}/catalina.sh ${DEBUG_PARAM} run ; scm_exit_code=$? ; [[ ${scm_exit_code} -eq ${SCM_RESTART_EVENT} ]] ; do
       echo Got exit code ${scm_exit_code} -- restarting SCM-Manager
     done
     echo Got exit code ${scm_exit_code} -- exiting
     exit ${scm_exit_code}
-
-    # TODO use "startup.sh -security"?
-    #exec su-exec tomcat  startup.sh -security
-    # Never exit
-    #while true; do sleep 10000; done
 }
 
 main "$@"

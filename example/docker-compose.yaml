@@ -1,8 +1,7 @@
 version: "3.7"
 services:
   smeagol-galore:
-    #image: quay.io/schnatterer/smeagol-galore:scm-v2
-    image: sg
+    image: schnatterer/smeagol-galore:0.2.0-SNAPSHOT
     container_name: smeagol-galore
     security_opt:
       - no-new-privileges
@@ -41,36 +40,36 @@ services:
         read_only: true
       - type: bind
         source: ./config/keystore.jks
-        target: /usr/local/tomcat/conf/keystore.jks
+        target: /opt/bitnami/tomcat/conf/keystore.jks
         read_only: true
       - type: bind
         source: ./config/cacerts
-        target: /etc/ssl/certs/java/cacerts
+        target: /opt/bitnami/java/lib/security/cacerts
         read_only: true
       # Examples for more verbose log output
       - type: bind
         source: ./config/scm-logback.xml
-        target: /usr/local/tomcat/webapps/scm/WEB-INF/classes/logback.xml
+        target: /opt/bitnami/tomcat/webapps/scm/WEB-INF/classes/logback.xml
         read_only: true
       - type: bind
         source: ./config/smeagol-logback.xml
-        target: /usr/local/tomcat/webapps/smeagol/WEB-INF/classes/logback.xml
+        target: /opt/bitnami/tomcat/webapps/smeagol/WEB-INF/classes/logback.xml
         read_only: true
       - type: bind
         source: ./config/cas-log4j.xml
-        target: /usr/local/tomcat/webapps/cas/WEB-INF/classes/log4j.xml
+        target: /opt/bitnami/tomcat/webapps/cas/WEB-INF/classes/log4j.xml
         read_only: true
       # Make writable - needed when by tomcat when 'read_only: true'
       - type: tmpfs
-        target: /usr/local/tomcat/temp
+        target: /opt/bitnami/tomcat/temp
       - type: tmpfs
-        target: /usr/local/tomcat/work
+        target: /opt/bitnami/tomcat/work
       - type: tmpfs
-        target: /usr/local/tomcat/logs
+        target: /opt/bitnami/tomcat/logs
       - type: tmpfs
         target: /tmp
       - type: tmpfs
-        target: /usr/local/tomcat/conf/Catalina
+        target: /opt/bitnami/tomcat/conf/Catalina
 
 networks:
   smeagol_galore:

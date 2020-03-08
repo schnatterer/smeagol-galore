@@ -72,7 +72,7 @@ spec:
           subPath: "cacerts"
           readOnly: true
         - name: keystore
-          mountPath: "/usr/local/tomcat/conf/keystore.jks"
+          mountPath: "/opt/bitnami/tomcat/conf/keystore.jks"
           subPath: "keystore.jks"
           readOnly: true
         # Persistent data
@@ -80,11 +80,11 @@ spec:
           mountPath: /home/tomcat/.scm
         # Needed when using a read-only file system
         - name: tomcat-tmp
-          mountPath: /usr/local/tomcat/temp
+          mountPath: /opt/bitnami/tomcat/temp
         - name: tomcat-logs
-          mountPath: /usr/local/tomcat/logs
+          mountPath: /opt/bitnami/tomcat/logs
         - name: tomcat-work
-          mountPath: /usr/local/tomcat/work
+          mountPath: /opt/bitnami/tomcat/work
         - name: tmp
           mountPath: /tmp
       volumes:

@@ -73,7 +73,13 @@ Note that
 Mount SCMM Volume to persist your repos/wikis: `-v $(pwd)/dev/scm:/home/tomcat/.scm `.
 This will also persist SCMM plugins, so the second start will be much faster. 
 
+Make sure the smeagol galore container use (UID 1001) is allowed to write to this folder by either `chown`ing or
+`chmod`. For development the followin will do
+
+
 ```bash
+mkdir -p dev/scm
+chmod 777 dev/scm
 docker run --rm --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomcat/.scm schnatterer/smeagol-galore:0.2.0-SNAPSHOT
 ``` 
 
@@ -81,7 +87,7 @@ docker run --rm --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomca
 
 The self-signed certificate is only a valid option for trying out and development.
 In production you should provide a proper certificate, which can be done by mounting a java keystore like so: 
-`-v $(pwd)/dev/keystore.jks:/usr/local/tomcat/conf/keystore.jks`.
+`-v $(pwd)/dev/keystore.jks:/opt/bitnami/tomcat/conf/keystore.jks`.
 
 Note that smeagol, cas and SCMM communicate with each other via HTTPS.
 If you're certificate is not trusted by the JVM you should add it to the trust store and then mount it like so: 
@@ -155,7 +161,7 @@ Via Environment Variables:
 The container is run as with UID and GID = 1000.
 If you want to run it as a different user you pass `-u` param when running the container.
 However, you should make sure that that the user exists (e.g. mount `/etc/passwd`).
-In order to get permissions on `/usr/local/tomcat` your user should be member of group 1000.
+In order to get permissions on `/opt/bitnami/tomcat` your user should be member of group 1000.
 
 Another option is to build your own image and set `--build-arg USER_ID` and `GROUP_ID` to your liking.
 
@@ -227,19 +233,19 @@ See also [more substantial example ](example/README.md) using docker-compose.
 ### SCM-Manager
 
 * [`logback.xml`](scm/logback.xml)
-* Run Container with `-v $(pwd)scm-logback.xml:/usr/local/tomcat/webapps/scm/WEB-INF/classes/logback.xml`
+* Run Container with `-v $(pwd)scm-logback.xml:/opt/bitnami/tomcat/webapps/scm/WEB-INF/classes/logback.xml`
 * [See also](https://bitbucket.org/sdorra/scm-manager/src/default/scm-webapp/src/main/resources/logback.default.xml)
 
 ### Smeagol
 
 * [`logback.xml`](smeagol/logback.xml)
-* Run Container with `-v $(pwd)/smeagol-logback.xml:/usr/local/tomcat/webapps/smeagol/WEB-INF/classes/logback.xml`
+* Run Container with `-v $(pwd)/smeagol-logback.xml:/opt/bitnami/tomcat/webapps/smeagol/WEB-INF/classes/logback.xml`
 * [See also](https://github.com/cloudogu/smeagol/blob/develop/src/main/resources/logback.xml)
 
 ### CAS
 
 * [`log4j.xml`](cas/src/main/resources/log4j.xml)
-* Run Container with `-v $(pwd)/cas-log4j.xml:/usr/local/tomcat/webapps/cas/WEB-INF/classes/log4j.xml`
+* Run Container with `-v $(pwd)/cas-log4j.xml:/opt/bitnami/tomcat/webapps/cas/WEB-INF/classes/log4j.xml`
 
 
 ## Debugging

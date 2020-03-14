@@ -24,7 +24,7 @@ ENV SMEAGOL_VERSION=v0.5.6
 ENV CATALINA_HOME=/dist/opt/bitnami/tomcat/webapps/
 ENV SCM_SCRIPT_PLUGIN_VERSION=2.0.0-rc1
 ENV SCM_CAS_PLUGIN_VERSION=2.0.0-rc2
-ENV SCM_VERSION=2.0.0-rc4
+ENV SCM_VERSION=2.0.0-rc5
 ENV SCM_PKG_URL=https://maven.scm-manager.org/nexus/content/repositories/releases/sonia/scm/scm-server/${SCM_VERSION}/scm-server-${SCM_VERSION}-app.tar.gz
 ENV SCM_REQUIRED_PLUGINS=/dist/opt/scm-server/required-plugins
 

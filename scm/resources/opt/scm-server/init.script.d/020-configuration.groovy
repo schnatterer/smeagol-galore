@@ -14,6 +14,10 @@ config.setNamespaceStrategy("CustomNamespaceStrategy");
 String fqdn = System.getenv('FQDN')
 logger.info("Setting FQDN ${fqdn}")
 config.setBaseUrl("https://${fqdn}/scm")
+
+// disable anonymous access (this leads to an unreachable instance at the moment)
+config.setAnonymousAccessEnabled(false);
+
 // store configuration
 ScmConfigurationUtil.getInstance().store(config);
 

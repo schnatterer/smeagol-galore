@@ -9,6 +9,7 @@ This example shows some options and features for smeagol-galore, implemented in 
 * Enables verbose log output
 * Increases session timeout  / token expiration (login less often)
 * Mounts custom certificate (via keystore) and CA certs. 
+* Exposes SSH Port for Git Operations on SCM-Manager via SSH
 
 A setup like this should work fine when used behind a reverse proxy. See bellow for details.
 

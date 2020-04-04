@@ -20,6 +20,8 @@ services:
       # SCMMv2's access token expiration seems to be hard coded to 1h.
     ports:
       - 8443:8443
+      # If SCMM SSH is used
+      - 2222:2222
     restart: unless-stopped
     read_only: true
     cap_drop:

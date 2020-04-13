@@ -1,9 +1,6 @@
 # Define image versions for all stages
 FROM maven:3.6.1-jdk-8-alpine as maven
-# Before switching to tomcat 9 make sure there is a solution for the permission proble with aufs:
-# https://github.com/docker-library/tomcat/issues/35
-#FROM bitnami/tomcat:9.0.31-debian-10-r25
-FROM bitnami/tomcat:8.5.54-debian-10-r3 as tomcat
+FROM bitnami/tomcat:9.0.34-debian-10-r3 as tomcat
 
 FROM maven as mavencache
 ENV MAVEN_OPTS=-Dmaven.repo.local=/mvn

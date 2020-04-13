@@ -87,7 +87,7 @@ docker run --rm --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomca
 
 The self-signed certificate is only a valid option for trying out and development.
 In production you should provide a proper certificate, which can be done by mounting a java keystore like so: 
-`-v $(pwd)/dev/keystore.jks:/opt/bitnami/tomcat/conf/keystore.jks`.
+`-v $(pwd)/certs:/config/certs`.
 
 Note that smeagol, cas and SCMM communicate with each other via HTTPS.
 If you're certificate is not trusted by the JVM you should add it to the trust store and then mount it like so: 
@@ -279,14 +279,6 @@ See also [more substantial example ](example/README.md) using docker-compose.
 # TODOs
 
 - Convert to a more 12-factor-like app using multiple containers and docker-compose
-- Use PKCMS12 instead of java keystore in tomcat and for self signed.
-  An idea, using openssl (which is not present in container, yet):
-  ```bash
-    # We could change a pks12 keystore like so, for example
-    openssl req -newkey rsa:2048 -x509 -keyout cakey.pem -out cacert.pem \
-       -subj '/CN=localhost/OU=Unknown/O=Unknown/L=Unknown/S=Unknown/C=Unknown' -days 3650
-    openssl pkcs12 -export -in cacert.pem -inkey cakey.pem -out keystore.jks -name "localhost"
-    ```
 - Create helm chart
 - Maybe persist CAS Tickets, so we can stay logged in even in case of a restart? HSQL stored to file=
   Docs seem a bit unconsistent for cas [4.0.x](https://apereo.github.io/cas/4.0.x/installation/JPA-Ticket-Registry.html), though. Better with 4.1.x.

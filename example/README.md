@@ -59,6 +59,6 @@ Smeagol galore can be reached vid on `https://localhost:8443`.
 
 You still might need a self signed cert, which is used for internal communication.
  You can easily create it be starting a throw-away smeagol-galore container and copy the 
- `/opt/bitnami/tomcat/conf/keystore.jks` and `/opt/bitnami/java/lib/security/cacerts` to your config directory. 
+ `/config/certs` and `/opt/bitnami/java/lib/security/cacerts` to your config directory. 
 
 The certificate validity can be customized using `-e CERT_VALIDITY_DAYS=365`.

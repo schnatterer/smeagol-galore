@@ -85,12 +85,11 @@ RUN \
   chown -R 1001:0 /dist/etc/cas && \
   chmod -R 770 /dist/home/tomcat
 
+# Create room for certs
+RUN mkdir -p /dist/config/certs
+
 FROM tomcat as dist
-COPY --from=downloader /dist /dist
 USER root
-# Create Tomcat User so SCMM has a HOME to write to
-RUN useradd --uid 1001 --gid 0 --shell /bin/bash --create-home tomcat && \
-    cp /etc/passwd /dist/etc
 
 # For now tomcat native libs must be built manually: https://github.com/bitnami/bitnami-docker-tomcat/issues/76#issuecomment-499885520
 # Install the required dependencies to build tomcat-native
@@ -104,6 +103,13 @@ RUN cd /tmp/tomcat-native-*/native && \
     rm -f libtcnative-1.a libtcnative-1.la libtcnative-1.lai
 RUN mkdir -p /dist/usr/lib && \
     cp /tmp/tomcat-native-*/native/.libs/* /dist/usr/lib
+
+# Aggregate folder from other stages
+COPY --from=downloader /dist /dist
+
+# Create Tomcat User so SCMM has a HOME to write to
+RUN useradd --uid 1001 --gid 0 --shell /bin/bash --create-home tomcat && \
+    cp /etc/passwd /dist/etc
 
 FROM tomcat
 COPY --from=dist --chown=1001:0  /dist /

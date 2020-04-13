@@ -65,7 +65,6 @@ COPY tomcat /dist/opt/bitnami/tomcat/
 # Smeagol config
 COPY smeagol/application.yml /dist/application.yml
 COPY smeagol/logback.xml ${CATALINA_HOME}/smeagol/WEB-INF/classes/logback.xml
-RUN mkdir -p /dist/opt/bitnami/scripts/tomcat/
 COPY entrypoint.sh /dist/opt/bitnami/scripts/tomcat/
 # Allow for editing cacerts in entrypoint.sh
 # Note on chown 1001:0
@@ -92,6 +91,19 @@ USER root
 # Create Tomcat User so SCMM has a HOME to write to
 RUN useradd --uid 1001 --gid 0 --shell /bin/bash --create-home tomcat && \
     cp /etc/passwd /dist/etc
+
+# For now tomcat native libs must be built manually: https://github.com/bitnami/bitnami-docker-tomcat/issues/76#issuecomment-499885520
+# Install the required dependencies to build tomcat-native
+RUN install_packages libapr1-dev libssl-dev openjdk-11-jdk-headless gcc make
+# Build tomcat-native
+RUN tar -xzvf /opt/bitnami/tomcat/bin/tomcat-native.tar.gz -C /tmp
+RUN cd /tmp/tomcat-native-*/native && \
+    ./configure --with-java-home=/usr/lib/jvm/java-11-openjdk-amd64 && \
+    make && \
+    cd .libs && \
+    rm -f libtcnative-1.a libtcnative-1.la libtcnative-1.lai
+RUN mkdir -p /dist/usr/lib && \
+    cp /tmp/tomcat-native-*/native/.libs/* /dist/usr/lib
 
 FROM tomcat
 COPY --from=dist --chown=1001:0  /dist /

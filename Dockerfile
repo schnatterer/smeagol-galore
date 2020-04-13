@@ -3,7 +3,7 @@ FROM maven:3.6.1-jdk-8-alpine as maven
 # Before switching to tomcat 9 make sure there is a solution for the permission proble with aufs:
 # https://github.com/docker-library/tomcat/issues/35
 #FROM bitnami/tomcat:9.0.31-debian-10-r25
-FROM bitnami/tomcat:8.5.51-debian-10-r23 as tomcat
+FROM bitnami/tomcat:8.5.54-debian-10-r3 as tomcat
 
 FROM maven as mavencache
 ENV MAVEN_OPTS=-Dmaven.repo.local=/mvn
@@ -68,10 +68,12 @@ COPY tomcat /dist/opt/bitnami/tomcat/
 # Smeagol config
 COPY smeagol/application.yml /dist/application.yml
 COPY smeagol/logback.xml ${CATALINA_HOME}/smeagol/WEB-INF/classes/logback.xml
-COPY entrypoint.sh /dist
+RUN mkdir -p /dist/opt/bitnami/scripts/tomcat/
+COPY entrypoint.sh /dist/opt/bitnami/scripts/tomcat/
 # Allow for editing cacerts in entrypoint.sh
 # Note on chown 1001:0
-# Bitnami images are always run with root group         # See https://docs.openshift.com/container-platform/4.3/openshift_images/create-images.html#images-create-guide-openshift_create-images
+# Bitnami images are always run with root group
+# See https://docs.openshift.com/container-platform/4.3/openshift_images/create-images.html#images-create-guide-openshift_create-images
 COPY --from=tomcat --chown=1001:0  /opt/bitnami/java/lib/security/cacerts /dist/opt/bitnami/java/lib/security/cacerts
 RUN \
       chown -R 1001:0 /dist/opt/bitnami/java/lib/security/cacerts && \
@@ -80,16 +82,22 @@ RUN \
       chmod 770 /dist/opt/bitnami/tomcat/temp && \
       chmod 770 /dist/opt/bitnami/java/lib/security/cacerts
 # Make volume writable
-RUN  \
+RUN \
   mkdir -p /dist/home/tomcat/.scm  && \
   chown -R 1001:0 /dist/home/tomcat && \
   chown -R 1001:0 /dist/home/tomcat/.scm  && \
   chown -R 1001:0 /dist/etc/cas && \
   chmod -R 770 /dist/home/tomcat
-  
+
+FROM tomcat as dist
+COPY --from=downloader /dist /dist
+USER root
+# Create Tomcat User so SCMM has a HOME to write to
+RUN useradd --uid 1001 --gid 0 --shell /bin/bash --create-home tomcat && \
+    cp /etc/passwd /dist/etc
 
 FROM tomcat
-COPY --from=downloader --chown=tomcat:0  /dist /
+COPY --from=dist --chown=1001:0  /dist /
 VOLUME /home/tomcat/.scm
 EXPOSE 8443 2222
 # Remove base images CMD - here it is used to pass additional CATALINA_ARGS conveniently

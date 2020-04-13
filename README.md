@@ -171,24 +171,10 @@ See [example](example/README.md) for a more substantial example using docker-com
 
 ## Kubernetes
 
-For an examples on how to deploy to kubernetes see folder `k8s`.
-
-It does not set a specific namespace, so set a namespace of your choice in you kubeconfig and deploy  with
-`kubectl apply -f k8s`.
-Note that this contains a whitelisting network policy for incoming traffic into the namespace allowing only inbound 
-traffic to smeagol-galore ([networkPolicy.yaml](k8s/networkPolicy.yaml)).
-
-The example [deployment.yaml](k8s/deployment.yaml) contains 
-* Setting resource requests & limits
-* Defining readiness and liveness probes
-* Security: Run as non-privileged user, don't mount service account token, use custom service account 
-  ([serviceAccount.yaml](k8s/serviceAccount.yaml)).
-* Setting custom FQDN
-* Use persistent storage ([pvc.yaml](k8s/pvc.yaml))
-* Defining custom user and attributes ([configmap.yaml](k8s/configmap.yaml) and [secret.yaml](k8s/secret.yaml) - in
-  this example we set up a user `arthur` with his password `towel`).
-* Defining custom self signed cert ([secret.yaml](k8s/secret.yaml)).
-
+There was an example on how to deploy to kubernetes see [this revision](https://github.com/schnatterer/smeagol-galore/tree/d51bfbfca8dda63a2675cc3f14c66b0106403bf3/k8s).
+It was no longer maintained, so if needed it could be used as a starting point.
+Even more convenient would be a helm chart.
+PRs welcome.
 
 # Import from Gollum
 

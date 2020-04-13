@@ -3,14 +3,23 @@ sudo: required
 services:
   - docker
 
-before_install:
-  - docker build --no-cache -t smeagol-galore .
-    # Don't deamonize, because we want to see the logs
-  - docker run --rm --name smeagol-galore -p 8443:8443 smeagol-galore&
-   # Wait for smeagol-galore to startup
-  - sleep 90
-  - echo "Finish sleeping"
+env:
+  - DOCKER_COMPOSE_VERSION=1.25.5
 
-# Do some basic sanity checks with the container
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+    # Build image from source instead of using tagged one
+  - "sed -ie 's/image:.*$/build: ../' example/docker-compose.yaml"
+  - cd example && docker-compose up -d
+   # Wait for smeagol-galore to startup
+  - sleep 60 && echo "Finish sleeping"
+
 script:
-- ./test.sh
+  # Do some basic sanity checks with the container
+  - ../test.sh
+
+after_failure:
+  - docker logs smeagol-galore

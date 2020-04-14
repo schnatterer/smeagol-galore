@@ -61,4 +61,20 @@ You still might need a self signed cert, which is used for internal communicatio
  You can easily create it be starting a throw-away smeagol-galore container and copy the 
  `/config/certs` and `/opt/bitnami/java/lib/security/cacerts` to your config directory. 
 
-The certificate validity can be customized using `-e CERT_VALIDITY_DAYS=365`.
+For example like so:
+
+```bash
+CONTAINER=$(\
+    docker run --rm -d \
+      -e CERT_VALIDITY_DAYS=3650 \
+      -e FQDN=example.com \
+      schnatterer/smeagol-galore:0.2.0-SNAPSHOT
+)
+sleep 5
+docker cp "${CONTAINER}:/config/certs/" .
+docker cp "${CONTAINER}:/opt/bitnami/java/lib/security/cacerts" .
+
+docker stop "${CONTAINER}"
+
+sudo chown -R 1001:0 certs/
+```

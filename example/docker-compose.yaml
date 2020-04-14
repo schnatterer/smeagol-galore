@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   smeagol-galore:
-    image: smeagol
+    image: schnatterer/smeagol-galore:0.2.0-SNAPSHOT
     container_name: smeagol-galore
     security_opt:
       - no-new-privileges
@@ -18,9 +18,14 @@ services:
       # Timeout Smeagol
       - SERVER_SESSION_TIMEOUT=2592000
       # SCMMv2's access token expiration seems to be hard coded to 1h.
+      
+      # Avoid applications writing to read-only home folder. E.g. jgit (part of SCMM)
+      # See https://git.eclipse.org/c/jgit/jgit.git/commit/?id=838b5a84b5093c335b95a644b8888006d9e95493
+      - XDG_CONFIG_HOME=/home/tomcat/.scm/
     ports:
       - 8443:8443
       # If SCMM SSH is used
+      - 2222:2222
     restart: unless-stopped
     read_only: true
     cap_drop:

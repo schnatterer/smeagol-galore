@@ -114,7 +114,17 @@ startTomcat() {
     CATALINA_OPTS="-Dsonia.scm.init.script.d=/opt/scm-server/init.script.d -Dsonia.scm.skipAdminCreation=true "
     export CATALINA_OPTS="${CATALINA_OPTS} -Dfqdn=${FQDN} ${EXTRA_JVM_ARGUMENTS} $*"
     echo "Set CATALINA_OPTS: ${CATALINA_OPTS}"
-    
+
+    JAVA_HOME="/opt/bitnami/java"
+    export JAVA_HOME
+
+    JAVA_OPTS="-Djava.awt.headless=true -XX:+UseG1GC -Dfile.encoding=UTF-8"
+    export JAVA_OPTS
+
+    # Load Tomcat Native library
+    LD_LIBRARY_PATH="/opt/bitnami/tomcat/lib:${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    export LD_LIBRARY_PATH
+
     local SCM_RESTART_EVENT=42
     while ${TOMCAT_BIN_DIR}/catalina.sh ${DEBUG_PARAM} run ; scm_exit_code=$? ; [[ ${scm_exit_code} -eq ${SCM_RESTART_EVENT} ]] ; do
       echo Got exit code ${scm_exit_code} -- restarting SCM-Manager

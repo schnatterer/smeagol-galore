@@ -16,7 +16,7 @@ WORKDIR /cas
 RUN mvn package
 
 # Download and cache webapps - we need java for scm, so just use another maven container here
-FROM maven as downloader
+FROM tomcat as downloader
 ENV SMEAGOL_VERSION=v0.5.6
 ENV CATALINA_HOME=/dist/opt/bitnami/tomcat/webapps/
 ENV SCM_SCRIPT_PLUGIN_VERSION=2.0.0-rc1
@@ -27,9 +27,11 @@ ENV SCM_REQUIRED_PLUGINS=/dist/opt/scm-server/required-plugins
 
 COPY --from=mavenbuild /cas/target/cas.war /tmp/cas.war
 
-RUN set -x
-RUN apk add --no-cache --update zip unzip curl unzip
+USER root
+RUN apt-get update
+RUN apt-get install -y wget zip
 RUN mkdir -p ${CATALINA_HOME}
+
 # Smeagol lacks JAXB (required from Java > 8). Use a custom build for now
 #RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/cloudogu/smeagol/${SMEAGOL_VERSION}/smeagol-${SMEAGOL_VERSION}.war
 RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/schnatterer/smeagol/${SMEAGOL_VERSION}-jaxb/smeagol-${SMEAGOL_VERSION}-jaxb.war
@@ -88,31 +90,12 @@ RUN \
 # Create room for certs
 RUN mkdir -p /dist/config/certs
 
-FROM tomcat as dist
-USER root
-
-# For now tomcat native libs must be built manually: https://github.com/bitnami/bitnami-docker-tomcat/issues/76#issuecomment-499885520
-# Install the required dependencies to build tomcat-native
-RUN install_packages libapr1-dev libssl-dev openjdk-11-jdk-headless gcc make
-# Build tomcat-native
-RUN tar -xzvf /opt/bitnami/tomcat/bin/tomcat-native.tar.gz -C /tmp
-RUN cd /tmp/tomcat-native-*/native && \
-    ./configure --with-java-home=/usr/lib/jvm/java-11-openjdk-amd64 && \
-    make && \
-    cd .libs && \
-    rm -f libtcnative-1.a libtcnative-1.la libtcnative-1.lai
-RUN mkdir -p /dist/usr/lib && \
-    cp /tmp/tomcat-native-*/native/.libs/* /dist/usr/lib
-
-# Aggregate folder from other stages
-COPY --from=downloader /dist /dist
-
 # Create Tomcat User so SCMM has a HOME to write to
 RUN useradd --uid 1001 --gid 0 --shell /bin/bash --create-home tomcat && \
     cp /etc/passwd /dist/etc
 
 FROM tomcat
-COPY --from=dist --chown=1001:0  /dist /
+COPY --from=downloader --chown=1001:0  /dist /
 VOLUME /home/tomcat/.scm
 EXPOSE 8443 2222
 # Remove base images CMD - here it is used to pass additional CATALINA_ARGS conveniently

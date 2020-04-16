@@ -53,7 +53,7 @@ Start the app with
 docker-compose up -d
 ```
 
-Smeagol galore can be reached vid on `https://localhost:8443`.
+Smeagol galore can be reached via on `https://localhost:8443`.
 
 ## Reverse proxy
 

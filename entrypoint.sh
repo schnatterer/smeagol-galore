@@ -111,7 +111,11 @@ startTomcat() {
     fi
 
     # Don't set "-Dserver.name=${FQDN}", or clear pass will no longer work
-    CATALINA_OPTS="-Dsonia.scm.init.script.d=/opt/scm-server/init.script.d -Dsonia.scm.skipAdminCreation=true "
+    CATALINA_OPTS="-Dsonia.scm.init.script.d=/opt/scm-server/init.script.d \
+                   -Dsonia.scm.skipAdminCreation=true \
+                   -Dsonia.scm.lifecycle.restart-strategy=exit \
+                   -Dsonia.scm.restart.exit-code=42"
+
     export CATALINA_OPTS="${CATALINA_OPTS} -Dfqdn=${FQDN} ${EXTRA_JVM_ARGUMENTS} $*"
     echo "Set CATALINA_OPTS: ${CATALINA_OPTS}"
 

@@ -5,9 +5,9 @@ FROM bitnami/tomcat:9.0.34-debian-10-r3 as tomcat
 # Define global values in a central, DRY way
 FROM tomcat as builder
 ENV SMEAGOL_VERSION=v0.5.6
-ENV SCM_SCRIPT_PLUGIN_VERSION=2.0.0-rc1
-ENV SCM_CAS_PLUGIN_VERSION=2.0.0-rc2
-ENV SCM_VERSION=2.0.0-rc5
+ENV SCM_SCRIPT_PLUGIN_VERSION=2.0.0-rc2
+ENV SCM_CAS_PLUGIN_VERSION=2.0.0-rc5
+ENV SCM_VERSION=2.0.0-rc7
 ENV CATALINA_HOME=/dist/opt/bitnami/tomcat/webapps/
 
 USER root

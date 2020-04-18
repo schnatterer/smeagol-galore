@@ -8,6 +8,7 @@
     "scm-support-plugin",
     "scm-readme-plugin",
     "scm-ssh-plugin",
-    "scm-editor-plugin"
+    "scm-editor-plugin",
+    "scm-landingpage-plugin"
   ]
 }

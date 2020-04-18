@@ -68,9 +68,7 @@ for (def name : plugins) {
 
 if (restart){
     System.out.println("restarting scm-manager");
-//    pluginManager.restart("initial plugin installation");
-    sleep(3000);
-    System.exit(42);
+    pluginManager.executePendingAndRestart();
 } else {
     System.out.println("no new plugins installed");
 }

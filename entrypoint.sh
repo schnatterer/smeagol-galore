@@ -116,7 +116,7 @@ startTomcat() {
                    -Dsonia.scm.lifecycle.restart-strategy=exit \
                    -Dsonia.scm.restart.exit-code=42"
 
-    export CATALINA_OPTS="${CATALINA_OPTS} -Dfqdn=${FQDN} ${EXTRA_JVM_ARGUMENTS} $*"
+    export CATALINA_OPTS="${CATALINA_OPTS} ${EXTRA_JVM_ARGUMENTS} $*"
     echo "Set CATALINA_OPTS: ${CATALINA_OPTS}"
 
     JAVA_HOME="/opt/bitnami/java"

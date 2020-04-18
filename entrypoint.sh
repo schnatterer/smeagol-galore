@@ -2,8 +2,10 @@
 
 # Exported so they can be read from tomcat process
 export ADMIN_GROUP=${ADMIN_GROUP:-admin}
-export FQDN=${FQDN:-localhost:8443}
 export USER_HOME=/home/tomcat
+export HTTP_PORT=${HTTP_PORT:-8080}
+export HTTPS_PORT=${HTTPS_PORT:-8443}
+export FQDN=${FQDN:-"localhost:${HTTPS_PORT}"}
 
 DEBUG=${DEBUG:-false}
 EXTRA_JVM_ARGUMENTS=${EXTRA_JVM_ARGUMENTS:-}
@@ -111,7 +113,9 @@ startTomcat() {
     fi
 
     # Don't set "-Dserver.name=${FQDN}", or clear pass will no longer work
-    CATALINA_OPTS="-Dsonia.scm.init.script.d=/opt/scm-server/init.script.d \
+    CATALINA_OPTS="-Dhttp.port=${HTTP_PORT} \
+                   -Dhttps.port=${HTTPS_PORT} \
+                   -Dsonia.scm.init.script.d=/opt/scm-server/init.script.d \
                    -Dsonia.scm.skipAdminCreation=true \
                    -Dsonia.scm.lifecycle.restart-strategy=exit \
                    -Dsonia.scm.restart.exit-code=42"

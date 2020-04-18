@@ -13,7 +13,7 @@ ENV CATALINA_HOME=/dist/opt/bitnami/tomcat/webapps/
 USER root
 RUN mkdir -p ${CATALINA_HOME}
 RUN apt-get update
-RUN apt-get install -y wget zip
+RUN apt-get install -y wget zip dumb-init
 
 
 FROM maven as cas-mavencache
@@ -103,10 +103,13 @@ RUN mkdir -p /dist/config/certs
 RUN useradd --uid 1001 --gid 0 --shell /bin/bash --create-home tomcat && \
     cp /etc/passwd /dist/etc
 
+# Use init system, so we still have proper signal handling even though restart loop in entrypoint.sh required by SCMM
+RUN mkdir -p /dist/usr/bin/ && cp /usr/bin/dumb-init /dist/usr/bin/dumb-init
 
 FROM tomcat
 COPY --from=aggregator --chown=1001:0  /dist /
 VOLUME /home/tomcat/.scm
 EXPOSE 8443 2222
+ENTRYPOINT [ "/usr/bin/dumb-init", "--", "/opt/bitnami/scripts/tomcat/entrypoint.sh" ]
 # Remove base image's CMD - here it is used to pass additional CATALINA_ARGS conveniently
 CMD []

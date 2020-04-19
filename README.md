@@ -149,7 +149,8 @@ Via Environment Variables:
   the following parameters to the container: `-v /etc/hosts:/etc/hosts -e FQDN=smeagol:8443`. You can then reach smeagol
   at `https://smeagol:8443`.
 * `HTTP_PORT` and `HTTPS_PORT`. Ports to listen on. Note that FQDN contains the HTTPS port (if != 443).  
-  For now listening on Ports < 1024 is only possible when run as root (`docker run -u0`), which you shouldn't :-P 
+  For now, the `tomcat` user is allowed to listen on ports 80,443 and of course > 1024.  
+  Other ports are only possible when run as root (`docker run -u0`), which you shouldn't.
 * `-e DEBUG=true` exposes port 8000 as Tomcat debug port
 * Additional arguments can be passed to tomcat, or the webapps (CAS, smeagol, SCM-Manager)
   * As Docker `CMD`, e.g.  

@@ -89,25 +89,36 @@ RUN chown -R 1001:0 /dist/opt/bitnami/java/lib/security/cacerts && \
     mkdir /dist/opt/bitnami/tomcat/temp && \
     chmod 770 /dist/opt/bitnami/tomcat/temp && \
     chmod 770 /dist/opt/bitnami/java/lib/security/cacerts
-# Make volume writable
-RUN mkdir -p /dist/home/tomcat/.scm  && \
-    chown -R 1001:0 /dist/home/tomcat && \
-    chown -R 1001:0 /dist/home/tomcat/.scm  && \
-    chown -R 1001:0 /dist/etc/cas && \
-    chmod -R 770 /dist/home/tomcat
-
 # Create room for certs
 RUN mkdir -p /dist/config/certs
+# Make folders writable
+RUN mkdir -p /dist/home/tomcat/.scm  && \
+    chmod -R 770 /dist/home/tomcat && \
+    chown -R 1001:0 /dist
 
 # Create Tomcat User so SCMM has a HOME to write to
 RUN useradd --uid 1001 --gid 0 --shell /bin/bash --create-home tomcat && \
     cp /etc/passwd /dist/etc
 
 # Use init system, so we still have proper signal handling even though restart loop in entrypoint.sh required by SCMM
-RUN mkdir -p /dist/usr/bin/ && cp /usr/bin/dumb-init /dist/usr/bin/dumb-init
+RUN mkdir -p /dist/usr/bin/ && \
+    cp /usr/bin/dumb-init /dist/usr/bin/dumb-init
+
+# Use authbind to allow tomcat user to bin to port 443
+# Unfortunately, COPYing capabilities does not work in classic docker build
+# https://github.com/moby/moby/issues/20435 
+#RUN setcap CAP_NET_BIND_SERVICE=+ep /opt/bitnami/java/bin/java # requires libcap2-bin
+# Another option could be to install libcap and create a "capability.conf" with
+# cap_net_bind_service		tomcat
+RUN cd /tmp && apt-get download authbind
+RUN dpkg-deb -X /tmp/*.deb /dist
+RUN touch /dist/etc/authbind/byport/443 /dist/etc/authbind/byport/80 && \
+    chown 1001:0 /dist/etc/authbind/byport/* && \
+    chmod 550 /dist/etc/authbind/byport/*
 
 FROM tomcat
-COPY --from=aggregator --chown=1001:0  /dist /
+# Don't --chown=1001:0  here, or some binaries/libraries won't work (libcap/authbind)
+COPY --from=aggregator /dist /
 VOLUME /home/tomcat/.scm
 EXPOSE 8443 2222
 ENTRYPOINT [ "/usr/bin/dumb-init", "--", "/opt/bitnami/scripts/tomcat/entrypoint.sh" ]

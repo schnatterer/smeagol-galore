@@ -5,7 +5,7 @@ export ADMIN_GROUP=${ADMIN_GROUP:-admin}
 export USER_HOME=/home/tomcat
 export HTTP_PORT=${HTTP_PORT:-8080}
 export HTTPS_PORT=${HTTPS_PORT:-8443}
-export FQDN=${FQDN:-"localhost:${HTTPS_PORT}"}
+export FQDN=${FQDN:-$(if [[ "$HTTPS_PORT" -eq 443 ]]; then echo -n "localhost"; else echo -n "localhost:${HTTPS_PORT}"; fi)}
 
 DEBUG=${DEBUG:-false}
 EXTRA_JVM_ARGUMENTS=${EXTRA_JVM_ARGUMENTS:-}
@@ -106,11 +106,16 @@ installScmPlugins() {
 startTomcat() {
 
     DEBUG_PARAM=""
-    if [ "${DEBUG}" == "true" ]
-    then
+    if [[ "${DEBUG}" == "true" ]];     then
         export JPDA_OPTS="-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
         DEBUG_PARAM=jpda
     fi
+    
+    if [[ "$HTTPS_PORT" -le 1024 || "${HTTP_PORT}" -le 1024 ]]; then
+        AUTHBIND="authbind --deep"
+     else 
+        AUTHBIND=""
+     fi
 
     # Don't set "-Dserver.name=${FQDN}", or clear pass will no longer work
     CATALINA_OPTS="-Dhttp.port=${HTTP_PORT} \
@@ -123,18 +128,13 @@ startTomcat() {
     export CATALINA_OPTS="${CATALINA_OPTS} ${EXTRA_JVM_ARGUMENTS} $*"
     echo "Set CATALINA_OPTS: ${CATALINA_OPTS}"
 
-    JAVA_HOME="/opt/bitnami/java"
-    export JAVA_HOME
-
-    JAVA_OPTS="-Djava.awt.headless=true -XX:+UseG1GC -Dfile.encoding=UTF-8"
-    export JAVA_OPTS
-
+    export JAVA_HOME="/opt/bitnami/java"
+    export JAVA_OPTS="-Djava.awt.headless=true -XX:+UseG1GC -Dfile.encoding=UTF-8"
     # Load Tomcat Native library
-    LD_LIBRARY_PATH="/opt/bitnami/tomcat/lib:${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-    export LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH="/opt/bitnami/tomcat/lib:${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
     local SCM_RESTART_EVENT=42
-    while ${TOMCAT_BIN_DIR}/catalina.sh ${DEBUG_PARAM} run ; scm_exit_code=$? ; [[ ${scm_exit_code} -eq ${SCM_RESTART_EVENT} ]] ; do
+    while ${AUTHBIND} ${TOMCAT_BIN_DIR}/catalina.sh ${DEBUG_PARAM} run ; scm_exit_code=$? ; [[ ${scm_exit_code} -eq ${SCM_RESTART_EVENT} ]] ; do
       echo Got exit code ${scm_exit_code} -- restarting SCM-Manager
     done
     echo Got exit code ${scm_exit_code} -- exiting

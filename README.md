@@ -1,10 +1,12 @@
 Smeagol galore
 ============================
-[![Build Status](https://travis-ci.org/schnatterer/smeagol-galore.svg?branch=master)](https://travis-ci.org/schnatterer/smeagol-galore)
+[![Build Status](https://travis-ci.org/schnatterer/smeagol-galore.svg?branch=scm-v2)](https://travis-ci.org/schnatterer/smeagol-galore)
 [![Docker Hub](https://images.microbadger.com/badges/image/schnatterer/smeagol-galore.svg)](https://hub.docker.com/r/schnatterer/smeagol-galore)
 
 A lightweight version of [cloudogu's](https://cloudogu.com) git-based wiki system [smeagol](https://github.com/cloudogu/smeagol), 
 the lightning-fast alternative to [gollum](https://github.com/gollum/gollum).
+
+![GIF showcasing smeagol-galore](https://github.com/schnatterer/smeagol-galore/wiki/smeagol-galore.gif)
 
 Runs without a full Cloudogu ecosystem, but still features
 * Markdown,

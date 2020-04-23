@@ -80,22 +80,25 @@ COPY --from=smeagol-downloader /dist /dist
 # Tomcat Config (TLS & root URL redirect)
 COPY tomcat /dist/opt/bitnami/tomcat/
 COPY entrypoint.sh /dist/opt/bitnami/scripts/tomcat/
+
+# Needed when running with read-only file system and mounting this folder as volume (which leads to being owend by 0:0)
+RUN mkdir /dist/opt/bitnami/tomcat/temp
 # Allow for editing cacerts in entrypoint.sh
-# Note on chown 1001:0: Bitnami images are always run with root group
-# See https://docs.openshift.com/container-platform/4.3/openshift_images/create-images.html#images-create-guide-openshift_create-images
-COPY --from=tomcat --chown=1001:0  /opt/bitnami/java/lib/security/cacerts /dist/opt/bitnami/java/lib/security/cacerts
-RUN chown -R 1001:0 /dist/opt/bitnami/java/lib/security/cacerts && \
-    # Needed when running with read-only file system and mounting this folder as volume (which leads to being owend by 0:0)
-    mkdir /dist/opt/bitnami/tomcat/temp && \
-    chmod 770 /dist/opt/bitnami/tomcat/temp && \
-    chmod 770 /dist/opt/bitnami/java/lib/security/cacerts
+RUN mkdir -p /dist/opt/bitnami/java/lib/security/ && \
+    cp /opt/bitnami/java/lib/security/cacerts /dist/opt/bitnami/java/lib/security/
 # Create room for certs
 RUN mkdir -p /dist/config/certs
-# Make folders writable
-RUN mkdir -p /dist/home/tomcat/.scm  && \
-    chmod -R 770 /dist/home/tomcat && \
-    chown -R 1001:0 /dist
-
+# Make home folder writable
+RUN mkdir -p /dist/home/tomcat/.scm
+# Once copied to the final stage everythings seems to be owend by root:root.
+# That is, the owner seems not to be preseverd, even when chown to UID 1001 here.
+# At least on Docker Hub this still pehttps://github.com/moby/moby/pull/38599oby/moby/pull/38599
+# Good thing: Bitnami images are always run with root group
+# See https://docs.openshift.com/container-platform/4.3/openshift_images/create-images.html#images-create-guide-openshift_create-images
+# So we need to make sure to chmod everything we need at run time to the group not only the user.
+# That's why we use 770 instead of 700.
+RUN chmod -R 770 /dist
+    
 # Create Tomcat User so SCMM has a HOME to write to
 RUN useradd --uid 1001 --gid 0 --shell /bin/bash --create-home tomcat && \
     cp /etc/passwd /dist/etc

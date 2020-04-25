@@ -1,0 +1,18 @@
+version: "3.7"
+services:
+  smeagol-galore:
+    image: ${IMAGE}
+    environment:
+      - FQDN=localhost:8443
+    ports:
+      - 8443:8443
+    volumes:
+      - smeagol-galore:/home/tomcat/.scm
+      # Don't install any plugins
+      - type: bind
+        source: ./config/plugin-config.json
+        target: /etc/scm/plugin-config.json
+        read_only: true
+
+volumes:
+  smeagol-galore:

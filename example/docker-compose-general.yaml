@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   smeagol-galore:
-    image: schnatterer/smeagol-galore:0.2.0-SNAPSHOT
+    image: ${IMAGE}
     container_name: smeagol-galore
     security_opt:
       - no-new-privileges
@@ -45,11 +45,11 @@ services:
         target: /etc/scm/plugin-config.json
         read_only: true
       - type: bind
-        source: ./config/certs
+        source: ./config/certs/localhost
         target: /config/certs
         read_only: true
       - type: bind
-        source: ./config/cacerts
+        source: ./config/certs/localhost/cacerts
         target: /opt/bitnami/java/lib/security/cacerts
         read_only: true
       # Examples for more verbose log output
@@ -79,9 +79,6 @@ services:
 
 networks:
   smeagol_galore:
-    # Internal network is not allowed to access internet. Does not work if downloading plugins.
-    #external: false
-    #internal: true
     ipam:
       config:
         - subnet: 172.1.2.0/24

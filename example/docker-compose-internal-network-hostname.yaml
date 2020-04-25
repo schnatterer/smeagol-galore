@@ -1,0 +1,57 @@
+version: "3.7"
+services:
+  smeagol-galore:
+    image: ${IMAGE}
+    container_name: smeagol-galore
+    security_opt:
+      - no-new-privileges
+    networks:
+      smeagol_galore:
+        ipv4_address: 172.1.2.2
+    hostname: smeagol
+    environment:
+      - FQDN=smeagol:8443
+      # Avoid applications writing to read-only home folder. E.g. jgit (part of SCMM)
+      # See https://git.eclipse.org/c/jgit/jgit.git/commit/?id=838b5a84b5093c335b95a644b8888006d9e95493
+      - XDG_CONFIG_HOME=/home/tomcat/.scm/
+    restart: unless-stopped
+    read_only: true
+    cap_drop:
+      - ALL
+    volumes:
+      - smeagol-galore:/home/tomcat/.scm
+      - type: bind
+        source: ./config/plugin-config.json
+        target: /etc/scm/plugin-config.json
+        read_only: true
+      - type: bind
+        source: ./config/certs/smeagol/
+        target: /config/certs
+        read_only: true
+      - type: bind
+        source: ./config/certs/smeagol/cacerts
+        target: /opt/bitnami/java/lib/security/cacerts
+        read_only: true
+      # Make writable - needed when by tomcat when 'read_only: true'
+      - type: tmpfs
+        target: /opt/bitnami/tomcat/temp
+      - type: tmpfs
+        target: /opt/bitnami/tomcat/work
+      - type: tmpfs
+        target: /opt/bitnami/tomcat/logs
+      - type: tmpfs
+        target: /tmp
+      - type: tmpfs
+        target: /opt/bitnami/tomcat/conf/Catalina
+
+networks:
+  smeagol_galore:
+    # Internal network is not allowed to access internet. Does not work if downloading plugins.
+    # Also, port bindings won't work 
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.1.2.0/24
+
+volumes:
+  smeagol-galore:

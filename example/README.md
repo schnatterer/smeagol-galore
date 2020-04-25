@@ -1,14 +1,50 @@
-Smeagol Galore example using docker-compose
+Smeagol Galore examples using docker-compose
 ====
 
-This example shows some options and features for smeagol-galore, implemented in the 
-[`docker-compose.yaml`](docker-compose.yaml).
 
-* Adds an non-admin user
+# Table of contents
+
+<!-- Update with `doctoc --notitle README.md`. See https://github.com/thlorenz/doctoc -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Simplest docker-compose example](#simplest-docker-compose-example)
+- [General example, showcasing several options](#general-example-showcasing-several-options)
+- [Internal network](#internal-network)
+- [Ports 80 / 443](#ports-80--443)
+- [Creating certs for internal communication](#creating-certs-for-internal-communication)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+
+## Simplest docker-compose example
+
+Only skips plugin install for faster startup. 
+ 
+See [`docker-compose-simple.yaml`](docker-compose-simple.yaml).
+
+Note that the image is defined in `.env` to facilitate replacement during testing.
+In a production setup this would not be necessary. 
+
+Start the app with 
+
+```bash
+docker-compose -f docker-compose-simple.yaml up -d
+```
+
+Smeagol galore can be reached via on `https://localhost:8443`.
+
+## General example, showcasing several options 
+
+This example shows some options and features for smeagol-galore, implemented in the 
+[`docker-compose-general.yaml`](docker-compose-general.yaml).
+
+* Adds a non-admin user
 * Installs only the very minimal set of plugins needed
 * Enables verbose log output
 * Increases session timeout  / token expiration (login less often)
-* Mounts custom certificate (via keystore) and CA certs. 
+* Mounts a custom certificate and CA certs. 
 * Exposes SSH Port for Git Operations on SCM-Manager via SSH
 
 A setup like this should work fine when used behind a reverse proxy. See bellow for details.
@@ -23,58 +59,88 @@ In addition, the example implements a number of good practices for docker contai
   Note that using an internal network will stop the plugins from being installed.  
 * a `read-only` root file system, enforcing integrity of the application files.  
   For this to work all folders that are written to at runtime are mounted as volumes. The ones containing temporary 
-  data are mounted as `tempfs`, an in-memory FS cleaned automatically and high throughput.  
-  Note that for now, `read-only` will only work when mounting your own keystore, because otherwise the app creates and 
-  tries to write its own keystore, but is not allowed, because the folders, when mounted as volume, are owned by root.
+  data is mounted as `tempfs`, an in-memory FS cleaned automatically and high throughput.  
+  Note that for now, `read-only` will only work when mounting your own certificates, because otherwise the app creates 
+  and tries to create its own, but is not allowed, because the folders, when mounted as volume, are owned by root.  
+  See [here](#creating-certs-for-internal-communication) how to generate certs.
 * Drops all capabilities. Smeagol-galore does not need any and it decreases the attack surface of the container.
 
-Some things could be further improved, though:
-
-In production, the network should be set up as `internal`. This is more secure, because an attacker wouldn't be able
-to access the internet, nor the host's network. However,
+From a security perspective, one thing could be further improved, though: block outgoing traffic. As this is not 
+straight forward with compose, it is realized in a [separate example](#internal-network). 
  
-* this will also ignore  port bindings leaving us to use the IP Address `172.1.2.2` as `FQDN`. However, setting a
-  numeric `FQDN` does not work with the Tools used for creating the certificate.  
-  This could be done using a reverse proxy that serves a domain, or by setting a `FQDN` such as `smeagol` and adding
-  the following to your `/etc/hosts`: `172.1.2.2   smeagol`.    
-* Also downloading plugins on startup would fail.
-* This example should run out of the box, so we simplify this here.
-* When running on the internet (e.g. my-smeag.ol; port 443), another issue would be that the services need to be able
-  to communicate with each other (CAS protocol) using this address, which would need to be resolved via the internet.  
-  Options to resolve something like this are `host` and `extra_hosts` in docker-compose. It's challenging, because
-  smeagol-galore runs on 8443, and a typical public service would run on 443. So some kind of port mapping (e.g. via
-  a reverse proxy) would be needed. Or otherwise, rebuilding smeagol-galore to run on 443. 
-
-So, in a setup such as this, the whole internal network business might be difficult!
-
 Start the app with 
 
 ```bash
-docker-compose up -d
+docker-compose -f docker-compose-general.yaml up -d
 ```
 
 Smeagol galore can be reached via on `https://localhost:8443`.
 
-## Reverse proxy
+
+## Internal network 
+
+This example uses the same security options as [`docker-compose-general.yaml`](docker-compose-general.yaml), but
+additionally runs in an internal network. 
+
+In production, the network could be set up as `internal`. This is more secure, because an attacker wouldn't be able
+to access the internet, nor the host's network. There are some challenges, though:
+
+* Downloading plugins in SCM-Manager startup will fail.
+* With an internal network, port bindings are ignored.
+ * The simplest option is to use the IP Address (in our example `172.1.2.2`) as `FQDN`.   
+ * In production, with an `FQDN` such as `smeagol.com`, this `FQDN` must also be set as `hostname`.
+   Otherwise, `smeagol` and `scm-manager` will not be able to validate authentication against `cas`.
+ * This can be tested locally, by using an `FQDN` such as  `smeagol` and adding the following to your 
+     `/etc/hosts`: `172.1.2.2   smeagol`.  
+    For this to work we need to [generate certificates](#creating-certs-for-internal-communication).
+
+Start the app with 
+
+```bash
+# Example 1: Start app without dns name
+docker-compose -f docker-compose-internal-network.yaml up -d
+# Smeagol galore can be reached on `https://172.1.2.2:8443`.
+
+# Example 2: Start app with dns name
+docker-compose -f docker-compose-internal-network-hostname.yaml up -d
+# Add "smeagol" entry to your /etc/hosts and access via browser
+# Smeagol galore can be reached on https://smeagol:8443
+```
+
+
+## Ports 80 / 443
+
+TODO
+
+## Creating certs for internal communication
 
 You still might need a self signed cert, which is used for internal communication.
- You can easily create it be starting a throw-away smeagol-galore container and copy the 
+You can easily create it be starting a throw-away smeagol-galore container and copy the 
  `/config/certs` and `/opt/bitnami/java/lib/security/cacerts` to your config directory. 
 
 For example like so:
 
 ```bash
+# The ip address of the container is also added to the cert, so you might want to specify it.
+# Eg, for this example it was created as follows
+docker network create --subnet 172.1.2.0/24 myNet
+
 CONTAINER=$(\
     docker run --rm -d \
       -e CERT_VALIDITY_DAYS=3650 \
-      -e FQDN=example.com \
-      schnatterer/smeagol-galore:0.2.0-SNAPSHOT
+      -e FQDN=smeagol:8443 \
+      --net myNet --ip 172.1.2.2 \
+      smeagol
 )
 sleep 5
 docker cp "${CONTAINER}:/config/certs/" .
-docker cp "${CONTAINER}:/opt/bitnami/java/lib/security/cacerts" .
+docker cp "${CONTAINER}:/opt/bitnami/java/lib/security/cacerts" certs
 
 docker stop "${CONTAINER}"
+rm certs/ca.crt.srl
+# Allow reading via group (root, as in container)
+sudo chown -R :0 certs/
+sudo chmod -R 440 certs/*
 
-sudo chown -R 1001:0 certs/
+docker network rm myNet
 ```

@@ -11,15 +11,20 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
-    # Build image from source instead of using tagged one
-  - "sed -ie 's/image:.*$/build: ../' example/docker-compose.yaml"
-  - cd example && docker-compose up -d
+    # Build image from source and use it for tests, instead of the one from DockerHub
+  - docker build --no-cache -t smeagol-galore .
+  - echo 'IMAGE=smeagol-galore' > example/.env
+  - cd example && docker-compose -f docker-compose-general.yaml up -d
    # Wait for smeagol-galore to startup
   - sleep 60 && echo "Finish sleeping"
 
 script:
   # Do some basic sanity checks with the container
   - ../test.sh
-
+# TODO run tests on other examples as well (using BATS?)
+# do the same for basic setup (Faster without plugin installs) 
+# do the same for internal network example
+# do the same for internal network example with hostname  - echo '172.1.2.2   smeagol' > /etc/hosts
+#  do the same with binding to port 443
 after_failure:
   - docker logs smeagol-galore

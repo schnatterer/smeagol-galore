@@ -35,6 +35,8 @@ createSelfSignedCert() {
     ca=/config/certs/ca.crt.pem
     trustStore=/opt/bitnami/java/lib/security/cacerts
     host=$(echo "${FQDN}" | sed -e 's/:/\n/g' | head -1)
+    ipAddress=$(hostname -I | awk '{print $1}')
+
 
     if [[ ! -f "${cert}" ]]; then
 
@@ -51,20 +53,23 @@ createSelfSignedCert() {
         openssl req -newkey rsa:4096 -keyout ca.pk.pem -x509 -new -nodes -out ${ca} \
           -subj "/OU=Unknown/O=Unknown/L=Unknown/ST=unknown/C=DE"  -days "${CERT_VALIDITY_DAYS}"
 
-        # Create Cert
+        subjectAltName="$(printf "subjectAltName=IP:127.0.0.1,IP:%s,DNS:%s" "${ipAddress}" "${host}")"
         openssl req -new -newkey rsa:4096 -nodes -keyout ${pk} -out csr.pem \
                -subj "/CN=${host}/OU=Unknown/O=Unknown/L=Unknown/ST=unknown/C=DE" \
-               -reqexts SAN \
-               -config <(cat /etc/ssl/openssl.cnf \
-                   <(printf "\n[SAN]\nsubjectAltName=IP:127.0.0.1,DNS:%s" "${host}"))
+               -config <(cat /etc/ssl/openssl.cnf <(printf "\n[SAN]\n%s" "${subjectAltName}"))
 
         # Sign Cert
-        openssl x509 -req -in csr.pem -CA ${ca} -CAkey ca.pk.pem -CAcreateserial -out ${cert} -days "${CERT_VALIDITY_DAYS}"
+        # Due to a bug in openssl, extensions are not transferred to the final signed x509 cert
+        # https://www.openssl.org/docs/man1.1.0/man1/x509.html#BUGS
+        # So add them while signing. The one added with "req" will probably be ignored.
+        openssl x509 -req -in csr.pem -CA ${ca} -CAkey ca.pk.pem -CAcreateserial -out ${cert} -days "${CERT_VALIDITY_DAYS}" \
+                -extensions v3_ca -extfile <(printf "\n[v3_ca]\n%s" "${subjectAltName}")
+                
         # Trust cert internally
-        keytool -import -noprompt -v -trustcacerts -alias ${host} -file ${cert} -keystore ${trustStore} -keypass changeit -storepass changeit
+        keytool -import -noprompt -trustcacerts -alias ${host} -file ${cert} -keystore ${trustStore} -keypass changeit -storepass changeit
         # Return to former workind dir, in order not to change tomcat's working directory
         cd "${CWD}"
-        # ReRemove CA private key (this is not for production!) and cert requests.
+        # Remove CA private key (this is not for production!) and cert requests.
         rm -rf "${TMPDIR}"
     fi
 }

@@ -35,6 +35,7 @@ docker-compose -f docker-compose-simple.yaml up -d
 
 Smeagol galore can be reached via on `https://localhost:8443`.
 
+
 ## General example, showcasing several options 
 
 This example shows some options and features for smeagol-galore, implemented in the 
@@ -90,6 +91,8 @@ to access the internet, nor the host's network. There are some challenges, thoug
  * The simplest option is to use the IP Address (in our example `172.1.2.2`) as `FQDN`.   
  * In production, with an `FQDN` such as `smeagol.com`, this `FQDN` must also be set as `hostname`.
    Otherwise, `smeagol` and `scm-manager` will not be able to validate authentication against `cas`.
+   In addition, when the `FQDN` does not contain a port, the `HTTPS_PORT` env var must be set to 443. 
+   See [other example](#ports-80--443).
  * This can be tested locally, by using an `FQDN` such as  `smeagol` and adding the following to your 
      `/etc/hosts`: `172.1.2.2   smeagol`.  
     For this to work we need to [generate certificates](#creating-certs-for-internal-communication).
@@ -107,10 +110,28 @@ docker-compose -f docker-compose-internal-network-hostname.yaml up -d
 # Smeagol galore can be reached on https://smeagol:8443
 ```
 
-
 ## Ports 80 / 443
 
-TODO
+In some use cases it might be necessary to listen to well-known ports 80 and 443 instead of the default 8080 and 8443.
+
+* When running smeagol without reverse proxy and want to get rid of explicitly mentioned ports, e.g `https://example.com`  
+  instead of `https://example.com:8443` or
+* When running behind a reverse proxy but with an internal network, so inside the container `smeagol` is able to connect
+  to `cas` via the `hostname` that is set to the value as `FQDN` (that is, using internal network without leaving the 
+  container).
+
+Two security options are incompatible with binding to well-known ports: 
+* `security_opt: [ no-new-privileges ]`
+* needs capability `NET_BIND_SERVICE`
+
+Start the app with 
+
+```bash
+docker-compose -f docker-compose-80-443.yaml
+```
+
+Smeagol galore can be reached via on `https://172.1.2.2`.
+
 
 ## Creating certs for internal communication
 

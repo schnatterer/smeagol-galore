@@ -68,7 +68,7 @@ COPY smeagol/application.yml /dist/application.yml
 COPY smeagol/logback.xml ${CATALINA_HOME}/smeagol/WEB-INF/classes/logback.xml
 
 
-FROM builder as aggregator
+FROM builder as aggregator-user
 # CAS
 COPY --from=cas-mavenbuild /cas/target/cas ${CATALINA_HOME}/cas
 # config
@@ -82,30 +82,21 @@ COPY tomcat /dist/opt/bitnami/tomcat/
 COPY entrypoint.sh /dist/opt/bitnami/scripts/tomcat/
 
 # Needed when running with read-only file system and mounting this folder as volume (which leads to being owend by 0:0)
-RUN mkdir /dist/opt/bitnami/tomcat/temp
-# Allow for editing cacerts in entrypoint.sh
-RUN mkdir -p /dist/opt/bitnami/java/lib/security/ && \
-    cp /opt/bitnami/java/lib/security/cacerts /dist/opt/bitnami/java/lib/security/
-# Create room for certs
-RUN mkdir -p /dist/config/certs
-# Make home folder writable
-RUN mkdir -p /dist/home/tomcat/.scm
-# Once copied to the final stage everythings seems to be owend by root:root.
-# That is, the owner seems not to be preseverd, even when chown to UID 1001 here.
-# At least on Docker Hub this still pehttps://github.com/moby/moby/pull/38599oby/moby/pull/38599
 # Good thing: Bitnami images are always run with root group
 # See https://docs.openshift.com/container-platform/4.3/openshift_images/create-images.html#images-create-guide-openshift_create-images
 # So we need to make sure to chmod everything we need at run time to the group not only the user.
 # That's why we use 770 instead of 700.
-RUN chmod -R 770 /dist
-    
-# Create Tomcat User so SCMM has a HOME to write to
-RUN useradd --uid 1001 --gid 0 --shell /bin/bash --create-home tomcat && \
-    cp /etc/passwd /dist/etc
-
-# Use init system, so we still have proper signal handling even though restart loop in entrypoint.sh required by SCMM
-RUN mkdir -p /dist/usr/bin/ && \
-    cp /usr/bin/dumb-init /dist/usr/bin/dumb-init
+RUN mkdir /dist/opt/bitnami/tomcat/temp
+# Allow for editing cacerts in entrypoint.sh
+RUN mkdir -p /dist/opt/bitnami/java/lib/security/ && \
+    cp /opt/bitnami/java/lib/security/cacerts /dist/opt/bitnami/java/lib/security/  && \
+    chmod 770 /dist/opt/bitnami/tomcat/temp && \
+    chmod 770 /dist/opt/bitnami/java/lib/security/cacerts
+# Create room for certs
+RUN mkdir -p /dist/config/certs
+# Make home folder writable
+RUN mkdir -p /dist/home/tomcat/.scm && \
+    chmod -R 770 /dist/home/tomcat
 
 # Use authbind to allow tomcat user to bin to port 443
 # Unfortunately, COPYing capabilities does not work in classic docker build
@@ -113,15 +104,35 @@ RUN mkdir -p /dist/usr/bin/ && \
 #RUN setcap CAP_NET_BIND_SERVICE=+ep /opt/bitnami/java/bin/java # requires libcap2-bin
 # Another option could be to install libcap and create a "capability.conf" with
 # cap_net_bind_service		tomcat
-RUN cd /tmp && apt-get download authbind
-RUN dpkg-deb -X /tmp/*.deb /dist
-RUN touch /dist/etc/authbind/byport/443 /dist/etc/authbind/byport/80 && \
+RUN mkdir -p /dist/etc/authbind/byport/ && \
+    touch /dist/etc/authbind/byport/443 /dist/etc/authbind/byport/80 && \
     chown 1001:0 /dist/etc/authbind/byport/* && \
     chmod 550 /dist/etc/authbind/byport/*
+    
+# Create Tomcat User so SCMM has a HOME to write to
+RUN useradd --uid 1001 --gid 0 --shell /bin/bash --create-home tomcat && \
+    cp /etc/passwd /dist/etc
+
+
+FROM builder as aggregator-root
+# Use init system, so we still have proper signal handling even though restart loop in entrypoint.sh required by SCMM
+RUN mkdir -p /dist/usr/bin/ && \
+    cp /usr/bin/dumb-init /dist/usr/bin/dumb-init
+
+# Authbind libraries and binary must be owned by root
+RUN cd /tmp && apt-get download authbind
+RUN dpkg-deb -X /tmp/*.deb /dist
+
 
 FROM tomcat
-# Don't --chown=1001:0  here, or some binaries/libraries won't work (libcap/authbind)
-COPY --from=aggregator /dist /
+# Once copied to the final stage everythings seems to be owend by root:root.
+# That is, the owner seems not to be preseverd, even when chown to UID 1001 here.
+# At least on Docker Hub this still persist: https://github.com/moby/moby/pull/38599oby/moby/pull/38599
+# An alerntative is to use --chown, but then all files will belong to the chowned user and 
+# some binaries/libraries won't work when not being owned by root (libcap/authbind)
+# So we use two aggregator stages as a workaround
+COPY --from=aggregator-user --chown=1001:0 /dist /
+COPY --from=aggregator-root /dist /
 VOLUME /home/tomcat/.scm
 EXPOSE 8443 2222
 ENTRYPOINT [ "/usr/bin/dumb-init", "--", "/opt/bitnami/scripts/tomcat/entrypoint.sh" ]

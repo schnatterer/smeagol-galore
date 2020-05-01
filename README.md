@@ -152,7 +152,12 @@ Via Environment Variables:
   at `https://smeagol:8443`.
 * `HTTP_PORT` and `HTTPS_PORT`. Ports to listen on. Note that FQDN contains the HTTPS port (if != 443).  
   For now, the `tomcat` user is allowed to listen on ports 80,443 and of course > 1024.  
-  Other ports are only possible when run as root (`docker run -u0`), which you shouldn't.
+  Other ports are only possible when run as root (`docker run -u0`), which you shouldn't.  
+  **Note*: This seems to only work when the image is built with newer versions of docker (tested with 19.03.08) but not 
+  with the one use by DockerHub. As the image is built from source there, these image will result in 
+  `Socket bind failed: [13] [Permission denied].`  
+   To showcase the feature I pushed an image with tag `0.2.0-SNAPSHOT-2e1ec28f`. If this works for you, you might want to 
+   build the most recent version from source yourself. 
 * `-e DEBUG=true` exposes port 8000 as Tomcat debug port
 * Additional arguments can be passed to tomcat, or the webapps (CAS, smeagol, SCM-Manager)
   * As Docker `CMD`, e.g.  

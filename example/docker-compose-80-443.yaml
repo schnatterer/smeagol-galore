@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   smeagol-galore:
-    image: ${IMAGE}
+    image: schnatterer/smeagol-galore:0.2.0-SNAPSHOT-2e1ec28f
     container_name: smeagol-galore
     networks:
       smeagol_galore:

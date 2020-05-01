@@ -108,6 +108,12 @@ docker-compose -f docker-compose-internal-network.yaml up -d
 docker-compose -f docker-compose-internal-network-hostname.yaml up -d
 # Add "smeagol" entry to your /etc/hosts and access via browser
 # Smeagol galore can be reached on https://smeagol:8443
+
+# Example 3: Tunnel to localhost
+docker-compose -f docker-compose-internal-network-hostname.yaml up -d
+# Smeagol galore can be reached on https://localhost:8443
+
+
 ```
 
 ## Ports 80 / 443

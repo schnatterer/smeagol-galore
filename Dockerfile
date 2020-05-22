@@ -1,6 +1,6 @@
 # Define image versions for all stages
 FROM maven:3.6.3-jdk-11-slim as maven
-FROM bitnami/tomcat:9.0.34-debian-10-r8 as tomcat
+FROM bitnami/tomcat:9.0.35-debian-10-r1 as tomcat
 
 # Define global values in a central, DRY way
 FROM tomcat as builder

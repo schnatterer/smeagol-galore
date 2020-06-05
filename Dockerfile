@@ -5,9 +5,9 @@ FROM bitnami/tomcat:9.0.35-debian-10-r1 as tomcat
 # Define global values in a central, DRY way
 FROM tomcat as builder
 ENV SMEAGOL_VERSION=v0.5.6
-ENV SCM_SCRIPT_PLUGIN_VERSION=2.0.0-rc2
-ENV SCM_CAS_PLUGIN_VERSION=2.0.0-rc5
-ENV SCM_VERSION=2.0.0-rc7
+ENV SCM_SCRIPT_PLUGIN_VERSION=2.0.0
+ENV SCM_CAS_PLUGIN_VERSION=2.0.0
+ENV SCM_VERSION=2.0.0 
 ENV CATALINA_HOME=/dist/opt/bitnami/tomcat/webapps/
 
 USER root
@@ -34,7 +34,7 @@ RUN mvn compile war:exploded
 # User separate downloader stages for better caching (especially downloads)
 FROM builder as scm-downloader
 
-ENV SCM_PKG_URL=https://maven.scm-manager.org/nexus/content/repositories/releases/sonia/scm/scm-server/${SCM_VERSION}/scm-server-${SCM_VERSION}-app.tar.gz
+ENV SCM_PKG_URL=https://packages.scm-manager.org/repository/releases/sonia/scm/packaging/unix/${SCM_VERSION}/unix-${SCM_VERSION}-app.tar.gz
 ENV SCM_REQUIRED_PLUGINS=/dist/opt/scm-server/required-plugins
 
 RUN curl --fail -Lks ${SCM_PKG_URL} -o /tmp/scm-server.tar.gz
@@ -43,8 +43,8 @@ RUN tar -C /opt -xf /tmp/scm-server.tar
 RUN unzip /opt/scm-server/var/webapp/scm-webapp.war -d ${CATALINA_HOME}/scm
 # download scm-script-plugin & scm-cas-plugin
 RUN mkdir -p ${SCM_REQUIRED_PLUGINS}
-RUN curl --fail -Lks https://maven.scm-manager.org/nexus/content/repositories/plugin-releases/sonia/scm/plugins/scm-script-plugin/${SCM_SCRIPT_PLUGIN_VERSION}/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp
-RUN curl --fail -Lks https://maven.scm-manager.org/nexus/content/repositories/plugin-releases/sonia/scm/plugins/scm-cas-plugin/${SCM_CAS_PLUGIN_VERSION}/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-cas-plugin.smp
+RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-script-plugin/${SCM_SCRIPT_PLUGIN_VERSION}/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp
+RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-cas-plugin/${SCM_CAS_PLUGIN_VERSION}/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-cas-plugin.smp
 # Make logging less verbose
 COPY /scm/logback.xml ${CATALINA_HOME}/scm/WEB-INF/classes/logback.xml
 # config
@@ -58,7 +58,7 @@ RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/schnatterer/smea
 
 # Set plantuml.com as plantuml renderer. Alternative would be to deploy plantuml
 # "Fix" executable war (which seems to confuse jar & zip utilities)
-ARG PLANTUMLSERVER="http://www.plantuml.com/plantuml/png/"
+ENV PLANTUMLSERVER="http://www.plantuml.com/plantuml/png/"
 RUN set -x && \
   zip -F /tmp/smeagol-exec.war --out /tmp/smeagol.war && \
   unzip /tmp/smeagol.war -d ${CATALINA_HOME}/smeagol && \

@@ -59,7 +59,7 @@ Still, breaking changes might occur!
 ## Getting started 
 
 ```bash
-docker run -p 8443:8443 schnatterer/smeagol-galore:0.2.0-SNAPSHOT
+docker run -p 8443:8443 schnatterer/smeagol-galore
 ```
 
 Note that
@@ -87,7 +87,7 @@ Make sure the smeagol galore container use (UID 1001) is allowed to write to thi
 ```bash
 mkdir -p dev/scm
 chmod 777 dev/scm
-docker run --rm --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomcat/.scm schnatterer/smeagol-galore:0.2.0-SNAPSHOT
+docker run --rm --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomcat/.scm schnatterer/smeagol-galore
 ``` 
 
 ## Custom Certificate
@@ -161,9 +161,9 @@ Via Environment Variables:
 * `-e DEBUG=true` exposes port 8000 as Tomcat debug port
 * Additional arguments can be passed to tomcat, or the webapps (CAS, smeagol, SCM-Manager)
   * As Docker `CMD`, e.g.  
-  `docker run schnatterer/smeagol-galore:0.2.0-SNAPSHOT '-Xmx1g -Dabc=def'` 
+  `docker run schnatterer/smeagol-galore '-Xmx1g -Dabc=def'` 
   * Via env var `EXTRA_JVM_ARGUMENTS`, e.g.   
-  `docker run -e EXTRA_JVM_ARGUMENTS='-Xmx1g -Dabc=def' schnatterer/smeagol-galore:0.2.0-SNAPSHOT`
+  `docker run -e EXTRA_JVM_ARGUMENTS='-Xmx1g -Dabc=def' schnatterer/smeagol-galore`
   * Examples: 
     * `-XmX2g` to virtual machine / tomcat process 
     * See CAS's [`cas.properties`](cas/etc/cas/cas.properties) and

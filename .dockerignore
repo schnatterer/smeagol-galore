@@ -2,7 +2,10 @@
 *
 # Whitelist
 !cas
+cas/overlays
+cas/target
 !tomcat
+tomcat/target
 !scm
 !smeagol
 !entrypoint.sh

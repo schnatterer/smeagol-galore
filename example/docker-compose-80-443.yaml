@@ -31,19 +31,13 @@ services:
         read_only: true
       - type: bind
         source: ./config/certs/localhost/cacerts
-        target: /opt/bitnami/java/lib/security/cacerts
+        target: /opt/java/openjdk/lib/security/cacerts
         read_only: true
       # Make writable - needed when by tomcat when 'read_only: true'
       - type: tmpfs
-        target: /opt/bitnami/tomcat/temp
-      - type: tmpfs
-        target: /opt/bitnami/tomcat/work
-      - type: tmpfs
-        target: /opt/bitnami/tomcat/logs
+        target: /tomcat/work
       - type: tmpfs
         target: /tmp
-      - type: tmpfs
-        target: /opt/bitnami/tomcat/conf/Catalina
 
 networks:
   smeagol_galore:

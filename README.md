@@ -175,8 +175,7 @@ Via Environment Variables:
 
 The container is run as with UID and GID = 1000.
 If you want to run it as a different user you pass `-u` param when running the container.
-However, you should make sure that that the user exists (e.g. mount `/etc/passwd`).
-In order to get permissions on `/opt/bitnami/tomcat` your user should be member of group 1000.
+However, you should make sure that the user exists (e.g. mount `/etc/passwd`).
 
 Another option is to build your own image and set `--build-arg USER_ID` and `GROUP_ID` to your liking.
 
@@ -234,19 +233,19 @@ See also [more substantial example ](example/README.md) using docker-compose.
 ### SCM-Manager
 
 * [`logback.xml`](scm/logback.xml)
-* Run Container with `-v $(pwd)scm-logback.xml:/opt/bitnami/tomcat/webapps/scm/WEB-INF/classes/logback.xml`
+* Run Container with `-v $(pwd)scm-logback.xml:/tomcat/webapps/scm/WEB-INF/classes/logback.xml`
 * [See also](https://bitbucket.org/sdorra/scm-manager/src/default/scm-webapp/src/main/resources/logback.default.xml)
 
 ### Smeagol
 
 * [`logback.xml`](smeagol/logback.xml)
-* Run Container with `-v $(pwd)/smeagol-logback.xml:/opt/bitnami/tomcat/webapps/smeagol/WEB-INF/classes/logback.xml`
+* Run Container with `-v $(pwd)/smeagol-logback.xml:/tomcat/webapps/smeagol/WEB-INF/classes/logback.xml`
 * [See also](https://github.com/cloudogu/smeagol/blob/develop/src/main/resources/logback.xml)
 
 ### CAS
 
 * [`log4j.xml`](cas/src/main/resources/log4j.xml)
-* Run Container with `-v $(pwd)/cas-log4j.xml:/opt/bitnami/tomcat/webapps/cas/WEB-INF/classes/log4j.xml`
+* Run Container with `-v $(pwd)/cas-log4j.xml:/tomcat/webapps/cas/WEB-INF/classes/log4j.xml`
 
 
 ## Debugging

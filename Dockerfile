@@ -1,26 +1,27 @@
 # Define image versions for all stages
 FROM maven:3.6.3-jdk-11-slim as maven
 FROM bitnami/tomcat:9.0.35-debian-10-r1 as tomcat
+FROM adoptopenjdk/openjdk11:jre-11.0.7_10-debianslim as jre
 
 # Define global values in a central, DRY way
-FROM tomcat as builder
+FROM jre as builder
 ENV SMEAGOL_VERSION=v0.5.6
 ENV SCM_SCRIPT_PLUGIN_VERSION=2.0.0
 ENV SCM_CAS_PLUGIN_VERSION=2.0.0
 ENV SCM_VERSION=2.0.0 
-ENV CATALINA_HOME=/dist/opt/bitnami/tomcat/webapps/
+ENV CATALINA_HOME=/dist/tomcat/webapps/
 
 USER root
 RUN mkdir -p ${CATALINA_HOME}
 RUN apt-get update
-RUN apt-get install -y wget zip dumb-init
+RUN apt-get install -y wget zip dumb-init gpg
 
 
 FROM maven as cas-mavencache
 ENV MAVEN_OPTS=-Dmaven.repo.local=/mvn
 ADD cas/pom.xml /cas/pom.xml
 WORKDIR /cas
-RUN mvn dependency:resolve dependency:resolve-plugins
+RUN mvn dependency:go-offline
 
 
 FROM maven as cas-mavenbuild
@@ -31,6 +32,20 @@ WORKDIR /cas
 RUN mvn compile war:exploded
 
 
+FROM maven as tomcat-mavencache
+ENV MAVEN_OPTS=-Dmaven.repo.local=/mvn
+ADD tomcat/pom.xml /tomcat/pom.xml
+WORKDIR /tomcat
+RUN mvn dependency:go-offline
+
+FROM maven as tomcat-mavenbuild
+ENV MAVEN_OPTS=-Dmaven.repo.local=/mvn 
+COPY --from=tomcat-mavencache /mvn/ /mvn/
+ADD tomcat/ /tomcat/
+WORKDIR /tomcat
+RUN mvn package
+
+
 # User separate downloader stages for better caching (especially downloads)
 FROM builder as scm-downloader
 
@@ -38,12 +53,16 @@ ENV SCM_PKG_URL=https://packages.scm-manager.org/repository/releases/sonia/scm/p
 ENV SCM_REQUIRED_PLUGINS=/dist/opt/scm-server/required-plugins
 
 RUN curl --fail -Lks ${SCM_PKG_URL} -o /tmp/scm-server.tar.gz
+RUN curl --fail -Lks ${SCM_PKG_URL}.asc -o /tmp/scm-server.tar.gz.asc
+RUN gpg --receive-keys 8A44E41377D51FA4
+RUN gpg --batch --verify /tmp/scm-server.tar.gz.asc /tmp/scm-server.tar.gz
 RUN gunzip /tmp/scm-server.tar.gz
 RUN tar -C /opt -xf /tmp/scm-server.tar
 RUN unzip /opt/scm-server/var/webapp/scm-webapp.war -d ${CATALINA_HOME}/scm
 # download scm-script-plugin & scm-cas-plugin
 RUN mkdir -p ${SCM_REQUIRED_PLUGINS}
 RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-script-plugin/${SCM_SCRIPT_PLUGIN_VERSION}/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp
+# Plugins are not signed, so no verification possible here
 RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-cas-plugin/${SCM_CAS_PLUGIN_VERSION}/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-cas-plugin.smp
 # Make logging less verbose
 COPY /scm/logback.xml ${CATALINA_HOME}/scm/WEB-INF/classes/logback.xml
@@ -77,15 +96,16 @@ COPY cas/etc/ /dist/etc/
 COPY --from=scm-downloader /dist /dist
 COPY --from=smeagol-downloader /dist /dist
 
-# Tomcat Config (TLS & root URL redirect)
-COPY tomcat /dist/opt/bitnami/tomcat/
-COPY entrypoint.sh /dist/opt/bitnami/scripts/tomcat/
+# Tomcat
+COPY tomcat /dist/tomcat/
+
+COPY entrypoint.sh /dist/
 
 # Needed when running with read-only file system and mounting this folder as volume (which leads to being owend by 0:0)
-RUN mkdir /dist/opt/bitnami/tomcat/temp
+RUN mkdir /dist/tomcat/temp
 # Allow for editing cacerts in entrypoint.sh
-RUN mkdir -p /dist/opt/bitnami/java/lib/security/ && \
-    cp /opt/bitnami/java/lib/security/cacerts /dist/opt/bitnami/java/lib/security/
+RUN mkdir -p /dist/opt/java/openjdk/lib/security/ && \
+    cp /opt/java/openjdk/lib/security/cacerts /dist/opt/java/openjdk/lib/security/cacerts
 # Create room for certs
 RUN mkdir -p /dist/config/certs
 # Make home folder writable
@@ -93,8 +113,7 @@ RUN mkdir -p /dist/home/tomcat/.scm
 # Once copied to the final stage everythings seems to be owend by root:root.
 # That is, the owner seems not to be preseverd, even when chown to UID 1001 here.
 # At least on Docker Hub this still pehttps://github.com/moby/moby/pull/38599oby/moby/pull/38599
-# Good thing: Bitnami images are always run with root group
-# See https://docs.openshift.com/container-platform/4.3/openshift_images/create-images.html#images-create-guide-openshift_create-images
+# To make things easier the final image will run as root group. For more info on this "pattern", see https://docs.openshift.com/container-platform/4.3/openshift_images/create-images.html#images-create-guide-openshift_create-images
 # So we need to make sure to chmod everything we need at run time to the group not only the user.
 # That's why we use 770 instead of 700.
 RUN chmod -R 770 /dist
@@ -110,7 +129,7 @@ RUN mkdir -p /dist/usr/bin/ && \
 # Use authbind to allow tomcat user to bin to port 443
 # Unfortunately, COPYing capabilities does not work in classic docker build
 # https://github.com/moby/moby/issues/20435 
-#RUN setcap CAP_NET_BIND_SERVICE=+ep /opt/bitnami/java/bin/java # requires libcap2-bin
+#RUN setcap CAP_NET_BIND_SERVICE=+ep /opt/java/openjdk/bin/java # requires libcap2-bin
 # Another option could be to install libcap and create a "capability.conf" with
 # cap_net_bind_service		tomcat
 RUN cd /tmp && apt-get download authbind
@@ -119,11 +138,21 @@ RUN touch /dist/etc/authbind/byport/443 /dist/etc/authbind/byport/80 && \
     chown 1001:0 /dist/etc/authbind/byport/* && \
     chmod 550 /dist/etc/authbind/byport/*
 
-FROM tomcat
+# Copy APR lib
+RUN mkdir -p /dist/lib/usr/local/lib 
+COPY --from=tomcat /opt/bitnami/tomcat/lib /tmp/lib
+RUN mv /tmp/lib/libapr* /tmp/lib/libtcnative* /dist/lib/usr/local/lib
+
+# Copy embedded tomcat
+COPY --from=tomcat-mavenbuild /tomcat/target/tomcat-jar-with-dependencies.jar /dist/app/app.jar
+
+
+FROM jre
 # Don't --chown=1001:0  here, or some binaries/libraries won't work (libcap/authbind)
 COPY --from=aggregator /dist /
 VOLUME /home/tomcat/.scm
 EXPOSE 8443 2222
-ENTRYPOINT [ "/usr/bin/dumb-init", "--", "/opt/bitnami/scripts/tomcat/entrypoint.sh" ]
+USER 1001:0
+ENTRYPOINT [ "dumb-init", "--", "/entrypoint.sh" ]
 # Remove base image's CMD - here it is used to pass additional CATALINA_ARGS conveniently
 CMD []

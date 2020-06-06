@@ -29,19 +29,13 @@ services:
         read_only: true
       - type: bind
         source: ./config/certs/localhost/cacerts
-        target: /opt/bitnami/java/lib/security/cacerts
+        target: /opt/java/openjdk/lib/security/cacerts
         read_only: true
       # Make writable - needed when by tomcat when 'read_only: true'
       - type: tmpfs
-        target: /opt/bitnami/tomcat/temp
-      - type: tmpfs
-        target: /opt/bitnami/tomcat/work
-      - type: tmpfs
-        target: /opt/bitnami/tomcat/logs
+        target: /tomcat/work
       - type: tmpfs
         target: /tmp
-      - type: tmpfs
-        target: /opt/bitnami/tomcat/conf/Catalina
   # If you want to use port bindings with internal networks you can use a tunnel
   tunnel:
     image: alpine/socat:1.7.3.4-r0

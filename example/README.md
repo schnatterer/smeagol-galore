@@ -143,7 +143,7 @@ Smeagol galore can be reached via on `https://172.1.2.2`.
 
 You still might need a self signed cert, which is used for internal communication.
 You can easily create it be starting a throw-away smeagol-galore container and copy the 
- `/config/certs` and `/opt/bitnami/java/lib/security/cacerts` to your config directory. 
+ `/config/certs` and `/opt/java/openjdk/lib/security/cacerts` to your config directory. 
 
 For example like so:
 
@@ -161,7 +161,7 @@ CONTAINER=$(\
 )
 sleep 5
 docker cp "${CONTAINER}:/config/certs/" .
-docker cp "${CONTAINER}:/opt/bitnami/java/lib/security/cacerts" certs
+docker cp "${CONTAINER}:/opt/java/openjdk/lib/security/cacerts" certs
 
 docker stop "${CONTAINER}"
 rm certs/ca.crt.srl

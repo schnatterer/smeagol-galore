@@ -13,7 +13,6 @@ CERT_VALIDITY_DAYS=${CERT_VALIDITY_DAYS:-30}
 
 SCM_DATA="${USER_HOME}/.scm/"
 SCM_REQUIRED_PLUGINS="/opt/scm-server/required-plugins"
-TOMCAT_BIN_DIR=/opt/bitnami/tomcat/bin
 
 set -o errexit -o nounset -o pipefail
 
@@ -33,7 +32,7 @@ createSelfSignedCert() {
     cert=/config/certs/crt.pem
     pk=/config/certs/pk.pem
     ca=/config/certs/ca.crt.pem
-    trustStore=/opt/bitnami/java/lib/security/cacerts
+    trustStore=/opt/java/openjdk/lib/security/cacerts
     host=$(echo "${FQDN}" | sed -e 's/:/\n/g' | head -1)
     ipAddress=$(hostname -I | awk '{print $1}')
 
@@ -112,8 +111,7 @@ startTomcat() {
 
     DEBUG_PARAM=""
     if [[ "${DEBUG}" == "true" ]];     then
-        export JPDA_OPTS="-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
-        DEBUG_PARAM=jpda
+        DEBUG_PARAM="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000"
     fi
     
     if [[ "$HTTPS_PORT" -le 1024 || "${HTTP_PORT}" -le 1024 ]]; then
@@ -130,16 +128,15 @@ startTomcat() {
                    -Dsonia.scm.lifecycle.restart-strategy=exit \
                    -Dsonia.scm.restart.exit-code=42"
 
-    export CATALINA_OPTS="${CATALINA_OPTS} ${EXTRA_JVM_ARGUMENTS} $*"
+    export CATALINA_OPTS="${CATALINA_OPTS} ${DEBUG_PARAM} ${EXTRA_JVM_ARGUMENTS} $*"
     echo "Set CATALINA_OPTS: ${CATALINA_OPTS}"
 
-    export JAVA_HOME="/opt/bitnami/java"
     export JAVA_OPTS="-Djava.awt.headless=true -XX:+UseG1GC -Dfile.encoding=UTF-8"
     # Load Tomcat Native library
-    export LD_LIBRARY_PATH="/opt/bitnami/tomcat/lib:${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    export LD_LIBRARY_PATH="/lib/usr/local/lib:${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
     local SCM_RESTART_EVENT=42
-    while ${AUTHBIND} ${TOMCAT_BIN_DIR}/catalina.sh ${DEBUG_PARAM} run ; scm_exit_code=$? ; [[ ${scm_exit_code} -eq ${SCM_RESTART_EVENT} ]] ; do
+    while ${AUTHBIND} java ${CATALINA_OPTS} -jar /app/app.jar ; scm_exit_code=$? ; [[ ${scm_exit_code} -eq ${SCM_RESTART_EVENT} ]] ; do
       echo Got exit code ${scm_exit_code} -- restarting SCM-Manager
     done
     echo Got exit code ${scm_exit_code} -- exiting

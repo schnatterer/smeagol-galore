@@ -96,13 +96,13 @@ COPY cas/etc/ /dist/etc/
 COPY --from=scm-downloader /dist /dist
 COPY --from=smeagol-downloader /dist /dist
 
-# Tomcat
-COPY tomcat /dist/tomcat/
+# Root webapp
+COPY tomcat/webapps /dist/tomcat/webapps
 
 COPY entrypoint.sh /dist/
 
 # Needed when running with read-only file system and mounting this folder as volume (which leads to being owend by 0:0)
-RUN mkdir /dist/tomcat/temp
+RUN mkdir /dist/tomcat/work
 # Allow for editing cacerts in entrypoint.sh
 RUN mkdir -p /dist/opt/java/openjdk/lib/security/ && \
     cp /opt/java/openjdk/lib/security/cacerts /dist/opt/java/openjdk/lib/security/cacerts

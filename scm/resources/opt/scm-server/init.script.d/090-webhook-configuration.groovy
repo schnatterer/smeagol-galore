@@ -1,16 +1,14 @@
 // this script configures the webhook plugin
 
+
 import sonia.scm.*
-
-import javax.xml.bind.*
-
 // TODO sharing ?
 def findClass(clazzAsString) {
   return Class.forName(clazzAsString, true, Thread.currentThread().getContextClassLoader())
 }
 
 def addSmeagolNotifyEntry(globalConfig){
-  String fqdn = System.getenv("config/_global/fqdn");
+  String fqdn = System.getenv('FQDN')
   String url = "https://${fqdn}/smeagol/rest/api/v1/notify?id=\${repository.id}";
 
   boolean executeOnEveryCommit = false;

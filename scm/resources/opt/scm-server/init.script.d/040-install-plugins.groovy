@@ -38,7 +38,6 @@ def isFirstStart() {
 // action
 
 // Smeagol
-plugins.add("scm-webhook-plugin")
 plugins.add("scm-rest-legacy-plugin")
 
 if (isFirstStart()) {

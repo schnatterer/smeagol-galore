@@ -1,5 +1,6 @@
 package info.schnatterer.tomcat;
 
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.VersionLoggerListener;
 
@@ -15,7 +16,6 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         Tomcat tomcat = new Tomcat();
-        tomcat.setPort(Integer.parseInt(System.getProperty("http.port")));
         String catalinaHome = "/tomcat";
         tomcat.setBaseDir(new File(catalinaHome).getAbsolutePath());
 
@@ -28,11 +28,18 @@ public class Main {
         tomcat.addWebapp("/scm", new File(catalinaHome + "/webapps/scm").getAbsolutePath());
 
         ReloadingTomcatConnectorFactory.addHttpsConnector(tomcat, Integer.parseInt(System.getProperty("https.port")), PK, CRT, CA);
-
-        // Without this call the connector seems not to start
-        tomcat.getConnector();
         
+        addHttpConnector(tomcat, Integer.parseInt(System.getProperty("http.port")));
+
         tomcat.start();
         tomcat.getServer().await();
+    }
+
+    private static void addHttpConnector(Tomcat tomcat, int httpPort) {
+        // Create Standard HTTP connector
+        // This creates an APR HTTP connector because AprLifecycleListener has been configured (in addHttpsConnector)
+        Connector connector = new Connector("HTTP/1.1");
+        connector.setPort(httpPort);
+        tomcat.getService().addConnector(connector);
     }
 }

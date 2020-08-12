@@ -1,14 +1,14 @@
 # Define image versions for all stages
 FROM maven:3.6.3-jdk-11-slim as maven
 FROM schnatterer/letsencrypt-tomcat:0.4.0 as letsencrypt-tomcat
-FROM adoptopenjdk/openjdk11:jre-11.0.7_10-debianslim as jre
+FROM adoptopenjdk/openjdk11:jre-11.0.8_10-debianslim as jre
 
 # Define global values in a central, DRY way
 FROM jre as builder
 ENV SMEAGOL_VERSION=v0.5.6
-ENV SCM_SCRIPT_PLUGIN_VERSION=2.0.0
+ENV SCM_SCRIPT_PLUGIN_VERSION=2.1.0
 ENV SCM_CAS_PLUGIN_VERSION=2.0.0
-ENV SCM_VERSION=2.0.0 
+ENV SCM_VERSION=2.3.1 
 ENV CATALINA_HOME=/dist/tomcat/webapps/
 
 USER root

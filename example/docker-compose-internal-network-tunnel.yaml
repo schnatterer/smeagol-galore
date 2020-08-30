@@ -25,7 +25,7 @@ services:
         read_only: true
       - type: bind
         source: ./config/certs/localhost
-        target: /config/certs
+        target: /config/certs/localhost
         read_only: true
       - type: bind
         source: ./config/certs/localhost/cacerts

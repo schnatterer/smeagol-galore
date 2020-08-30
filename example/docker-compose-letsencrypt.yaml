@@ -1,0 +1,46 @@
+version: "3.7"
+services:
+  smeagol-galore:
+    image: ${IMAGE}
+    # More secure, but more challenging when using let's encrypt
+    #read_only: true
+    environment:
+      - ENABLE_LETSENCRYPT=true
+      - FQDN=example.com
+      # Remove for production systems. Beware of letsencrypt rate limits once removed
+      # Note that this does not work with read_only: true (enable it once you remove/comment out STAGING)
+      #- STAGING=true
+      # read_only: true: Avoid applications writing to read-only home folder. E.g. jgit (part of SCMM)
+      # See https://git.eclipse.org/c/jgit/jgit.git/commit/?id=838b5a84b5093c335b95a644b8888006d9e95493
+      - XDG_CONFIG_HOME=/home/tomcat/.scm/
+    ports:
+      - 443:8443
+      - 80:8080
+    volumes:
+      - smeagol-galore:/home/tomcat/.scm
+      # Better persist your certs to avoid letsencrypt rate limits
+      - smeagol-galore-certs:/config/certs
+      # read_only: true: Dehydrated's dir needs to be writable, so mount when with 
+      - type: tmpfs
+        target: /dehydrated/
+      - type: tmpfs
+        target: /tomcat/webapps/ROOT/.well-known/acme-challenge
+
+      # read_only: true: Make writable
+      - type: tmpfs
+        target: /tomcat/work
+      - type: tmpfs
+        target: /tmp
+      - type: bind
+        source: ./config/certs/localhost/cacerts
+        target: /opt/java/openjdk/lib/security/cacerts
+        # For the first start, this needs to be writable, so startup-self signed cert can be added to truststore
+        #read_only: true
+      # Don't install any plugins for faster startup in this example
+      - type: bind
+        source: ./config/plugin-config.json
+        target: /etc/scm/plugin-config.json
+        read_only: true
+volumes:
+  smeagol-galore:
+  smeagol-galore-certs:

@@ -28,7 +28,7 @@
             <!-- Make tomcat automatically reload certificates at runtime -->
             <groupId>info.schnatterer.tomcat-reloading-connector</groupId>
             <artifactId>reloading-connector-embedded-tomcat</artifactId>
-            <version>0.1.2-SNAPSHOT</version>
+            <version>0.3.0</version>
         </dependency>
     </dependencies>
 
@@ -59,15 +59,17 @@
                 </executions>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <!-- mvn go-offline now properly resolves dependencies, improving Docker build caching 
+                        https://issues.apache.org/jira/browse/MDEP-204 
+                    -->
+                    <version>3.1.2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
-
-    <repositories>
-        <repository>
-            <id>snapshots-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases><enabled>false</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
-        </repository>
-    </repositories>
     
 </project>

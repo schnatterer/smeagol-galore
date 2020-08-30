@@ -46,7 +46,7 @@ services:
         read_only: true
       - type: bind
         source: ./config/certs/localhost
-        target: /config/certs
+        target: /config/certs/localhost
         read_only: true
       - type: bind
         source: ./config/certs/localhost/cacerts
@@ -63,7 +63,7 @@ services:
         read_only: true
       - type: bind
         source: ./config/cas-log4j.xml
-        target: //tomcat/webapps/cas/WEB-INF/classes/log4j.xml
+        target: /tomcat/webapps/cas/WEB-INF/classes/log4j.xml
         read_only: true
       # Make writable - needed when by tomcat when 'read_only: true'
       - type: tmpfs

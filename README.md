@@ -14,14 +14,11 @@ Runs without a full Cloudogu ecosystem, but still features
 * [PlantUML](http://plantuml.com/),
 * [SCM-Manager](https://www.scm-manager.org/) as Git backend,
 * Single Sign On using [CAS](https://github.com/apereo/cas),
+* built-in let's encrypt support,
 * everything deployed on an [Apache Tomcat](https://github.com/apache/tomcat) and 
 * neatly packed into a docker image.
 
 [![Diagram showing components and their relationships](http://www.plantuml.com/plantuml/svg/Z9BVIYCn58VlvocEkXSkE9Fw1oaYijsfYj1kfRNiXKWv9d4QEac69ACBuhjl9ZETjagbkJhjxvkJBoVvPHqQLyeyscFyHIWEwM0qxOzkfzFn0ERE5VQ248DlIIRSl7mkBJTKAyULIwYMXEQwP3ehIP6Zglh4otzYMnZXk2KIhUCcYlQ4edd9U6dozKr81LjYgKoAuF4z9ZbcEg_Hrlak7VtPpTUL1J9pkj8LFerVFD7wlfuadQIpuT7q9xw3rEgBPvip_bhrirwMBhZP3eODyOrRBJdnYgyxmuBDA1hsQG2J-_7Tm_LajnaOVEOvLmm93QTlPz5Eu3ZfaER7Xj5g6-AqfEXg3R_iGgW23Kf0O_GRl4S0gSwrWODEMD77EgGquu7vhGtZfY6Fpy-xNRP98dNQr2ZIHMPqgLY3dvpYAMDRcW3SQEM-ADJjfhPwa45Yln-kQX_G0WibmENbZxgykeA3bx22GVt1GpXv-C25ikBhQfCFgtg-iqawFBHK7e4luY4gpBZvkKGtmE5rxtOqE6oUkV-WBZx3DxtPNN-MziRzGuhs2DBUP1tvg8vQszvNbpiT3eBlygOhusNjdTyhl9e9nF4LD7l31LmpuU2lM8Yra4eVt787Orve6otXxoAVUKcVzKetvye9Yev77jyQhPgsnfuPSyMy1XEO6PGsQhFuSIuOu-gfRXT5KVrueJqaF9vr_vrroV7vq_zcwo39SH26ml2LdgGdmBl19Bx_aKQ9WPwakojcD_yovIyInOOuBLPIO0rm5QH5a6mDMC4Iu1P6hmDMI5PS1beXTMMbZIYs0eg6MG5EvBe2a20xLm0KsPO0u5W4M0Ba4c1oKg-3dDrfPfV1LX9f2if5K4hEPagx3B9R8e45G24MWVv_m7u5SWNedj0pAdfRav-1RBVMTaKapaWG-H7bdm3RcGEaHMJW_NYsopkmUckzFPan3CbypD8ho6ssjvRjGOncwNxSkzZ_0MnlxMwFGjXspAfR1tlxLhPH31arGf-WRhNzCiHUXsJhe6pVHEK0h5-20-HStmQ0fs0YZju6J92yjDaj2pf8Bi1vZ1ln0kXZoAQ8B01TWFFwxXaOm4vWLcwFl_V-EvaCpqfSW-8B0Aa4e8dLLZ1oeiUnpGHWJW5Kn1696u1pCLT0vCae4qJk3p2-4fbZ5BriEi7vrGJIb-yJXdLv0H3Q2Juq0Q2w221ga4zrCCXdy7Wt_ucdLpoZ_W80)](http://www.plantuml.com/plantuml/uml/Z9BVIYCn58VlvocEkXSkE9Fw1oaYijsfYj1kfRNiXKWv9d4QEac69ACBuhjl9ZETjagbkJhjxvkJBoVvPHqQLyeyscFyHIWEwM0qxOzkfzFn0ERE5VQ248DlIIRSl7mkBJTKAyULIwYMXEQwP3ehIP6Zglh4otzYMnZXk2KIhUCcYlQ4edd9U6dozKr81LjYgKoAuF4z9ZbcEg_Hrlak7VtPpTUL1J9pkj8LFerVFD7wlfuadQIpuT7q9xw3rEgBPvip_bhrirwMBhZP3eODyOrRBJdnYgyxmuBDA1hsQG2J-_7Tm_LajnaOVEOvLmm93QTlPz5Eu3ZfaER7Xj5g6-AqfEXg3R_iGgW23Kf0O_GRl4S0gSwrWODEMD77EgGquu7vhGtZfY6Fpy-xNRP98dNQr2ZIHMPqgLY3dvpYAMDRcW3SQEM-ADJjfhPwa45Yln-kQX_G0WibmENbZxgykeA3bx22GVt1GpXv-C25ikBhQfCFgtg-iqawFBHK7e4luY4gpBZvkKGtmE5rxtOqE6oUkV-WBZx3DxtPNN-MziRzGuhs2DBUP1tvg8vQszvNbpiT3eBlygOhusNjdTyhl9e9nF4LD7l31LmpuU2lM8Yra4eVt787Orve6otXxoAVUKcVzKetvye9Yev77jyQhPgsnfuPSyMy1XEO6PGsQhFuSIuOu-gfRXT5KVrueJqaF9vr_vrroV7vq_zcwo39SH26ml2LdgGdmBl19Bx_aKQ9WPwakojcD_yovIyInOOuBLPIO0rm5QH5a6mDMC4Iu1P6hmDMI5PS1beXTMMbZIYs0eg6MG5EvBe2a20xLm0KsPO0u5W4M0Ba4c1oKg-3dDrfPfV1LX9f2if5K4hEPagx3B9R8e45G24MWVv_m7u5SWNedj0pAdfRav-1RBVMTaKapaWG-H7bdm3RcGEaHMJW_NYsopkmUckzFPan3CbypD8ho6ssjvRjGOncwNxSkzZ_0MnlxMwFGjXspAfR1tlxLhPH31arGf-WRhNzCiHUXsJhe6pVHEK0h5-20-HStmQ0fs0YZju6J92yjDaj2pf8Bi1vZ1ln0kXZoAQ8B01TWFFwxXaOm4vWLcwFl_V-EvaCpqfSW-8B0Aa4e8dLLZ1oeiUnpGHWJW5Kn1696u1pCLT0vCae4qJk3p2-4fbZ5BriEi7vrGJIb-yJXdLv0H3Q2Juq0Q2w221ga4zrCCXdy7Wt_ucdLpoZ_W80)
-
-**NOTE**: This version of smeagol-galore uses a Release Candidate version of SCM-Manager v2.
-It is already used in production, and has been running stable for more than a year. 
-Still, breaking changes might occur!
 
 # Table of contents
 
@@ -34,6 +31,8 @@ Still, breaking changes might occur!
   - [Getting started](#getting-started)
   - [Persist state](#persist-state)
   - [Custom Certificate](#custom-certificate)
+    - [Mount your own certs](#mount-your-own-certs)
+    - [Built-in Let's Encrypt support](#built-in-lets-encrypt-support)
   - [Create more wikis](#create-more-wikis)
   - [Credentials](#credentials)
   - [Configuration](#configuration)
@@ -92,16 +91,51 @@ docker run --rm --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomca
 
 ## Custom Certificate
 
-The self-signed certificate is only a valid option for trying out and development.
-In production you should provide a proper certificate, which can be done by mounting a java keystore like so: 
-`-v $(pwd)/certs:/config/certs`.
-
+The self-signed certificate that is generated on startup by default is only a valid option for trying out and development.
+In production, you should provide a proper certificate, which can be done by either:
+ * mounting your certs
+ * enabling built'in Lets's Encrypt support
+ 
 Note that smeagol, cas and SCMM communicate with each other via HTTPS.
 If you're certificate is not trusted by the JVM you should add it to the trust store and then mount it like so: 
-`-v $(pwd)/dev/cacerts:/usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts`.
+`-v $(pwd)/dev/cacerts:/opt/java/openjdk/lib/security/cacerts`.
 
 See [entrypoint.sh](entrypoint.sh) for an example.
 
+### Mount your own certs
+ 
+Just mount your certs into the container like so: `-v $(pwd)/certs:/config/certs/${FQDN}`.
+
+Smeagol galore's server loads the certs from the following files inside the `/config/certs/${FQDN}` folder:
+
+* `cert.pem` 
+* `fullchain.pem`
+* `privkey.pem`
+
+### Built-in Let's Encrypt support
+
+If you don't have any reverse proxy infrastructure that handles TLS temrination, the most convenient way of handling 
+TLS is to use Smeagol Galore's built-in Let's Encrypt support.
+ 
+Before getting started, make sure
+ 
+* to set the DNS record to match the external IP address of your host and
+* that ports 80 and 443 are routed to the container ports. By default:
+    * external port 443 to container port 8443 (`-p443:8443`) and
+    * external port 80 to container port 8080 (`-p80:8080`)
+
+Then just enable let's encrypt via the environment:
+* `-e ENABLE_LETSENCRYPT=true` - enable let's encrypt support
+* `-eFQDN=example.com` - determines the domain to request the cert for 
+* `-eSTAGING=true` - If set to `true` creates certs against Lets Encrypt's staging, which has no rate limit but is not 
+  accepted by your browser.
+
+For a full example see [examples](example/docker-compose-letsencrypt.yaml).
+
+At startup Smeagol Galore still generates self-signed certs, if none are there, as it needs cert files to get the 
+server started.  
+Once the server is up, a background process queries the certs from Let's Encrypt, if their validity is less than 30 days.
+The process checks once a day if the certs are valid less than 30 days and renews them, if necessary.
 
 ## Create more wikis
 

@@ -1,20 +1,20 @@
 # Define image versions for all stages
 FROM maven:3.6.3-jdk-11-slim as maven
-FROM bitnami/tomcat:9.0.35-debian-10-r1 as tomcat
-FROM adoptopenjdk/openjdk11:jre-11.0.7_10-debianslim as jre
+FROM schnatterer/letsencrypt-tomcat:0.4.0 as letsencrypt-tomcat
+FROM adoptopenjdk/openjdk11:jre-11.0.8_10-debianslim as jre
 
 # Define global values in a central, DRY way
 FROM jre as builder
 ENV SMEAGOL_VERSION=v0.5.6
-ENV SCM_SCRIPT_PLUGIN_VERSION=2.0.0
+ENV SCM_SCRIPT_PLUGIN_VERSION=2.1.0
 ENV SCM_CAS_PLUGIN_VERSION=2.0.0
-ENV SCM_VERSION=2.0.0 
+ENV SCM_VERSION=2.4.0 
 ENV CATALINA_HOME=/dist/tomcat/webapps/
 
 USER root
 RUN mkdir -p ${CATALINA_HOME}
 RUN apt-get update
-RUN apt-get install -y wget zip dumb-init gpg
+RUN apt-get install -y wget zip gpg
 
 
 FROM maven as cas-mavencache
@@ -122,10 +122,6 @@ RUN chmod -R 770 /dist
 RUN useradd --uid 1001 --gid 0 --shell /bin/bash --create-home tomcat && \
     cp /etc/passwd /dist/etc
 
-# Use init system, so we still have proper signal handling even though restart loop in entrypoint.sh required by SCMM
-RUN mkdir -p /dist/usr/bin/ && \
-    cp /usr/bin/dumb-init /dist/usr/bin/dumb-init
-
 # Use authbind to allow tomcat user to bin to port 443
 # Unfortunately, COPYing capabilities does not work in classic docker build
 # https://github.com/moby/moby/issues/20435 
@@ -138,10 +134,22 @@ RUN touch /dist/etc/authbind/byport/443 /dist/etc/authbind/byport/80 && \
     chown 1001:0 /dist/etc/authbind/byport/* && \
     chmod 550 /dist/etc/authbind/byport/*
 
+# Copy letsencrypt-related stuff
+COPY --from=letsencrypt-tomcat /letsencrypt /dist
+
+# Serve /static
+# It would be simpler to link ROOT -> static but it seems that tomcat does not follow symlinks when serving static content
+# So just do it the other way round
+RUN mkdir -p /dist/tomcat/webapps/ROOT/.well-known/acme-challenge
+RUN rm -rf /dist/static/.well-known/acme-challenge
+RUN ln -s /tomcat/webapps/ROOT/.well-known/acme-challenge /dist/static/.well-known/acme-challenge
+RUN chmod 770 /dist/tomcat/webapps/ROOT/.well-known/acme-challenge
+
+# As SG's setup is rather complex the essential code of meta-entrypoint was included (and altered) in entrypoint.sh 
+RUN rm /dist/meta-entrypoint.sh
+
 # Copy APR lib
-RUN mkdir -p /dist/lib/usr/local/lib 
-COPY --from=tomcat /opt/bitnami/tomcat/lib /tmp/lib
-RUN mv /tmp/lib/libapr* /tmp/lib/libtcnative* /dist/lib/usr/local/lib
+COPY --from=letsencrypt-tomcat /lib /dist/
 
 # Copy embedded tomcat
 COPY --from=tomcat-mavenbuild /tomcat/target/tomcat-jar-with-dependencies.jar /dist/app/app.jar
@@ -153,6 +161,4 @@ COPY --from=aggregator /dist /
 VOLUME /home/tomcat/.scm
 EXPOSE 8443 2222
 USER 1001:0
-ENTRYPOINT [ "dumb-init", "--", "/entrypoint.sh" ]
-# Remove base image's CMD - here it is used to pass additional CATALINA_ARGS conveniently
-CMD []
+ENTRYPOINT [ "/entrypoint.sh" ]

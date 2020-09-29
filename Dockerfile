@@ -8,6 +8,7 @@ FROM jre as builder
 ENV SMEAGOL_VERSION=v0.5.6
 ENV SCM_SCRIPT_PLUGIN_VERSION=2.1.3
 ENV SCM_CAS_PLUGIN_VERSION=2.1.1
+ENV SCM_SMEAGOL_PLUGIN_VERSION=0.1.0
 ENV SCM_VERSION=2.6.0 
 ENV CATALINA_HOME=/dist/tomcat/webapps/
 
@@ -59,11 +60,12 @@ RUN gpg --batch --verify /tmp/scm-server.tar.gz.asc /tmp/scm-server.tar.gz
 RUN gunzip /tmp/scm-server.tar.gz
 RUN tar -C /opt -xf /tmp/scm-server.tar
 RUN unzip /opt/scm-server/var/webapp/scm-webapp.war -d ${CATALINA_HOME}/scm
-# download scm-script-plugin & scm-cas-plugin
+# download essential SCMM plugins
 RUN mkdir -p ${SCM_REQUIRED_PLUGINS}
-RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-script-plugin/${SCM_SCRIPT_PLUGIN_VERSION}/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp
 # Plugins are not signed, so no verification possible here
+RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-script-plugin/${SCM_SCRIPT_PLUGIN_VERSION}/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp
 RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-cas-plugin/${SCM_CAS_PLUGIN_VERSION}/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-cas-plugin.smp
+RUN curl --fail -Lks https://github.com/schnatterer/scm-smeagol-plugin/releases/download/${SCM_SMEAGOL_PLUGIN_VERSION}/scm-smeagol-plugin-${SCM_SMEAGOL_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-smeagol-plugin.smp
 # Make logging less verbose
 COPY /scm/logback.xml ${CATALINA_HOME}/scm/WEB-INF/classes/logback.xml
 # config

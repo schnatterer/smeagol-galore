@@ -83,7 +83,9 @@ ENV PLANTUMLSERVER="http://www.plantuml.com/plantuml/png/"
 RUN set -x && \
   zip -F /tmp/smeagol-exec.war --out /tmp/smeagol.war && \
   unzip /tmp/smeagol.war -d ${CATALINA_HOME}/smeagol && \
-  sed -i "s#rendererURL:\"/plantuml/png/#rendererURL:\"${PLANTUMLSERVER}#g" "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)"
+  sed -i "s#rendererURL:\"/plantuml/png/#rendererURL:\"${PLANTUMLSERVER}#g" "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)" && \
+  # Add link to SCM-Manager in Smeagol UI
+  sed -i 's#\(to:"/"},"Smeagol")\)#\1,s.a.createElement("a",{href:"/scm",class:"navbar-brand"},"SCM-Manager")#g' "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)" 
 # Config
 COPY smeagol/application.yml /dist/application.yml
 COPY smeagol/logback.xml ${CATALINA_HOME}/smeagol/WEB-INF/classes/logback.xml

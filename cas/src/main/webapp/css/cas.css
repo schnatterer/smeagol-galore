@@ -50,7 +50,7 @@ header h1 { background: #210F7A; color: white; padding: 1.4em 1.4em; font-size: 
 #msg { padding: 20px; margin-bottom: 10px; }
 #msg h2 { font-size: 1.4em; margin-bottom: 1em; }
 #msg.errors { border: 1px dotted #BB0000; color: #BB0000; padding-left: 100px; background: url(../images/error.gif) no-repeat 20px center; }
-#msg.success { border: 1px dotted #390; color: #390; padding-left: 100px; background: url(../images/confirm.gif) no-repeat 20px center; }
+#msg.success { border: 1px dotted #390; color: #000000; padding-left: 100px; background: url(../images/confirm.gif) no-repeat 20px center; }
 #msg.info { border: 1px dotted #008; color: #008; padding-left: 100px; background: url(../images/info.gif) no-repeat 20px center; }
 #msg.question { border: 1px dotted #390; color: #390; padding-left: 100px; background: url(../images/question.png) no-repeat 20px center; }
 #msg.warn { border: 1px dotted #960; color: #960; padding-left: 100px; background: #ffbc8f url(../images/info.gif) no-repeat 20px center; }
@@ -144,3 +144,35 @@ a.button:hover {
     border-right:2px solid #82b36c;
     border-bottom:2px solid #82b36c;
 }
+
+.bg-primary {
+    background-color: #23A3DD;
+}
+
+.vertical-center {
+    width: 100%;
+    min-height: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center; }
+
+.container {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto; }
+.container:before, .container:after {
+    display: table;
+    content: " "; }
+.container:after {
+    clear: both; }
+@media (min-width: 768px) {
+    .container {
+        width: 750px; } }
+@media (min-width: 992px) {
+    .container {
+        width: 970px; } }
+@media (min-width: 1200px) {
+    .container {
+        width: 1170px; } }
+

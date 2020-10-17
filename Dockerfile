@@ -22,7 +22,8 @@ FROM maven as cas-mavencache
 ENV MAVEN_OPTS=-Dmaven.repo.local=/mvn
 ADD cas/pom.xml /cas/pom.xml
 WORKDIR /cas
-RUN mvn dependency:go-offline
+# Using go-offline results in issues resolving xmldsig from http://developer.ja-sig.org/maven2/ :-/
+RUN mvn dependency:resolve dependency:resolve-plugins
 
 
 FROM maven as cas-mavenbuild
@@ -99,6 +100,9 @@ COPY cas/etc/ /dist/etc/
 
 COPY --from=scm-downloader /dist /dist
 COPY --from=smeagol-downloader /dist /dist
+
+# Use smeagol favicons also for cas
+RUN cp ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/favicon* ${CATALINA_HOME}/cas
 
 # Root webapp
 COPY tomcat/webapps /dist/tomcat/webapps

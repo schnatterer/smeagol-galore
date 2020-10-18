@@ -32,6 +32,7 @@ services:
       - ALL
     volumes:
       - smeagol-galore:/home/tomcat/.scm
+      - smeagol-galore-repo-cache:/home/tomcat/.smeagol
       - type: bind
         source: ./config/users.txt
         target: /etc/cas/users.txt
@@ -79,3 +80,4 @@ networks:
 
 volumes:
   smeagol-galore:
+  smeagol-galore-repo-cache:

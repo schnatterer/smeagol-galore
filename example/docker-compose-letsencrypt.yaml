@@ -18,6 +18,7 @@ services:
       - 80:8080
     volumes:
       - smeagol-galore:/home/tomcat/.scm
+      - smeagol-galore-repo-cache:/home/tomcat/.smeagol
       # Better persist your certs to avoid letsencrypt rate limits
       - smeagol-galore-certs:/config/certs
       # read_only: true: Dehydrated's dir needs to be writable, so mount when with 
@@ -44,3 +45,4 @@ services:
 volumes:
   smeagol-galore:
   smeagol-galore-certs:
+  smeagol-galore-repo-cache:

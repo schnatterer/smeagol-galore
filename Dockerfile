@@ -118,6 +118,7 @@ RUN mkdir -p /dist/opt/java/openjdk/lib/security/ && \
 RUN mkdir -p /dist/config/certs
 # Make home folder writable
 RUN mkdir -p /dist/home/tomcat/.scm
+RUN mkdir -p /dist/home/tomcat/.smeagol
 # Once copied to the final stage everythings seems to be owend by root:root.
 # That is, the owner seems not to be preseverd, even when chown to UID 1001 here.
 # At least on Docker Hub this still pehttps://github.com/moby/moby/pull/38599oby/moby/pull/38599
@@ -166,7 +167,9 @@ COPY --from=tomcat-mavenbuild /tomcat/target/tomcat-jar-with-dependencies.jar /d
 FROM jre
 # Don't --chown=1001:0  here, or some binaries/libraries won't work (libcap/authbind)
 COPY --from=aggregator /dist /
+
 VOLUME /home/tomcat/.scm
+VOLUME /home/tomcat/.smeagol
 EXPOSE 8443 2222
 USER 1001:0
 ENTRYPOINT [ "/entrypoint.sh" ]

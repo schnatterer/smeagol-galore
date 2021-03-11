@@ -1,6 +1,7 @@
 stage: production
 server:
-  contextPath: /smeagol
+  servlet:
+    contextPath: /smeagol
 homeDirectory: /home/tomcat/.smeagol
 scm:
   url: https://${FQDN}/scm

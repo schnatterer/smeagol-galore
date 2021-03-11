@@ -5,7 +5,7 @@ FROM schnatterer/letsencrypt-tomcat:0.4.0 as letsencrypt-tomcat
 
 # Define global values in a central, DRY way
 FROM jre as builder
-ENV SMEAGOL_VERSION=v0.5.6
+ENV SMEAGOL_VERSION=v0.7.0-1 
 ENV SCM_SCRIPT_PLUGIN_VERSION=2.2.0
 ENV SCM_CODE_EDITOR_PLUGIN_VERSION=1.0.0
 ENV SCM_CAS_PLUGIN_VERSION=2.2.3
@@ -66,11 +66,11 @@ RUN unzip -o /opt/scm-server/var/webapp/scm-webapp.war -d ${CATALINA_HOME}/scm
 # download essential SCMM plugins
 RUN mkdir -p ${SCM_REQUIRED_PLUGINS}
 # Plugins are not signed, so no verification possible here
+RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-rest-legacy-plugin/${SCM_REST_LEGACY_PLUGIN_VERSION}/scm-rest-legacy-plugin-${SCM_REST_LEGACY_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-rest-legacy-plugin.smp
 RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-code-editor-plugin/${SCM_CODE_EDITOR_PLUGIN_VERSION}/scm-code-editor-plugin-${SCM_CODE_EDITOR_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-code-editor-plugin.smp
 RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-script-plugin/${SCM_SCRIPT_PLUGIN_VERSION}/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp
 RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-cas-plugin/${SCM_CAS_PLUGIN_VERSION}/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-cas-plugin.smp
 RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-smeagol-plugin/${SCM_SMEAGOL_PLUGIN_VERSION}/scm-smeagol-plugin-${SCM_SMEAGOL_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-smeagol-plugin.smp
-RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-rest-legacy-plugin/${SCM_REST_LEGACY_PLUGIN_VERSION}/scm-rest-legacy-plugin-${SCM_REST_LEGACY_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-rest-legacy-plugin.smp
 # Make logging less verbose
 COPY /scm/logback.xml ${CATALINA_HOME}/scm/WEB-INF/classes/logback.xml
 # config
@@ -78,9 +78,7 @@ COPY scm/resources /dist
 
 
 FROM builder as smeagol-downloader
-# Smeagol lacks JAXB (required from Java > 8). Use a custom build for now
-#RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/cloudogu/smeagol/${SMEAGOL_VERSION}/smeagol-${SMEAGOL_VERSION}.war
-RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/schnatterer/smeagol/${SMEAGOL_VERSION}-jaxb/smeagol-${SMEAGOL_VERSION}-jaxb.war
+RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/cloudogu/smeagol/${SMEAGOL_VERSION}/smeagol-${SMEAGOL_VERSION}.war
 
 # Set plantuml.com as plantuml renderer. Alternative would be to deploy plantuml
 # "Fix" executable war (which seems to confuse jar & zip utilities)
@@ -88,9 +86,9 @@ ENV PLANTUMLSERVER="http://www.plantuml.com/plantuml/png/"
 RUN set -x && \
   zip -F /tmp/smeagol-exec.war --out /tmp/smeagol.war && \
   unzip /tmp/smeagol.war -d ${CATALINA_HOME}/smeagol && \
-  sed -i "s#rendererURL:\"/plantuml/png/#rendererURL:\"${PLANTUMLSERVER}#g" "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)" && \
-  # Add link to SCM-Manager in Smeagol UI
-  sed -i 's#\(to:"/"},"Smeagol")\)#\1,s.a.createElement("a",{href:"/scm",class:"navbar-brand"},"SCM-Manager")#g' "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)" 
+  sed -i "s#rendererURL:\"/plantuml/png/#rendererURL:\"${PLANTUMLSERVER}#g" "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)" 
+  # TODO Patch link to SCM-Manager into Smeagol UI
+  #sed -i 's#\(to:"/"},"Smeagol")\)#\1,s.a.createElement("a",{href:"/scm",class:"navbar-brand"},"SCM-Manager")#g' "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)" 
 # Config
 COPY smeagol/application.yml /dist/application.yml
 COPY smeagol/logback.xml ${CATALINA_HOME}/smeagol/WEB-INF/classes/logback.xml

@@ -14,6 +14,7 @@ def setSmeagolConfig(){
     def currentConfig = smeagolConfiguration.get()
     currentConfig.setSmeagolUrl(smeagolUrl)
     currentConfig.setEnabled(true)
+    currentConfig.setNavLinkEnabled(true)
     smeagolConfiguration.set(currentConfig)
 }
 

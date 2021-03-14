@@ -31,8 +31,7 @@
     <form:form method="post" id="fm1" commandName="${commandName}" htmlEscape="true">
 
         <form:errors path="*" id="msg" cssClass="errors" element="div" htmlEscape="false" />
-
-        <h2>Smeagol Galore</h2>
+        <h2><%=  System.getenv("SMEAGOL_GALORE_LOGIN_WELCOME") == null ?  "Smeagol Galore" : System.getenv("SMEAGOL_GALORE_LOGIN_WELCOME") %></h2>
 
         <section class="row">
             <label for="username"><spring:message code="screen.welcome.label.netid" /></label>

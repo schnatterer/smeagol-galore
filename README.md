@@ -214,6 +214,7 @@ Via Environment Variables:
       * as System Property, e.g. `docker run -e EXTRA_JVM_ARGUMENTS='-Dproperty.name=value'...`) or
       * Environment Variable, e.g. (`docker run -e -e PROPERTY_NAME=value ...`).
     * This is used in the [example](example/docker-compose.yaml) to increase session timeout / token expiration.
+* Via `SMEAGOL_GALORE_LOGIN_WELCOME` you can customize the welcome message on the login screen. Default is `Smeagol Galore` 
 
 The container is run as with UID and GID = 1000.
 If you want to run it as a different user you pass `-u` param when running the container.

@@ -8,6 +8,7 @@ services:
       - 8443:8443
     volumes:
       - smeagol-galore:/home/tomcat/.scm
+      - smeagol-galore-repo-cache:/home/tomcat/.smeagol
       # Don't install any plugins
       - type: bind
         source: ./config/plugin-config.json
@@ -16,3 +17,4 @@ services:
 
 volumes:
   smeagol-galore:
+  smeagol-galore-repo-cache:

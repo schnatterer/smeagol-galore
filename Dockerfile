@@ -1,14 +1,17 @@
 # Define image versions for all stages
+FROM adoptopenjdk/openjdk11:jre-11.0.10_9-debianslim as jre
 FROM maven:3.6.3-jdk-11-slim as maven
 FROM schnatterer/letsencrypt-tomcat:0.4.0 as letsencrypt-tomcat
-FROM adoptopenjdk/openjdk11:jre-11.0.8_10-debianslim as jre
 
 # Define global values in a central, DRY way
 FROM jre as builder
-ENV SMEAGOL_VERSION=v0.5.6
-ENV SCM_SCRIPT_PLUGIN_VERSION=2.1.3
-ENV SCM_CAS_PLUGIN_VERSION=2.1.1
-ENV SCM_VERSION=2.6.0 
+ENV SMEAGOL_VERSION=v0.7.0-1 
+ENV SCM_SCRIPT_PLUGIN_VERSION=2.2.0
+ENV SCM_CODE_EDITOR_PLUGIN_VERSION=1.0.0
+ENV SCM_CAS_PLUGIN_VERSION=2.2.3
+ENV SCM_SMEAGOL_PLUGIN_VERSION=1.1.0
+ENV SCM_REST_LEGACY_PLUGIN_VERSION=2.0.0
+ENV SCM_VERSION=2.15.1
 ENV CATALINA_HOME=/dist/tomcat/webapps/
 
 USER root
@@ -21,7 +24,8 @@ FROM maven as cas-mavencache
 ENV MAVEN_OPTS=-Dmaven.repo.local=/mvn
 ADD cas/pom.xml /cas/pom.xml
 WORKDIR /cas
-RUN mvn dependency:go-offline
+# Using go-offline results in issues resolving xmldsig from http://developer.ja-sig.org/maven2/ :-/
+RUN mvn dependency:resolve dependency:resolve-plugins
 
 
 FROM maven as cas-mavenbuild
@@ -49,7 +53,7 @@ RUN mvn package
 # User separate downloader stages for better caching (especially downloads)
 FROM builder as scm-downloader
 
-ENV SCM_PKG_URL=https://packages.scm-manager.org/repository/releases/sonia/scm/packaging/unix/${SCM_VERSION}/unix-${SCM_VERSION}-app.tar.gz
+ENV SCM_PKG_URL=https://packages.scm-manager.org/repository/releases/sonia/scm/packaging/unix/${SCM_VERSION}/unix-${SCM_VERSION}.tar.gz
 ENV SCM_REQUIRED_PLUGINS=/dist/opt/scm-server/required-plugins
 
 RUN curl --fail -Lks ${SCM_PKG_URL} -o /tmp/scm-server.tar.gz
@@ -58,12 +62,16 @@ RUN gpg --receive-keys 8A44E41377D51FA4
 RUN gpg --batch --verify /tmp/scm-server.tar.gz.asc /tmp/scm-server.tar.gz
 RUN gunzip /tmp/scm-server.tar.gz
 RUN tar -C /opt -xf /tmp/scm-server.tar
-RUN unzip /opt/scm-server/var/webapp/scm-webapp.war -d ${CATALINA_HOME}/scm
-# download scm-script-plugin & scm-cas-plugin
+RUN unzip -o /opt/scm-server/var/webapp/scm-webapp.war -d ${CATALINA_HOME}/scm
+# download essential SCMM plugins
 RUN mkdir -p ${SCM_REQUIRED_PLUGINS}
-RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-script-plugin/${SCM_SCRIPT_PLUGIN_VERSION}/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp
 # Plugins are not signed, so no verification possible here
+RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-rest-legacy-plugin/${SCM_REST_LEGACY_PLUGIN_VERSION}/scm-rest-legacy-plugin-${SCM_REST_LEGACY_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-rest-legacy-plugin.smp
+RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-code-editor-plugin/${SCM_CODE_EDITOR_PLUGIN_VERSION}/scm-code-editor-plugin-${SCM_CODE_EDITOR_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-code-editor-plugin.smp
+RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-script-plugin/${SCM_SCRIPT_PLUGIN_VERSION}/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp
 RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-cas-plugin/${SCM_CAS_PLUGIN_VERSION}/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-cas-plugin.smp
+RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-smeagol-plugin/${SCM_SMEAGOL_PLUGIN_VERSION}/scm-smeagol-plugin-${SCM_SMEAGOL_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-smeagol-plugin.smp
+
 # Make logging less verbose
 COPY /scm/logback.xml ${CATALINA_HOME}/scm/WEB-INF/classes/logback.xml
 # config
@@ -71,9 +79,7 @@ COPY scm/resources /dist
 
 
 FROM builder as smeagol-downloader
-# Smeagol lacks JAXB (required from Java > 8). Use a custom build for now
-#RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/cloudogu/smeagol/${SMEAGOL_VERSION}/smeagol-${SMEAGOL_VERSION}.war
-RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/schnatterer/smeagol/${SMEAGOL_VERSION}-jaxb/smeagol-${SMEAGOL_VERSION}-jaxb.war
+RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/cloudogu/smeagol/${SMEAGOL_VERSION}/smeagol-${SMEAGOL_VERSION}.war
 
 # Set plantuml.com as plantuml renderer. Alternative would be to deploy plantuml
 # "Fix" executable war (which seems to confuse jar & zip utilities)
@@ -81,7 +87,10 @@ ENV PLANTUMLSERVER="http://www.plantuml.com/plantuml/png/"
 RUN set -x && \
   zip -F /tmp/smeagol-exec.war --out /tmp/smeagol.war && \
   unzip /tmp/smeagol.war -d ${CATALINA_HOME}/smeagol && \
-  sed -i "s#rendererURL:\"/plantuml/png/#rendererURL:\"${PLANTUMLSERVER}#g" "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)"
+  sed -i "s#rendererURL:\"/plantuml/png/#rendererURL:\"${PLANTUMLSERVER}#g" "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)" && \ 
+  # Patch link to SCM-Manager into Smeagol UI
+  sed -i 's#\(navbar-right"},e\)#\1,_.a.createElement("li",null,_.a.createElement("a",{href:"/scm"},"SCM-Manager"))#g' "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)"
+  
 # Config
 COPY smeagol/application.yml /dist/application.yml
 COPY smeagol/logback.xml ${CATALINA_HOME}/smeagol/WEB-INF/classes/logback.xml
@@ -95,6 +104,9 @@ COPY cas/etc/ /dist/etc/
 
 COPY --from=scm-downloader /dist /dist
 COPY --from=smeagol-downloader /dist /dist
+
+# Use smeagol favicons also for cas
+RUN cp ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/favicon* ${CATALINA_HOME}/cas
 
 # Root webapp
 COPY tomcat/webapps /dist/tomcat/webapps
@@ -110,6 +122,7 @@ RUN mkdir -p /dist/opt/java/openjdk/lib/security/ && \
 RUN mkdir -p /dist/config/certs
 # Make home folder writable
 RUN mkdir -p /dist/home/tomcat/.scm
+RUN mkdir -p /dist/home/tomcat/.smeagol
 # Once copied to the final stage everythings seems to be owend by root:root.
 # That is, the owner seems not to be preseverd, even when chown to UID 1001 here.
 # At least on Docker Hub this still pehttps://github.com/moby/moby/pull/38599oby/moby/pull/38599
@@ -158,7 +171,9 @@ COPY --from=tomcat-mavenbuild /tomcat/target/tomcat-jar-with-dependencies.jar /d
 FROM jre
 # Don't --chown=1001:0  here, or some binaries/libraries won't work (libcap/authbind)
 COPY --from=aggregator /dist /
+
 VOLUME /home/tomcat/.scm
+VOLUME /home/tomcat/.smeagol
 EXPOSE 8443 2222
 USER 1001:0
 ENTRYPOINT [ "/entrypoint.sh" ]

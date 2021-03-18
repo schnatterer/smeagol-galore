@@ -115,18 +115,22 @@ function installScmPlugins() {
       rm -rf "${SCM_DATA}/plugins"
     fi
 
-    # install required plugins
+    echo "install required plugins"
     if ! [ -d "${SCM_DATA}/plugins" ];  then
       mkdir "${SCM_DATA}/plugins"
     fi
-    if { ! [ -d "${SCM_DATA}/plugins/scm-cas-plugin" ] || [ -f "${SCM_DATA}/plugins/scm-cas-plugin/uninstall" ] ; } && ! [ -f "${SCM_DATA}/plugins/scm-cas-plugin.smp" ] ;  then
-      echo "Reinstalling scm-cas-plugin from default plugin folder"
-      cp "${SCM_REQUIRED_PLUGINS}/scm-cas-plugin.smp" "${SCM_DATA}/plugins"
-    fi
-    if { ! [ -d "${SCM_DATA}/plugins/scm-script-plugin" ] || [ -f "${SCM_DATA}/plugins/scm-script-plugin/uninstall" ] ; } && ! [ -f "${SCM_DATA}/plugins/scm-script-plugin.smp" ] ;  then
-      echo "Reinstalling scm-script-plugin from default plugin folder"
-      cp "${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp" "${SCM_DATA}/plugins"
-    fi
+    
+    find ${SCM_REQUIRED_PLUGINS} -iname '*.smp' -type f -printf "%f\n" | while read -r pluginFile; do
+        plugin="${pluginFile/.smp/}"
+        echo "Processing plugin ${plugin}"
+        
+        if { ! [[ -d "${SCM_DATA}/plugins/${plugin}" ]] || [[ -f "${SCM_DATA}/plugins/${plugin}/uninstall" ]]; } \
+            && ! [[ -f "${SCM_DATA}/plugins/${pluginFile}" ]]; then
+              
+          echo "Reinstalling ${plugin} from default plugin folder"
+          cp "${SCM_REQUIRED_PLUGINS}/${pluginFile}" "${SCM_DATA}/plugins"
+        fi
+    done
 
     echo "Finished installing SCM plugins"
 }

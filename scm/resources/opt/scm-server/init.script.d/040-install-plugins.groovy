@@ -37,9 +37,6 @@ def isFirstStart() {
 
 // action
 
-// Smeagol
-plugins.add("scm-rest-legacy-plugin")
-
 if (isFirstStart()) {
     System.out.println("First start detected; installing default plugins.");
     plugins.addAll(defaultPlugins)

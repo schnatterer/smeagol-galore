@@ -20,6 +20,7 @@ services:
       - ALL
     volumes:
       - smeagol-galore:/home/tomcat/.scm
+      - smeagol-galore-repo-cache:/home/tomcat/.smeagol
       - type: bind
         source: ./config/plugin-config.json
         target: /etc/scm/plugin-config.json
@@ -49,3 +50,4 @@ networks:
 
 volumes:
   smeagol-galore:
+  smeagol-galore-repo-cache:

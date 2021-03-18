@@ -18,7 +18,7 @@ services:
       # Timeout Smeagol
       - SERVER_SESSION_TIMEOUT=2592000
       # SCMMv2's access token expiration seems to be hard coded to 1h.
-      
+      - SMEAGOL_GALORE_LOGIN_WELCOME=Welcome to the example
       # Avoid applications writing to read-only home folder. E.g. jgit (part of SCMM)
       # See https://git.eclipse.org/c/jgit/jgit.git/commit/?id=838b5a84b5093c335b95a644b8888006d9e95493
       - XDG_CONFIG_HOME=/home/tomcat/.scm/
@@ -32,6 +32,7 @@ services:
       - ALL
     volumes:
       - smeagol-galore:/home/tomcat/.scm
+      - smeagol-galore-repo-cache:/home/tomcat/.smeagol
       - type: bind
         source: ./config/users.txt
         target: /etc/cas/users.txt
@@ -79,3 +80,4 @@ networks:
 
 volumes:
   smeagol-galore:
+  smeagol-galore-repo-cache:

@@ -30,6 +30,8 @@ Runs without a full Cloudogu ecosystem, but still features
 - [Usage](#usage)
   - [Getting started](#getting-started)
   - [Persist state](#persist-state)
+    - [SCM-Manager (Repos/Wikis)](#scm-manager-reposwikis)
+    - [Smeagol's Repo Cache](#smeagols-repo-cache)
   - [Custom Certificate](#custom-certificate)
     - [Mount your own certs](#mount-your-own-certs)
     - [Built-in Let's Encrypt support](#built-in-lets-encrypt-support)
@@ -76,18 +78,24 @@ Note that
 
 ## Persist state 
 
+### SCM-Manager (Repos/Wikis)
 Mount SCMM Volume to persist your repos/wikis: `-v $(pwd)/dev/scm:/home/tomcat/.scm `.
 This will also persist SCMM plugins, so the second start will be much faster. 
 
 Make sure the smeagol galore container use (UID 1001) is allowed to write to this folder by either `chown`ing or
-`chmod`. For development the followin will do
-
+`chmod`. For development the following will do
 
 ```bash
 mkdir -p dev/scm
 chmod 777 dev/scm
 docker run --rm --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomcat/.scm schnatterer/smeagol-galore
-``` 
+```
+
+### Smeagol's Repo Cache
+
+Although not strictly necessary, it is recommended to persist Smeagol's repo Cache at `/home/tomcat/.smeagol`.
+Without it smeagol will have to clone every repo from SCM-Manager again. Especially for large repos (100MB+) this will
+slow down the first request to each repo after the container has been restarted.
 
 ## Custom Certificate
 
@@ -206,6 +214,7 @@ Via Environment Variables:
       * as System Property, e.g. `docker run -e EXTRA_JVM_ARGUMENTS='-Dproperty.name=value'...`) or
       * Environment Variable, e.g. (`docker run -e -e PROPERTY_NAME=value ...`).
     * This is used in the [example](example/docker-compose.yaml) to increase session timeout / token expiration.
+* Via `SMEAGOL_GALORE_LOGIN_WELCOME` you can customize the welcome message on the login screen. Default is `Smeagol Galore` 
 
 The container is run as with UID and GID = 1000.
 If you want to run it as a different user you pass `-u` param when running the container.

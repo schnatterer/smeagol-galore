@@ -9,9 +9,9 @@ ENV SMEAGOL_VERSION=v0.7.0-1
 ENV SCM_SCRIPT_PLUGIN_VERSION=2.2.0
 ENV SCM_CODE_EDITOR_PLUGIN_VERSION=1.0.0
 ENV SCM_CAS_PLUGIN_VERSION=2.2.3
-ENV SCM_SMEAGOL_PLUGIN_VERSION=1.0.0
+ENV SCM_SMEAGOL_PLUGIN_VERSION=1.1.0
 ENV SCM_REST_LEGACY_PLUGIN_VERSION=2.0.0
-ENV SCM_VERSION=2.14.1
+ENV SCM_VERSION=2.15.1
 ENV CATALINA_HOME=/dist/tomcat/webapps/
 
 USER root
@@ -70,8 +70,7 @@ RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases
 RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-code-editor-plugin/${SCM_CODE_EDITOR_PLUGIN_VERSION}/scm-code-editor-plugin-${SCM_CODE_EDITOR_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-code-editor-plugin.smp
 RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-script-plugin/${SCM_SCRIPT_PLUGIN_VERSION}/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp
 RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-cas-plugin/${SCM_CAS_PLUGIN_VERSION}/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-cas-plugin.smp
-#RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-smeagol-plugin/${SCM_SMEAGOL_PLUGIN_VERSION}/scm-smeagol-plugin-${SCM_SMEAGOL_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-smeagol-plugin.smp
-RUN curl --fail -Lks https://oss.cloudogu.com/jenkins/job/scm-manager-plugins/job/scm-smeagol-plugin/job/develop/lastSuccessfulBuild/artifact/build/libs/scm-smeagol-plugin.smp -o ${SCM_REQUIRED_PLUGINS}/scm-smeagol-plugin.smp
+RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-smeagol-plugin/${SCM_SMEAGOL_PLUGIN_VERSION}/scm-smeagol-plugin-${SCM_SMEAGOL_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-smeagol-plugin.smp
 
 # Make logging less verbose
 COPY /scm/logback.xml ${CATALINA_HOME}/scm/WEB-INF/classes/logback.xml

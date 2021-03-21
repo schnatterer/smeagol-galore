@@ -1,9 +1,9 @@
 Smeagol galore
 ============================
-[![Build Status](https://travis-ci.org/schnatterer/smeagol-galore.svg?branch=scm-v2)](https://travis-ci.org/schnatterer/smeagol-galore)
-[![Docker Hub](https://images.microbadger.com/badges/image/schnatterer/smeagol-galore.svg)](https://hub.docker.com/r/schnatterer/smeagol-galore)
+[![Build Status](https://img.shields.io/github/workflow/status/schnatterer/smeagol-galore/Build)](https://github.com/schnatterer/smeagol-galore/actions)
+[![Docker Hub](https://img.shields.io/docker/image-size/schnatterer/smeagol-galore)](https://hub.docker.com/r/schnatterer/smeagol-galore)
 
-A lightweight version of [cloudogu's](https://cloudogu.com) git-based wiki system [smeagol](https://github.com/cloudogu/smeagol), 
+A lightweight version of [cloudogu's](https://cloudogu.com) git-based wiki system [smeagol](https://github.com/cloudogu/smeagol),
 the lightning-fast alternative to [gollum](https://github.com/gollum/gollum).
 
 ![GIF showcasing smeagol-galore](https://github.com/schnatterer/smeagol-galore/wiki/smeagol-galore.gif)
@@ -15,7 +15,7 @@ Runs without a full Cloudogu ecosystem, but still features
 * [SCM-Manager](https://www.scm-manager.org/) as Git backend,
 * Single Sign On using [CAS](https://github.com/apereo/cas),
 * built-in let's encrypt support,
-* everything deployed on an [Apache Tomcat](https://github.com/apache/tomcat) and 
+* everything deployed on an [Apache Tomcat](https://github.com/apache/tomcat) and
 * neatly packed into a docker image.
 
 [![Diagram showing components and their relationships](http://www.plantuml.com/plantuml/svg/Z9BVIYCn58VlvocEkXSkE9Fw1oaYijsfYj1kfRNiXKWv9d4QEac69ACBuhjl9ZETjagbkJhjxvkJBoVvPHqQLyeyscFyHIWEwM0qxOzkfzFn0ERE5VQ248DlIIRSl7mkBJTKAyULIwYMXEQwP3ehIP6Zglh4otzYMnZXk2KIhUCcYlQ4edd9U6dozKr81LjYgKoAuF4z9ZbcEg_Hrlak7VtPpTUL1J9pkj8LFerVFD7wlfuadQIpuT7q9xw3rEgBPvip_bhrirwMBhZP3eODyOrRBJdnYgyxmuBDA1hsQG2J-_7Tm_LajnaOVEOvLmm93QTlPz5Eu3ZfaER7Xj5g6-AqfEXg3R_iGgW23Kf0O_GRl4S0gSwrWODEMD77EgGquu7vhGtZfY6Fpy-xNRP98dNQr2ZIHMPqgLY3dvpYAMDRcW3SQEM-ADJjfhPwa45Yln-kQX_G0WibmENbZxgykeA3bx22GVt1GpXv-C25ikBhQfCFgtg-iqawFBHK7e4luY4gpBZvkKGtmE5rxtOqE6oUkV-WBZx3DxtPNN-MziRzGuhs2DBUP1tvg8vQszvNbpiT3eBlygOhusNjdTyhl9e9nF4LD7l31LmpuU2lM8Yra4eVt787Orve6otXxoAVUKcVzKetvye9Yev77jyQhPgsnfuPSyMy1XEO6PGsQhFuSIuOu-gfRXT5KVrueJqaF9vr_vrroV7vq_zcwo39SH26ml2LdgGdmBl19Bx_aKQ9WPwakojcD_yovIyInOOuBLPIO0rm5QH5a6mDMC4Iu1P6hmDMI5PS1beXTMMbZIYs0eg6MG5EvBe2a20xLm0KsPO0u5W4M0Ba4c1oKg-3dDrfPfV1LX9f2if5K4hEPagx3B9R8e45G24MWVv_m7u5SWNedj0pAdfRav-1RBVMTaKapaWG-H7bdm3RcGEaHMJW_NYsopkmUckzFPan3CbypD8ho6ssjvRjGOncwNxSkzZ_0MnlxMwFGjXspAfR1tlxLhPH31arGf-WRhNzCiHUXsJhe6pVHEK0h5-20-HStmQ0fs0YZju6J92yjDaj2pf8Bi1vZ1ln0kXZoAQ8B01TWFFwxXaOm4vWLcwFl_V-EvaCpqfSW-8B0Aa4e8dLLZ1oeiUnpGHWJW5Kn1696u1pCLT0vCae4qJk3p2-4fbZ5BriEi7vrGJIb-yJXdLv0H3Q2Juq0Q2w221ga4zrCCXdy7Wt_ucdLpoZ_W80)](http://www.plantuml.com/plantuml/uml/Z9BVIYCn58VlvocEkXSkE9Fw1oaYijsfYj1kfRNiXKWv9d4QEac69ACBuhjl9ZETjagbkJhjxvkJBoVvPHqQLyeyscFyHIWEwM0qxOzkfzFn0ERE5VQ248DlIIRSl7mkBJTKAyULIwYMXEQwP3ehIP6Zglh4otzYMnZXk2KIhUCcYlQ4edd9U6dozKr81LjYgKoAuF4z9ZbcEg_Hrlak7VtPpTUL1J9pkj8LFerVFD7wlfuadQIpuT7q9xw3rEgBPvip_bhrirwMBhZP3eODyOrRBJdnYgyxmuBDA1hsQG2J-_7Tm_LajnaOVEOvLmm93QTlPz5Eu3ZfaER7Xj5g6-AqfEXg3R_iGgW23Kf0O_GRl4S0gSwrWODEMD77EgGquu7vhGtZfY6Fpy-xNRP98dNQr2ZIHMPqgLY3dvpYAMDRcW3SQEM-ADJjfhPwa45Yln-kQX_G0WibmENbZxgykeA3bx22GVt1GpXv-C25ikBhQfCFgtg-iqawFBHK7e4luY4gpBZvkKGtmE5rxtOqE6oUkV-WBZx3DxtPNN-MziRzGuhs2DBUP1tvg8vQszvNbpiT3eBlygOhusNjdTyhl9e9nF4LD7l31LmpuU2lM8Yra4eVt787Orve6otXxoAVUKcVzKetvye9Yev77jyQhPgsnfuPSyMy1XEO6PGsQhFuSIuOu-gfRXT5KVrueJqaF9vr_vrroV7vq_zcwo39SH26ml2LdgGdmBl19Bx_aKQ9WPwakojcD_yovIyInOOuBLPIO0rm5QH5a6mDMC4Iu1P6hmDMI5PS1beXTMMbZIYs0eg6MG5EvBe2a20xLm0KsPO0u5W4M0Ba4c1oKg-3dDrfPfV1LX9f2if5K4hEPagx3B9R8e45G24MWVv_m7u5SWNedj0pAdfRav-1RBVMTaKapaWG-H7bdm3RcGEaHMJW_NYsopkmUckzFPan3CbypD8ho6ssjvRjGOncwNxSkzZ_0MnlxMwFGjXspAfR1tlxLhPH31arGf-WRhNzCiHUXsJhe6pVHEK0h5-20-HStmQ0fs0YZju6J92yjDaj2pf8Bi1vZ1ln0kXZoAQ8B01TWFFwxXaOm4vWLcwFl_V-EvaCpqfSW-8B0Aa4e8dLLZ1oeiUnpGHWJW5Kn1696u1pCLT0vCae4qJk3p2-4fbZ5BriEi7vrGJIb-yJXdLv0H3Q2Juq0Q2w221ga4zrCCXdy7Wt_ucdLpoZ_W80)
@@ -55,16 +55,16 @@ Runs without a full Cloudogu ecosystem, but still features
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Usage 
+# Usage
 
-## Getting started 
+## Getting started
 
 ```bash
 docker run -p 8443:8443 schnatterer/smeagol-galore
 ```
 
 Note that
- 
+
 * SCM-Manager installs plugins via the internet on first startup, so it might take some time.  
   You can choose which plugins are installed by editing `plugin-config.yml`, e.g. by mounting your own version into the
   container: `-v your-plugin-config.yml:/etc/scm/plugin-config.yml`.  
@@ -76,11 +76,11 @@ Note that
   SCM-Manager will be available on [https://localhost:8443/scm](https://localhost:8443/scm).
 * Default user/pw: `admin/admin` (see bellow for custom credentials)
 
-## Persist state 
+## Persist state
 
 ### SCM-Manager (Repos/Wikis)
 Mount SCMM Volume to persist your repos/wikis: `-v $(pwd)/dev/scm:/home/tomcat/.scm `.
-This will also persist SCMM plugins, so the second start will be much faster. 
+This will also persist SCMM plugins, so the second start will be much faster.
 
 Make sure the smeagol galore container use (UID 1001) is allowed to write to this folder by either `chown`ing or
 `chmod`. For development the following will do
@@ -101,46 +101,46 @@ slow down the first request to each repo after the container has been restarted.
 
 The self-signed certificate that is generated on startup by default is only a valid option for trying out and development.
 In production, you should provide a proper certificate, which can be done by either:
- * mounting your certs
- * enabling built'in Lets's Encrypt support
- 
+* mounting your certs
+* enabling built'in Lets's Encrypt support
+
 Note that smeagol, cas and SCMM communicate with each other via HTTPS.
-If you're certificate is not trusted by the JVM you should add it to the trust store and then mount it like so: 
+If you're certificate is not trusted by the JVM you should add it to the trust store and then mount it like so:
 `-v $(pwd)/dev/cacerts:/opt/java/openjdk/lib/security/cacerts`.
 
 See [entrypoint.sh](entrypoint.sh) for an example.
 
 ### Mount your own certs
- 
+
 Just mount your certs into the container like so: `-v $(pwd)/certs:/config/certs/${FQDN}`.
 
 Smeagol galore's server loads the certs from the following files inside the `/config/certs/${FQDN}` folder:
 
-* `cert.pem` 
+* `cert.pem`
 * `fullchain.pem`
 * `privkey.pem`
 
 ### Built-in Let's Encrypt support
 
-If you don't have any reverse proxy infrastructure that handles TLS temrination, the most convenient way of handling 
+If you don't have any reverse proxy infrastructure that handles TLS temrination, the most convenient way of handling
 TLS is to use Smeagol Galore's built-in Let's Encrypt support.
- 
+
 Before getting started, make sure
- 
+
 * to set the DNS record to match the external IP address of your host and
 * that ports 80 and 443 are routed to the container ports. By default:
-    * external port 443 to container port 8443 (`-p443:8443`) and
-    * external port 80 to container port 8080 (`-p80:8080`)
+  * external port 443 to container port 8443 (`-p443:8443`) and
+  * external port 80 to container port 8080 (`-p80:8080`)
 
 Then just enable let's encrypt via the environment:
 * `-e ENABLE_LETSENCRYPT=true` - enable let's encrypt support
-* `-eFQDN=example.com` - determines the domain to request the cert for 
-* `-eSTAGING=true` - If set to `true` creates certs against Lets Encrypt's staging, which has no rate limit but is not 
+* `-eFQDN=example.com` - determines the domain to request the cert for
+* `-eSTAGING=true` - If set to `true` creates certs against Lets Encrypt's staging, which has no rate limit but is not
   accepted by your browser.
 
 For a full example see [examples](example/docker-compose-letsencrypt.yaml).
 
-At startup Smeagol Galore still generates self-signed certs, if none are there, as it needs cert files to get the 
+At startup Smeagol Galore still generates self-signed certs, if none are there, as it needs cert files to get the
 server started.  
 Once the server is up, a background process queries the certs from Let's Encrypt, if their validity is less than 30 days.
 The process checks once a day if the certs are valid less than 30 days and renews them, if necessary.
@@ -148,9 +148,9 @@ The process checks once a day if the certs are valid less than 30 days and renew
 ## Create more wikis
 
 Note that the git arg `-c http.sslVerify=false ` is only necessary for testing with a self-signed cert .
-If you use an official TLS cert this won't be necessary. 
+If you use an official TLS cert this won't be necessary.
 
-* Go to https://localhost:8443/scm 
+* Go to https://localhost:8443/scm
 * Log in as administrator
 * Create a git repo
 * Clone into git wiki, e.g. for localhost: `git -c http.sslVerify=false clone https://admin@localhost:8443/scm/git/test`
@@ -187,34 +187,34 @@ Via Environment Variables:
 
 * Set the name of SCM-Manager's `ADMIN_GROUP`
 * Set your Fully Qualified Domain name (including Port) - `FQDN`  
-  Note that the smeagol galore container must be able to resolve this address as well, 
+  Note that the smeagol galore container must be able to resolve this address as well,
   because the webb apps communicate with each other (smeagol -> cas, smeagol -> scm, scm -> cas).
-  You can try this out locally, by adding the following entry to your `/etc/hosts`: `127.0.0.1 smeagol` and then passing 
+  You can try this out locally, by adding the following entry to your `/etc/hosts`: `127.0.0.1 smeagol` and then passing
   the following parameters to the container: `-v /etc/hosts:/etc/hosts -e FQDN=smeagol:8443`. You can then reach smeagol
   at `https://smeagol:8443`.
 * `HTTP_PORT` and `HTTPS_PORT`. Ports to listen on. Note that FQDN contains the HTTPS port (if != 443).  
   For now, the `tomcat` user is allowed to listen on ports 80,443 and of course > 1024.  
   Other ports are only possible when run as root (`docker run -u0`), which you shouldn't.  
-  **Note*: This seems to only work when the image is built with newer versions of docker (tested with 19.03.08) but not 
-  with the one use by DockerHub. As the image is built from source there, these image will result in 
+  **Note*: This seems to only work when the image is built with newer versions of docker (tested with 19.03.08) but not
+  with the one use by DockerHub. As the image is built from source there, these image will result in
   `Socket bind failed: [13] [Permission denied].`  
-   To showcase the feature I pushed an image with tag `0.2.0-SNAPSHOT-2e1ec28f`. If this works for you, you might want to 
-   build the most recent version from source yourself. 
+  To showcase the feature I pushed an image with tag `0.2.0-SNAPSHOT-2e1ec28f`. If this works for you, you might want to
+  build the most recent version from source yourself.
 * `-e DEBUG=true` exposes port 8000 as Tomcat debug port
 * Additional arguments can be passed to tomcat, or the webapps (CAS, smeagol, SCM-Manager)
   * As Docker `CMD`, e.g.  
-  `docker run schnatterer/smeagol-galore '-Xmx1g -Dabc=def'` 
+    `docker run schnatterer/smeagol-galore '-Xmx1g -Dabc=def'`
   * Via env var `EXTRA_JVM_ARGUMENTS`, e.g.   
-  `docker run -e EXTRA_JVM_ARGUMENTS='-Xmx1g -Dabc=def' schnatterer/smeagol-galore`
-  * Examples: 
-    * `-XmX2g` to virtual machine / tomcat process 
+    `docker run -e EXTRA_JVM_ARGUMENTS='-Xmx1g -Dabc=def' schnatterer/smeagol-galore`
+  * Examples:
+    * `-XmX2g` to virtual machine / tomcat process
     * See CAS's [`cas.properties`](cas/etc/cas/cas.properties) and
     * Smeagol's [application.yml](https://github.com/cloudogu/smeagol/blob/develop/src/main/resources/application.yml)
-    * for options. These can either be set 
+    * for options. These can either be set
       * as System Property, e.g. `docker run -e EXTRA_JVM_ARGUMENTS='-Dproperty.name=value'...`) or
       * Environment Variable, e.g. (`docker run -e -e PROPERTY_NAME=value ...`).
     * This is used in the [example](example/docker-compose.yaml) to increase session timeout / token expiration.
-* Via `SMEAGOL_GALORE_LOGIN_WELCOME` you can customize the welcome message on the login screen. Default is `Smeagol Galore` 
+* Via `SMEAGOL_GALORE_LOGIN_WELCOME` you can customize the welcome message on the login screen. Default is `Smeagol Galore`
 
 The container is run as with UID and GID = 1000.
 If you want to run it as a different user you pass `-u` param when running the container.
@@ -246,32 +246,32 @@ PRs welcome.
     ```
 - There are [a couple of limitations regarding file names](https://github.com/cloudogu/smeagol/blob/50330fa6ded55d8cf62ced9d9b45e5ca8bbbe7a4/src/main/java/com/cloudogu/smeagol/wiki/domain/Path.java#L74).    
   Find an `rename` or `git mv` them.
-    - For example, find files that end with a blank before the file extension: `ll | grep ' \.md'.`
-    - Find files that do not match the [character whitelist of smeagol](https://github.com/cloudogu/smeagol/blob/50330fa6ded55d8cf62ced9d9b45e5ca8bbbe7a4/src/main/java/com/cloudogu/smeagol/wiki/domain/Path.java#L20): 
-      `find ./  -printf "%f\n" | grep -Pv '^[\w\.\-_/ ]+$'`.  
-      You could just replace them: `rename 's/[(),#+~&]/_/g' *` (add more characters to replace in the first part of the regex, if needed).      
-      But keep in mind that changing the name of a file might break links to those.
-    - If you used uploads in Gollum, you might have to change the links.  
-      If you used fully qualified (absolute) links (like `https://mygoll.um/uploads`) or relative links starting in `/` 
-      (like `/uploads`) you should change all to `uploads`.  
-      You can find them like so: ` grep -r https://mygoll.um/uploads/` and `grep -r /uploads/`.
+  - For example, find files that end with a blank before the file extension: `ll | grep ' \.md'.`
+  - Find files that do not match the [character whitelist of smeagol](https://github.com/cloudogu/smeagol/blob/50330fa6ded55d8cf62ced9d9b45e5ca8bbbe7a4/src/main/java/com/cloudogu/smeagol/wiki/domain/Path.java#L20):
+    `find ./  -printf "%f\n" | grep -Pv '^[\w\.\-_/ ]+$'`.  
+    You could just replace them: `rename 's/[(),#+~&]/_/g' *` (add more characters to replace in the first part of the regex, if needed).      
+    But keep in mind that changing the name of a file might break links to those.
+  - If you used uploads in Gollum, you might have to change the links.  
+    If you used fully qualified (absolute) links (like `https://mygoll.um/uploads`) or relative links starting in `/`
+    (like `/uploads`) you should change all to `uploads`.  
+    You can find them like so: ` grep -r https://mygoll.um/uploads/` and `grep -r /uploads/`.
 - For some reason the version overview in smeagol shows only changes occurred after moving the files.  
   However, the history can still be found in git via scm-manager.
-- Note that it is also possible to run Gollum and Smeagol in parallel:  
-  - Just add a git origin to Gollum's Git repo pointing to the Git Repo in SCM-Manager.  
+- Note that it is also possible to run Gollum and Smeagol in parallel:
+  - Just add a git origin to Gollum's Git repo pointing to the Git Repo in SCM-Manager.
   - You can then sync via push and pull in Gollum's git repo.
-  
+
 # Troubleshooting
 
 ## Extend Log output
 
-Details for SCM-Manager, CAS, and Smeagol bellow. Process is the same for each component: 
+Details for SCM-Manager, CAS, and Smeagol bellow. Process is the same for each component:
 
 * Copy log files from source
 * Increase levels for appenders
-* Mount into container 
+* Mount into container
 
-See also [more substantial example ](example/README.md) using docker-compose. 
+See also [more substantial example ](example/README.md) using docker-compose.
 
 ### SCM-Manager
 

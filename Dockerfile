@@ -5,7 +5,7 @@ FROM schnatterer/letsencrypt-tomcat:0.4.0 as letsencrypt-tomcat
 
 # Define global values in a central, DRY way
 FROM jre as builder
-ENV SMEAGOL_VERSION=v0.7.0-1 
+ENV SMEAGOL_VERSION=v1.0.0-1 
 ENV SCM_SCRIPT_PLUGIN_VERSION=2.2.0
 ENV SCM_CODE_EDITOR_PLUGIN_VERSION=1.0.0
 ENV SCM_CAS_PLUGIN_VERSION=2.2.3
@@ -89,7 +89,7 @@ RUN set -x && \
   unzip /tmp/smeagol.war -d ${CATALINA_HOME}/smeagol && \
   sed -i "s#rendererURL:\"/plantuml/png/#rendererURL:\"${PLANTUMLSERVER}#g" "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)" && \ 
   # Patch link to SCM-Manager into Smeagol UI
-  sed -i 's#\(navbar-right"},e\)#\1,_.a.createElement("li",null,_.a.createElement("a",{href:"/scm"},"SCM-Manager"))#g' "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)"
+  sed -i 's#\(navbar-right"},e\)#\1,b.a.createElement("li",null, b.a.createElement("a",{href:"/scm"},"SCM-Manager"))#g' "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)"
   
 # Config
 COPY smeagol/application.yml /dist/application.yml

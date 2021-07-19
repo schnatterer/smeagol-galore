@@ -1,17 +1,20 @@
 # Define image versions for all stages
-FROM adoptopenjdk/openjdk11:jre-11.0.10_9-debianslim as jre
-FROM maven:3.6.3-jdk-11-slim as maven
+FROM adoptopenjdk/openjdk11:jre-11.0.11_9-debianslim as jre
+FROM maven:3.8.1-jdk-11-slim as maven
 FROM schnatterer/letsencrypt-tomcat:0.4.0 as letsencrypt-tomcat
 
 # Define global values in a central, DRY way
 FROM jre as builder
-ENV SMEAGOL_VERSION=v1.0.0-1 
-ENV SCM_SCRIPT_PLUGIN_VERSION=2.2.0
+
+# Note: On update Patchin the link to SCM-Manager into Smeagol UI has to be adapted :/
+ENV SMEAGOL_VERSION=v1.5.0-1
+#TODO add checksum validations 
+ENV SCM_SCRIPT_PLUGIN_VERSION=2.2.1
 ENV SCM_CODE_EDITOR_PLUGIN_VERSION=1.0.0
-ENV SCM_CAS_PLUGIN_VERSION=2.2.3
-ENV SCM_SMEAGOL_PLUGIN_VERSION=1.1.0
+ENV SCM_CAS_PLUGIN_VERSION=2.3.0
+ENV SCM_SMEAGOL_PLUGIN_VERSION=1.2.0
 ENV SCM_REST_LEGACY_PLUGIN_VERSION=2.0.0
-ENV SCM_VERSION=2.15.1
+ENV SCM_VERSION=2.20.0
 ENV CATALINA_HOME=/dist/tomcat/webapps/
 
 USER root
@@ -86,10 +89,10 @@ RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/cloudogu/smeagol
 ENV PLANTUMLSERVER="http://www.plantuml.com/plantuml/png/"
 RUN set -x && \
   zip -F /tmp/smeagol-exec.war --out /tmp/smeagol.war && \
-  unzip /tmp/smeagol.war -d ${CATALINA_HOME}/smeagol && \
-  sed -i "s#rendererURL:\"/plantuml/png/#rendererURL:\"${PLANTUMLSERVER}#g" "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)" && \ 
-  # Patch link to SCM-Manager into Smeagol UI
-  sed -i 's#\(navbar-right"},e\)#\1,b.a.createElement("li",null, b.a.createElement("a",{href:"/scm"},"SCM-Manager"))#g' "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)"
+  unzip /tmp/smeagol.war -d ${CATALINA_HOME}/smeagol
+RUN sed -i "s#rendererURL:\"/plantuml/png/#rendererURL:\"${PLANTUMLSERVER}#g" "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)"  
+# Patch link to SCM-Manager into Smeagol UI
+RUN sed -i 's#\(navbar-right"},e\)#\1,E.a.createElement("li",null, E.a.createElement("a",{href:"/scm"},"SCM-Manager"))#g' "$(ls ${CATALINA_HOME}/smeagol/WEB-INF/classes/static/static/js/main*.js)"
   
 # Config
 COPY smeagol/application.yml /dist/application.yml

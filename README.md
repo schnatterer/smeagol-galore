@@ -75,6 +75,8 @@ Note that
 * Smeagol galore will be available on [https://localhost:8443](https://localhost:8443) (and via `/smeagol`).  
   SCM-Manager will be available on [https://localhost:8443/scm](https://localhost:8443/scm).
 * Default user/pw: `admin/admin` (see bellow for custom credentials)
+* PlantUML Rendering uses plantuml.com by default. Note that this might be blocked by browser plugins such as uBlock 🤔
+  You can use your own instance with a custom image, though. See [Building](#building).
 
 ## Persist state
 
@@ -88,7 +90,8 @@ Make sure the smeagol galore container use (UID 1001) is allowed to write to thi
 ```bash
 mkdir -p dev/scm
 chmod 777 dev/scm
-docker run --rm --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomcat/.scm schnatterer/smeagol-galore
+docker run --rm --name smeagol-galore -p 8443:8443 -v $(pwd)/dev/scm:/home/tomcat/.scm schnatterer/s
+meagol-galore
 ```
 
 ### Smeagol's Repo Cache

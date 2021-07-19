@@ -86,7 +86,7 @@ RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/cloudogu/smeagol
 
 # Set plantuml.com as plantuml renderer. Alternative would be to deploy plantuml
 # "Fix" executable war (which seems to confuse jar & zip utilities)
-ENV PLANTUMLSERVER="http://www.plantuml.com/plantuml/png/"
+ENV PLANTUMLSERVER="https://www.plantuml.com/plantuml/png/"
 RUN set -x && \
   zip -F /tmp/smeagol-exec.war --out /tmp/smeagol.war && \
   unzip /tmp/smeagol.war -d ${CATALINA_HOME}/smeagol

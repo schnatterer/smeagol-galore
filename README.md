@@ -1,7 +1,6 @@
 Smeagol galore
 ============================
 [![Build Status](https://img.shields.io/github/workflow/status/schnatterer/smeagol-galore/Build)](https://github.com/schnatterer/smeagol-galore/actions)
-[![Docker Hub](https://img.shields.io/docker/image-size/schnatterer/smeagol-galore)](https://hub.docker.com/r/schnatterer/smeagol-galore)
 
 A lightweight version of [cloudogu's](https://cloudogu.com) git-based wiki system [smeagol](https://github.com/cloudogu/smeagol),
 the lightning-fast alternative to [gollum](https://github.com/gollum/gollum).
@@ -60,7 +59,7 @@ Runs without a full Cloudogu ecosystem, but still features
 ## Getting started
 
 ```bash
-docker run -p 8443:8443 schnatterer/smeagol-galore
+docker run -p 8443:8443 ghcr.io/schnatterer/smeagol-galore
 ```
 
 Note that
@@ -77,6 +76,8 @@ Note that
 * Default user/pw: `admin/admin` (see bellow for custom credentials)
 * PlantUML Rendering uses plantuml.com by default. Note that this might be blocked by browser plugins such as uBlock 🤔
   You can use your own instance with a custom image, though. See [Building](#building).
+* You might find older versions of smeagol galore on [DockerHub](https://hub.docker.com/repository/docker/schnatterer/smeagol-galore/tags), if they haven't been deleted by their
+  [image retention policy](https://www.docker.com/blog/scaling-dockers-business-to-serve-millions-more-developers-storage/).
 
 ## Persist state
 
@@ -206,9 +207,9 @@ Via Environment Variables:
 * `-e DEBUG=true` exposes port 8000 as Tomcat debug port
 * Additional arguments can be passed to tomcat, or the webapps (CAS, smeagol, SCM-Manager)
   * As Docker `CMD`, e.g.  
-    `docker run schnatterer/smeagol-galore '-Xmx1g -Dabc=def'`
+    `docker run ghcr.io/schnatterer/smeagol-galore '-Xmx1g -Dabc=def'`
   * Via env var `EXTRA_JVM_ARGUMENTS`, e.g.   
-    `docker run -e EXTRA_JVM_ARGUMENTS='-Xmx1g -Dabc=def' schnatterer/smeagol-galore`
+    `docker run -e EXTRA_JVM_ARGUMENTS='-Xmx1g -Dabc=def' ghcr.io/schnatterer/smeagol-galore`
   * Examples:
     * `-XmX2g` to virtual machine / tomcat process
     * See CAS's [`cas.properties`](cas/etc/cas/cas.properties) and

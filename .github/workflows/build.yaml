@@ -16,10 +16,15 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: false
+          tags: smeagol-galore
       - name: smoke test
         run: |
-          # Build image from source and use it for tests, instead of the one from DockerHub
-          docker build --no-cache -t smeagol-galore .
+          # Use the local image for tests, instead of the one from DockerHub
           echo 'IMAGE=smeagol-galore' > example/.env
           cd example && docker-compose -f docker-compose-general.yaml up -d
           # Wait for smeagol-galore to startup
@@ -33,13 +38,6 @@ jobs:
       # do the same for internal network example with hostname  - echo '172.1.2.2   smeagol' > /etc/hosts
       #  do the same with binding to port 443
   
-      - name: Log in to the Container registry
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v3
@@ -55,7 +53,13 @@ jobs:
             type=ref,event=pr
             type=sha,prefix=,format=short
             type=raw,enable=${{ github.ref == 'refs/heads/main' }},value=latest
-      - name: Build and push Docker image
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push Docker image
         uses: docker/build-push-action@v2
         with:
           context: .

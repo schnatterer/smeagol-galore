@@ -6,15 +6,29 @@ FROM schnatterer/letsencrypt-tomcat:0.4.0 as letsencrypt-tomcat
 # Define global values in a central, DRY way
 FROM jre as builder
 
-# Note: On update Patchin the link to SCM-Manager into Smeagol UI has to be adapted :/
+# Note: On update patching the link to SCM-Manager into Smeagol UI has to be adapted :/
 ENV SMEAGOL_VERSION=v1.5.0-1
-#TODO add checksum validations 
-ENV SCM_SCRIPT_PLUGIN_VERSION=2.2.1
+# https://jitpack.io/com/github/cloudogu/smeagol/${SMEAGOL_VERSION}/smeagol-${SMEAGOL_VERSION}.war.md5
+ENV SMEAGOL_MD5=118ee8e35d3ea087d3a9ebe330a84a41
+
+# https://packages.scm-manager.org/service/rest/repository/browse/plugin-releases/sonia/scm/plugins/
+ENV SCM_SCRIPT_PLUGIN_VERSION=2.3.0
+# e.g. https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-script-plugin/2.3.0/scm-script-plugin-2.3.0.smp.sha256
+ENV SCM_SCRIPT_PLUGIN_SHA256=07de0736ce324d2154b199b306c156ff74ecf7816638f2c5307bd3cdbd3da7f6 
 ENV SCM_CODE_EDITOR_PLUGIN_VERSION=1.0.0
-ENV SCM_CAS_PLUGIN_VERSION=2.3.0
+ENV SCM_CODE_EDITOR_PLUGIN_SHA256=c5d80fa7ab9723fd3d41b8422ec83433bc3376f59850d97a589fe093f5ca8989
+ENV SCM_CAS_PLUGIN_VERSION=2.3.1
+ENV SCM_CAS_PLUGIN_SHA256=c73674301e4f1f41a901e90b3f1ffd2895426e4b926fd88ac0d26285ef7368c4
+# TODO this version does not look good with SCMM 2.21+
+# https://github.com/scm-manager/scm-smeagol-plugin/issues/8
 ENV SCM_SMEAGOL_PLUGIN_VERSION=1.2.0
+ENV SCM_SMEAGOL_PLUGIN_SHA256=f870b5590bf2f67785b2eab251d9d8b714da613f61d78dd46fc17ca0ccaf7d88
 ENV SCM_REST_LEGACY_PLUGIN_VERSION=2.0.0
-ENV SCM_VERSION=2.21.0
+ENV SCM_REST_LEGACY_PLUGIN_MD5=1d7943bc76b0e88a79770f3285c3f272
+ENV SCM_VERSION=2.22.0
+# https://packages.scm-manager.org/repository/releases/sonia/scm/packaging/unix/${SCM_VERSION}/unix-${SCM_VERSION}.tar.gz.sha256
+ENV SCM_SHA256=aa9537eb790e7efdefff3a4278d36448e8755ede1b4566d1de226a97e767d712
+
 ENV CATALINA_HOME=/dist/tomcat/webapps/
 
 USER root
@@ -24,7 +38,7 @@ RUN apt-get install -y wget zip gpg
 
 
 FROM maven as cas-mavencache
-ENV MAVEN_OPTS=-Dmaven.repo.local=/mvn
+ENV MAVEN_OPTS='-Dmaven.repo.local=/mvn'
 ADD cas/pom.xml /cas/pom.xml
 WORKDIR /cas
 # Using go-offline results in issues resolving xmldsig from http://developer.ja-sig.org/maven2/ :-/
@@ -32,7 +46,7 @@ RUN mvn dependency:resolve dependency:resolve-plugins
 
 
 FROM maven as cas-mavenbuild
-ENV MAVEN_OPTS=-Dmaven.repo.local=/mvn 
+ENV MAVEN_OPTS='-Dmaven.repo.local=/mvn' 
 COPY --from=cas-mavencache /mvn/ /mvn/
 ADD cas/ /cas/
 WORKDIR /cas
@@ -40,13 +54,13 @@ RUN mvn compile war:exploded
 
 
 FROM maven as tomcat-mavencache
-ENV MAVEN_OPTS=-Dmaven.repo.local=/mvn
+ENV MAVEN_OPTS='-Dmaven.repo.local=/mvn'
 ADD tomcat/pom.xml /tomcat/pom.xml
 WORKDIR /tomcat
 RUN mvn dependency:go-offline
 
 FROM maven as tomcat-mavenbuild
-ENV MAVEN_OPTS=-Dmaven.repo.local=/mvn 
+ENV MAVEN_OPTS='-Dmaven.repo.local=/mvn'
 COPY --from=tomcat-mavencache /mvn/ /mvn/
 ADD tomcat/ /tomcat/
 WORKDIR /tomcat
@@ -59,7 +73,8 @@ FROM builder as scm-downloader
 ENV SCM_PKG_URL=https://packages.scm-manager.org/repository/releases/sonia/scm/packaging/unix/${SCM_VERSION}/unix-${SCM_VERSION}.tar.gz
 ENV SCM_REQUIRED_PLUGINS=/dist/opt/scm-server/required-plugins
 
-RUN curl --fail -Lks ${SCM_PKG_URL} -o /tmp/scm-server.tar.gz
+RUN curl --fail -Lks ${SCM_PKG_URL} -o /tmp/scm-server.tar.gz \
+    && echo "${SCM_SHA256} */tmp/scm-server.tar.gz" | sha256sum -c -
 RUN curl --fail -Lks ${SCM_PKG_URL}.asc -o /tmp/scm-server.tar.gz.asc
 RUN gpg --receive-keys 8A44E41377D51FA4
 RUN gpg --batch --verify /tmp/scm-server.tar.gz.asc /tmp/scm-server.tar.gz
@@ -69,11 +84,16 @@ RUN unzip -o /opt/scm-server/var/webapp/scm-webapp.war -d ${CATALINA_HOME}/scm
 # download essential SCMM plugins
 RUN mkdir -p ${SCM_REQUIRED_PLUGINS}
 # Plugins are not signed, so no verification possible here
-RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-rest-legacy-plugin/${SCM_REST_LEGACY_PLUGIN_VERSION}/scm-rest-legacy-plugin-${SCM_REST_LEGACY_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-rest-legacy-plugin.smp
-RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-code-editor-plugin/${SCM_CODE_EDITOR_PLUGIN_VERSION}/scm-code-editor-plugin-${SCM_CODE_EDITOR_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-code-editor-plugin.smp
-RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-script-plugin/${SCM_SCRIPT_PLUGIN_VERSION}/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp
-RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-cas-plugin/${SCM_CAS_PLUGIN_VERSION}/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-cas-plugin.smp
-RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-smeagol-plugin/${SCM_SMEAGOL_PLUGIN_VERSION}/scm-smeagol-plugin-${SCM_SMEAGOL_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-smeagol-plugin.smp
+RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-rest-legacy-plugin/${SCM_REST_LEGACY_PLUGIN_VERSION}/scm-rest-legacy-plugin-${SCM_REST_LEGACY_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-rest-legacy-plugin.smp \
+  && echo "${SCM_REST_LEGACY_PLUGIN_MD5} *${SCM_REQUIRED_PLUGINS}/scm-rest-legacy-plugin.smp" | md5sum -c - 
+RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-code-editor-plugin/${SCM_CODE_EDITOR_PLUGIN_VERSION}/scm-code-editor-plugin-${SCM_CODE_EDITOR_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-code-editor-plugin.smp \
+  && echo "${SCM_CODE_EDITOR_PLUGIN_SHA256} *${SCM_REQUIRED_PLUGINS}/scm-code-editor-plugin.smp" | sha256sum -c - 
+RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-script-plugin/${SCM_SCRIPT_PLUGIN_VERSION}/scm-script-plugin-${SCM_SCRIPT_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp \
+  && echo "${SCM_SCRIPT_PLUGIN_SHA256} *${SCM_REQUIRED_PLUGINS}/scm-script-plugin.smp" | sha256sum -c - 
+RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-cas-plugin/${SCM_CAS_PLUGIN_VERSION}/scm-cas-plugin-${SCM_CAS_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-cas-plugin.smp \
+  && echo "${SCM_CAS_PLUGIN_SHA256} *${SCM_REQUIRED_PLUGINS}/scm-cas-plugin.smp" | sha256sum -c - 
+RUN curl --fail -Lks https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-smeagol-plugin/${SCM_SMEAGOL_PLUGIN_VERSION}/scm-smeagol-plugin-${SCM_SMEAGOL_PLUGIN_VERSION}.smp -o ${SCM_REQUIRED_PLUGINS}/scm-smeagol-plugin.smp \
+  && echo "${SCM_SMEAGOL_PLUGIN_SHA256} *${SCM_REQUIRED_PLUGINS}/scm-smeagol-plugin.smp" | sha256sum -c - 
 
 # Make logging less verbose
 COPY /scm/logback.xml ${CATALINA_HOME}/scm/WEB-INF/classes/logback.xml
@@ -82,7 +102,8 @@ COPY scm/resources /dist
 
 
 FROM builder as smeagol-downloader
-RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/cloudogu/smeagol/${SMEAGOL_VERSION}/smeagol-${SMEAGOL_VERSION}.war
+RUN wget -O /tmp/smeagol-exec.war https://jitpack.io/com/github/cloudogu/smeagol/${SMEAGOL_VERSION}/smeagol-${SMEAGOL_VERSION}.war \
+  && echo "${SMEAGOL_MD5} */tmp/smeagol-exec.war" | md5sum -c - 
 
 # Set plantuml.com as plantuml renderer. Alternative would be to deploy plantuml
 # "Fix" executable war (which seems to confuse jar & zip utilities)

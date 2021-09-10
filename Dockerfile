@@ -7,9 +7,9 @@ FROM schnatterer/letsencrypt-tomcat:0.4.0 as letsencrypt-tomcat
 FROM jre as builder
 
 # Note: On update patching the link to SCM-Manager into Smeagol UI has to be adapted :/
-ENV SMEAGOL_VERSION=v1.5.0-1
+ENV SMEAGOL_VERSION=v1.6.0-1
 # https://jitpack.io/com/github/cloudogu/smeagol/${SMEAGOL_VERSION}/smeagol-${SMEAGOL_VERSION}.war.md5
-ENV SMEAGOL_MD5=118ee8e35d3ea087d3a9ebe330a84a41
+ENV SMEAGOL_MD5=01aa553aa34463f23069eb0b5e2d2d1e
 
 # https://packages.scm-manager.org/service/rest/repository/browse/plugin-releases/sonia/scm/plugins/
 ENV SCM_SCRIPT_PLUGIN_VERSION=2.3.0
@@ -23,9 +23,9 @@ ENV SCM_SMEAGOL_PLUGIN_VERSION=1.2.1
 ENV SCM_SMEAGOL_PLUGIN_SHA256=d588537fc77ddb85adaaecf43a94a3e0cf32880ec4d3b0aadf9d7c0fc50d344d
 ENV SCM_REST_LEGACY_PLUGIN_VERSION=2.0.0
 ENV SCM_REST_LEGACY_PLUGIN_MD5=1d7943bc76b0e88a79770f3285c3f272
-ENV SCM_VERSION=2.22.0
+ENV SCM_VERSION=2.23.0
 # https://packages.scm-manager.org/repository/releases/sonia/scm/packaging/unix/${SCM_VERSION}/unix-${SCM_VERSION}.tar.gz.sha256
-ENV SCM_SHA256=aa9537eb790e7efdefff3a4278d36448e8755ede1b4566d1de226a97e767d712
+ENV SCM_SHA256=78fc3617c828dc465524ab27faacda492c397afa82df828897a3850cffa5d354
 
 ENV CATALINA_HOME=/dist/tomcat/webapps/
 

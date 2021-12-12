@@ -2,6 +2,8 @@ Smeagol galore
 ============================
 [![Build Status](https://img.shields.io/github/workflow/status/schnatterer/smeagol-galore/Build)](https://github.com/schnatterer/smeagol-galore/actions)
 
+⚠️ For the time being I recommend stopping smeagol-galore instances due to [CVE-2021-44228](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228). Smeagol galore might or might not be affected. It does not use Log4j version 2, but CAS includes log4j version 1 and smeagol includes log4j-api and log4j-to-slf4j which seem not to be vulnerable but who knows.
+
 A lightweight version of [cloudogu's](https://cloudogu.com) git-based wiki system [smeagol](https://github.com/cloudogu/smeagol),
 the lightning-fast alternative to [gollum](https://github.com/gollum/gollum).
 

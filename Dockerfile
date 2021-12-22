@@ -1,31 +1,31 @@
 # Define image versions for all stages
-FROM adoptopenjdk/openjdk11:jre-11.0.11_9-debianslim as jre
-FROM maven:3.8.1-jdk-11-slim as maven
+FROM adoptopenjdk/openjdk11:jre-11.0.13_8-debianslim as jre
+FROM maven:3.8.4-jdk-11-slim as maven
 FROM schnatterer/letsencrypt-tomcat:0.4.0 as letsencrypt-tomcat
 
 # Define global values in a central, DRY way
 FROM jre as builder
 
 # Note: On update patching the link to SCM-Manager into Smeagol UI has to be adapted :/
-ENV SMEAGOL_VERSION=v1.6.0-1
+ENV SMEAGOL_VERSION=v1.6.1-1
 # https://jitpack.io/com/github/cloudogu/smeagol/${SMEAGOL_VERSION}/smeagol-${SMEAGOL_VERSION}.war.md5
-ENV SMEAGOL_MD5=01aa553aa34463f23069eb0b5e2d2d1e
+ENV SMEAGOL_MD5=78b9fec96ad15e841a32675995ef9421
 
 # https://packages.scm-manager.org/service/rest/repository/browse/plugin-releases/sonia/scm/plugins/
-ENV SCM_SCRIPT_PLUGIN_VERSION=2.3.0
+ENV SCM_SCRIPT_PLUGIN_VERSION=2.3.2
 # e.g. https://packages.scm-manager.org/repository/plugin-releases/sonia/scm/plugins/scm-script-plugin/2.3.0/scm-script-plugin-2.3.0.smp.sha256
-ENV SCM_SCRIPT_PLUGIN_SHA256=07de0736ce324d2154b199b306c156ff74ecf7816638f2c5307bd3cdbd3da7f6 
+ENV SCM_SCRIPT_PLUGIN_SHA256=4e52dc010b0682c9321f22573f698a59f0b667e3ef2a3a6885ffa57feeebfb5e 
 ENV SCM_CODE_EDITOR_PLUGIN_VERSION=1.0.0
 ENV SCM_CODE_EDITOR_PLUGIN_SHA256=c5d80fa7ab9723fd3d41b8422ec83433bc3376f59850d97a589fe093f5ca8989
-ENV SCM_CAS_PLUGIN_VERSION=2.3.1
-ENV SCM_CAS_PLUGIN_SHA256=c73674301e4f1f41a901e90b3f1ffd2895426e4b926fd88ac0d26285ef7368c4
+ENV SCM_CAS_PLUGIN_VERSION=2.4.0
+ENV SCM_CAS_PLUGIN_SHA256=bd9a0e0794fb1be40f357cbbde7396889055bd1af2c42b4f2cdb34763c5fb372
 ENV SCM_SMEAGOL_PLUGIN_VERSION=1.2.1
 ENV SCM_SMEAGOL_PLUGIN_SHA256=d588537fc77ddb85adaaecf43a94a3e0cf32880ec4d3b0aadf9d7c0fc50d344d
 ENV SCM_REST_LEGACY_PLUGIN_VERSION=2.0.0
 ENV SCM_REST_LEGACY_PLUGIN_MD5=1d7943bc76b0e88a79770f3285c3f272
-ENV SCM_VERSION=2.23.0
+ENV SCM_VERSION=2.28.0
 # https://packages.scm-manager.org/repository/releases/sonia/scm/packaging/unix/${SCM_VERSION}/unix-${SCM_VERSION}.tar.gz.sha256
-ENV SCM_SHA256=78fc3617c828dc465524ab27faacda492c397afa82df828897a3850cffa5d354
+ENV SCM_SHA256=c4108d671304e916003391ac81f74f04c699e5c24587539c86107c9b813ed1f6
 
 ENV CATALINA_HOME=/dist/tomcat/webapps/
 
@@ -49,6 +49,7 @@ COPY --from=cas-mavencache /mvn/ /mvn/
 ADD cas/ /cas/
 WORKDIR /cas
 RUN mvn compile war:exploded
+
 
 
 FROM maven as tomcat-mavencache
@@ -121,6 +122,9 @@ COPY smeagol/logback.xml ${CATALINA_HOME}/smeagol/WEB-INF/classes/logback.xml
 FROM builder as aggregator
 # CAS
 COPY --from=cas-mavenbuild /cas/target/cas ${CATALINA_HOME}/cas
+# Mitigate any possible attack vectors similar to Log4Shell (CVE-2021-44228)
+# https://www.slf4j.org/log4shell.html
+RUN cd ${CATALINA_HOME}/cas/WEB-INF/lib/ && zip -q -d log4j-*.jar org/apache/log4j/net/JMSAppender.class
 # config
 COPY cas/etc/ /dist/etc/
 

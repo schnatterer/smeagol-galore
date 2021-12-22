@@ -2,8 +2,6 @@ Smeagol galore
 ============================
 [![Build Status](https://img.shields.io/github/workflow/status/schnatterer/smeagol-galore/Build)](https://github.com/schnatterer/smeagol-galore/actions)
 
-⚠️ For the time being I recommend stopping smeagol-galore instances due to [CVE-2021-44228](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228). Smeagol galore might or might not be affected. It does not use Log4j version 2, but CAS includes log4j version 1 and smeagol includes log4j-api and log4j-to-slf4j which seem not to be vulnerable but who knows.
-
 A lightweight version of [cloudogu's](https://cloudogu.com) git-based wiki system [smeagol](https://github.com/cloudogu/smeagol),
 the lightning-fast alternative to [gollum](https://github.com/gollum/gollum).
 
@@ -302,6 +300,22 @@ See also [more substantial example ](example/README.md) using docker-compose.
 * Start container with `-p8000:8000 -e DEBUG=true`
 * Load sources for [SCM-Manager](https://github.com/sdorra/scm-manager) and related plugins, CAS from this repo and/or [smeagol](https://github.com/cloudogu/smeagol) into your IDE.
 * Start debugger, e.g. in [IntelliJ](https://stackoverflow.com/a/6734028/1845976) on port 8000
+
+# Security
+## Log4Shell / CVE-2021-44228
+
+[CVE-2021-44228](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228).
+
+Smeagol-galore does not use Log4j version 2, so it is not affected. 
+* CAS includes log4j version 1, Smeagol includes log4j-api and log4j-to-slf4j and SCM-Manager uses logback [which all are not vulnerable in terms of CVE-2021-44228](https://wwe.e.slf4j.org/log4shell.html).
+* However, when an attacker has write access to the cas log4j config, the `JMSAppender` class could abused for an attack similar to log4shell.  
+  This class was removed preventively in 1.6.1-1-r1.
+* A similar attack vector exists in Logback used in SCM-Manager, which [was patched in version 2.27.3 of SCM-Manager](https://scm-manager.org/blog/posts/2021-12-13-log4shell/), contained in galore 1.6.1-1-r1.  
+  The above link states that SCM-Manager plugins _might_ be affected, which you should check via script plugin.
+
+So in Smeagol galore >= 1.6.1-1-r1, with default SCM-Manager plugins there is no vulnerability similar to log4shell, according to current knowledge, 
+as of 22 December, 2021. 
+
 
 # Links
 
